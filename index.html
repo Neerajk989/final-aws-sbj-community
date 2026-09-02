@@ -1,1411 +1,719 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta name="google-site-verification" content="hKhZlCo8cPkI_BZ7_oXm2YjxH1GKHoPKq-5kzw19mOQ" />
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ff9900">
+  <meta name="description" content="SB Jain AWS Student Community — The flagship student-led cloud community at SB Jain Institute of Technology, Nagpur. Build. Learn. Connect.">
+  
+  <title>SB Jain AWS Student Community · Nagpur | Build. Learn. Connect.</title>
 
-    <title>SB Jain AWS Student Community</title>
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="SB Jain AWS Student Community · Build. Learn. Connect.">
+  <meta property="og:description" content="A student-driven community for cloud enthusiasts, developers, innovators and future builders at SB Jain Institute of Technology.">
+  <meta property="og:image" content="images/aws-logo.png">
 
-    <meta name="description"
-        content="SB Jain AWS Student Community — Build, Learn, Connect and Innovate with AWS and Cloud Technology.">
+  <!-- Favicon using transparent AWS Logo -->
+  <link rel="icon" type="image/svg+xml" href="images/aws-logo.svg?v=2">
+  <link rel="icon" type="image/png" href="images/aws-logo.png">
 
-    <link rel="stylesheet" href="style.css">
+  <!-- Google Fonts: Inter & Instrument Serif matching reference -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-    <!-- =====================================================
-         LOADING SCREEN
-    ====================================================== -->
+  <!-- AMBIENT ANIMATED AURA BACKGROUND (Full Page) -->
+  <div class="site-aura" aria-hidden="true">
+    <span class="aura-blob ab1"></span>
+    <span class="aura-blob ab2"></span>
+    <span class="aura-blob ab3"></span>
+  </div>
 
-    <div class="loader" id="loader">
-        <div class="loader-logo">AWS</div>
-        <div class="loader-line">
-            <span></span>
-        </div>
-        <p>SB JAIN AWS STUDENT COMMUNITY</p>
+  <!-- CUSTOM DUAL CURSOR -->
+  <div class="cursor-dot" id="cursor-dot"></div>
+  <div class="cursor-ring" id="cursor-ring"></div>
+
+  <!-- TOP BREAKING TICKER -->
+  <div class="ticker">
+    <div class="ticker-track">
+      <span class="t-item"><span class="t-tag">ANNOUNCEMENT</span> AWS Student Community · SB Jain Nagpur</span>
+      <span class="t-dot">✦</span>
+      <span class="t-item">SB Jain Institute of Technology, Management &amp; Research</span>
+      <span class="t-dot">✦</span>
+      <span class="t-item">Cloud · DevOps · Generative AI · Cloud Architecture</span>
+      <span class="t-dot">✦</span>
+      <span class="t-item"><span class="t-tag">UPCOMING</span> Student Community Day 2026</span>
+      <span class="t-dot">✦</span>
+      <span class="t-item">500+ Student Builders Connected</span>
+      <span class="t-dot">✦</span>
+      <span class="t-item"><span class="t-tag">JOIN</span> Build. Learn. Connect.</span>
+      <span class="t-dot">✦</span>
+      <span class="t-item"><span class="t-tag">ANNOUNCEMENT</span> AWS Student Community · SB Jain Nagpur</span>
+      <span class="t-dot">✦</span>
+      <span class="t-item">SB Jain Institute of Technology, Management &amp; Research</span>
+      <span class="t-dot">✦</span>
+      <span class="t-item">Cloud · DevOps · Generative AI · Cloud Architecture</span>
+      <span class="t-dot">✦</span>
+      <span class="t-item"><span class="t-tag">UPCOMING</span> Student Community Day 2026</span>
+      <span class="t-dot">✦</span>
+      <span class="t-item">500+ Student Builders Connected</span>
+      <span class="t-dot">✦</span>
     </div>
+  </div>
 
+  <!-- FLOATING CAPSULE NAVBAR (.snav) -->
+  <nav class="snav">
+    <div class="snav-inner">
+      <a href="#hero" class="snav-logo" aria-label="SB Jain AWS Community Home">
+        <!-- Official AWS Logo with NO white background -->
+        <img class="snav-logo-img" src="images/aws-logo.svg?v=2" alt="AWS Logo" width="64" height="38">
+        <span class="snav-divider"></span>
+        <span class="snav-logo-text">SB JAIN<br><em>COMMUNITY</em></span>
+      </a>
 
-    <!-- =====================================================
-         NAVBAR
-    ====================================================== -->
-
-    <header class="navbar">
-
-        <a href="#home" class="logo">
-
-            <div class="aws-logo">
-                aws
-                <span></span>
-            </div>
-
-            <div class="logo-divider"></div>
-
-            <div class="student-builder">
-                STUDENT
-                <br>
-                BUILDER
-                <br>
-                COMMUNITY
-            </div>
-
-        </a>
-
-
-        <nav class="nav-links">
-
-            <a href="#about">ABOUT</a>
-            <a href="#events">EVENTS</a>
-            <a href="#speakers">SPEAKERS</a>
-            <a href="#agenda">AGENDA</a>
-            <a href="#venue">VENUE</a>
-            <a href="#team">TEAM</a>
-            <a href="#faq">FAQ</a>
-
-        </nav>
-
-
-        <a href="#join" class="nav-button">
-            JOIN COMMUNITY
-            <span>↗</span>
-        </a>
-
-
-        <button class="menu-button" id="menuButton">
-            ☰
-        </button>
-
-    </header>
-
-
-
-    <!-- =====================================================
-         MOBILE MENU
-    ====================================================== -->
-
-    <div class="mobile-menu" id="mobileMenu">
-
-        <a href="#about">ABOUT</a>
-        <a href="#events">EVENTS</a>
-        <a href="#speakers">SPEAKERS</a>
-        <a href="#agenda">AGENDA</a>
-        <a href="#venue">VENUE</a>
-        <a href="#team">TEAM</a>
+      <div class="snav-links">
+        <a href="#about">About</a>
+        <a href="#speakers">Speakers</a>
+        <a href="#agenda">Agenda</a>
+        <a href="#venue">Venue</a>
+        <a href="#partners">Partners</a>
+        <a href="#badge">Badge</a>
+        <a href="#team">Team</a>
         <a href="#faq">FAQ</a>
-        <a href="#join">JOIN COMMUNITY ↗</a>
+      </div>
 
+      <a href="mailto:neerajk.ml25@sbjit.edu.in" class="snav-cta">Join Community ↗</a>
+
+      <button class="snav-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="snav-mobile-menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <div class="snav-mobile" id="snav-mobile-menu" aria-hidden="true">
+        <div class="snav-mobile-links">
+          <a href="#about">About</a>
+          <a href="#speakers">Speakers</a>
+          <a href="#agenda">Agenda</a>
+          <a href="#venue">Venue</a>
+          <a href="#partners">Partners</a>
+          <a href="#badge">Badge</a>
+          <a href="#team">Team</a>
+          <a href="#faq">FAQ</a>
+        </div>
+        <a href="mailto:neerajk.ml25@sbjit.edu.in" class="snav-mobile-cta">Join Community ↗</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="hero" id="hero">
+    <!-- Hero Ambient Background Layer -->
+    <div class="hero-bg">
+      <div class="aurora a1"></div>
+      <div class="aurora a2"></div>
+      <div class="aurora a3"></div>
+      <div class="grid-mesh"></div>
+      <div class="particles" id="particles"></div>
     </div>
 
-
-
-    <main>
-
-        <!-- =================================================
-             HERO
-        ================================================== -->
-
-        <section class="hero" id="home">
-
-            <!-- LIVE COLLEGE BACKGROUND -->
-
-            <div class="hero-background">
-
-                <div class="hero-image"></div>
-
-                <div class="hero-overlay"></div>
-
-                <div class="hero-gradient"></div>
-
-            </div>
-
-
-            <!-- GRID -->
-
-            <div class="hero-grid"></div>
-
-
-            <!-- FLOATING PARTICLES -->
-
-            <div class="particles">
-
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-
-            </div>
-
-
-            <!-- HERO CONTENT -->
-
-            <div class="hero-content">
-
-                <div class="event-status">
-
-                    <span class="status-dot"></span>
-
-                    SB JAIN · AWS STUDENT COMMUNITY
-
-                </div>
-
-
-                <div class="hero-kicker">
-
-                    AWS STUDENT BUILDER GROUP
-
-                </div>
-
-
-                <h1>
-
-                    <span class="hero-line white">
-                        STUDENT
-                    </span>
-
-                    <span class="hero-line script">
-                        Community
-                    </span>
-
-                    <span class="hero-line gradient-text">
-                        DAY 2026
-                    </span>
-
-                    <span class="hero-line script small-script">
-                        Nagpur
-                    </span>
-
-                </h1>
-
-
-                <p class="hero-description">
-
-                    One community. One stage.
-                    A student-driven ecosystem where builders,
-                    developers and innovators come together to
-                    learn AWS, build real projects and create
-                    the future of cloud technology.
-
-                </p>
-
-
-                <div class="hero-buttons">
-
-                    <a href="#join" class="primary-button">
-
-                        JOIN COMMUNITY
-
-                        <span>↗</span>
-
-                    </a>
-
-
-                    <a href="#events" class="secondary-button">
-
-                        EXPLORE EVENTS
-
-                        <span>↓</span>
-
-                    </a>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- HERO RIGHT CARD -->
-
-            <div class="hero-card">
-
-                <div class="hero-card-image">
-
-                    <img
-                        src="https://media.getmyuni.com/azure/college-images-test/sb-jain-institute-of-technology-management-and-research-sbjitmr-nagpur/cb3973b368f3491b888e97760a4bd58a.jpeg"
-                        alt="SB Jain Institute of Technology and Research">
-
-                    <div class="image-dark"></div>
-
-                    <div class="image-label">
-
-                        <span>
-                            SB JAIN
-                        </span>
-
-                        <strong>
-                            NAGPUR
-                        </strong>
-
-                    </div>
-
-                    <div class="image-corner">
-                        AWS
-                        <br>
-                        STUDENT
-                        <br>
-                        COMMUNITY
-                    </div>
-
-                </div>
-
-
-                <!-- COUNTDOWN -->
-
-                <div class="hero-countdown">
-
-                    <div class="countdown-box">
-                        <strong id="days">00</strong>
-                        <span>DAYS</span>
-                    </div>
-
-                    <div class="countdown-separator">:</div>
-
-                    <div class="countdown-box">
-                        <strong id="hours">00</strong>
-                        <span>HOURS</span>
-                    </div>
-
-                    <div class="countdown-separator">:</div>
-
-                    <div class="countdown-box">
-                        <strong id="minutes">00</strong>
-                        <span>MINUTES</span>
-                    </div>
-
-                    <div class="countdown-separator">:</div>
-
-                    <div class="countdown-box">
-                        <strong id="seconds">00</strong>
-                        <span>SECONDS</span>
-                    </div>
-
-                </div>
-
-
-                <div class="countdown-label">
-                    NEXT COMMUNITY EXPERIENCE
-                </div>
-
-            </div>
-
-
-
-            <!-- HERO SIDE LABEL -->
-
-            <div class="hero-side-label">
-
-                <span>01</span>
-
-                <div></div>
-
-                SCROLL TO EXPLORE
-
-            </div>
-
-
-
-            <!-- HERO BOTTOM -->
-
-            <div class="hero-bottom">
-
-                <div class="hero-stat">
-
-                    <strong>
-                        <span class="counter" data-target="500">
-                            0
-                        </span>+
-                    </strong>
-
-                    <span>COMMUNITY MEMBERS</span>
-
-                </div>
-
-
-                <div class="hero-stat">
-
-                    <strong>
-                        <span class="counter" data-target="20">
-                            0
-                        </span>+
-                    </strong>
-
-                    <span>EVENTS</span>
-
-                </div>
-
-
-                <div class="hero-stat">
-
-                    <strong>
-                        <span class="counter" data-target="10">
-                            0
-                        </span>+
-                    </strong>
-
-                    <span>WORKSHOPS</span>
-
-                </div>
-
-
-                <div class="hero-location">
-
-                    <span class="location-dot"></span>
-
-                    SB JAIN INSTITUTE OF TECHNOLOGY
-
-                    <br>
-
-                    NAGPUR · MAHARASHTRA
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =================================================
-             TICKER
-        ================================================== -->
-
-        <div class="ticker">
-
-            <div class="ticker-track">
-
-                <span>BUILD</span>
-                <b>✦</b>
-
-                <span>LEARN</span>
-                <b>✦</b>
-
-                <span>CONNECT</span>
-                <b>✦</b>
-
-                <span>INNOVATE</span>
-                <b>✦</b>
-
-                <span>CREATE</span>
-                <b>✦</b>
-
-                <span>DEPLOY</span>
-                <b>✦</b>
-
-                <span>BUILD</span>
-                <b>✦</b>
-
-                <span>LEARN</span>
-                <b>✦</b>
-
-                <span>CONNECT</span>
-                <b>✦</b>
-
-                <span>INNOVATE</span>
-                <b>✦</b>
-
-            </div>
-
+    <div class="container hero-layout">
+      <div class="hero-copy reveal">
+        <div class="badge">
+          <span class="dot"></span>
+          <span>SB JAIN INSTITUTE OF TECHNOLOGY · HOSTED BY AWS SBG · NAGPUR</span>
         </div>
 
+        <h1 class="hero-title">
+          <span class="line"><span class="word">Student</span></span>
+          <span class="line"><span class="word ital">Community</span></span>
+          <span class="line"><span class="word grad">Day 2026</span></span>
+          <span class="line"><span class="word ital">Nagpur</span></span>
+        </h1>
 
+        <p class="hero-sub">
+          One day. One stage. The student-driven AWS community gathering at SB Jain Institute of Technology.
+          Keynotes from AWS Community leaders, deep-dive workshops, cloud challenges, and student innovators building tomorrow's technologies.
+        </p>
 
-        <!-- =================================================
-             ABOUT
-        ================================================== -->
+        <div class="hero-ctas">
+          <a href="mailto:neerajk.ml25@sbjit.edu.in" class="btn-primary">
+            <span>Join Community</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+          </a>
+          <a href="#events" class="btn-ghost">
+            <span>Explore Events</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+          </a>
+        </div>
 
-        <section class="section about" id="about">
+        <div class="quick-facts">
+          <div class="qf"><strong>2026<span>OCT</span></strong>Upcoming</div>
+          <div class="qf-sep"></div>
+          <div class="qf"><strong>500+</strong>Builders</div>
+          <div class="qf-sep"></div>
+          <div class="qf"><strong>20+</strong>Events</div>
+          <div class="qf-sep"></div>
+          <div class="qf"><strong>10+</strong>Workshops</div>
+        </div>
+      </div>
 
-            <div class="section-number">01</div>
+      <div class="hero-media reveal">
+        <div class="hero-photo-card">
+          <img src="https://media.getmyuni.com/azure/college-images-test/sb-jain-institute-of-technology-management-and-research-sbjitmr-nagpur/cb3973b368f3491b888e97760a4bd58a.jpeg" alt="SB Jain Institute of Technology Campus Nagpur">
+          <div class="hero-photo-top">SB JAIN CAMPUS<br>NAGPUR, MAHARASHTRA</div>
+          <div class="hero-photo-bottom">
+            <span class="hero-photo-label">AWS STUDENT BUILDER GROUP</span>
+          </div>
+        </div>
 
-            <div class="section-label">
-                ABOUT THE COMMUNITY
+        <!-- Real-time Live Countdown Timer -->
+        <div class="countdown" id="countdown" aria-label="Countdown to next community flagship gathering">
+          <div class="cd-cell"><div class="cd-num" data-key="d">--</div><div class="cd-lbl">Days</div></div>
+          <div class="cd-sep">:</div>
+          <div class="cd-cell"><div class="cd-num" data-key="h">--</div><div class="cd-lbl">Hours</div></div>
+          <div class="cd-sep">:</div>
+          <div class="cd-cell"><div class="cd-num" data-key="m">--</div><div class="cd-lbl">Minutes</div></div>
+          <div class="cd-sep">:</div>
+          <div class="cd-cell"><div class="cd-num" data-key="s">--</div><div class="cd-lbl">Seconds</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE BAND -->
+  <div class="marquee">
+    <div class="m-track">
+      <span class="m-item">Build <span class="m-star">✦</span> <span class="m-out">Learn</span> <span class="m-star">✦</span> Connect <span class="m-star">✦</span> <span class="m-out">Innovate</span> <span class="m-star">✦</span> Deploy <span class="m-star">✦</span> <span class="m-out">Ship</span> <span class="m-star">✦</span></span>
+      <span class="m-item">Build <span class="m-star">✦</span> <span class="m-out">Learn</span> <span class="m-star">✦</span> Connect <span class="m-star">✦</span> <span class="m-out">Innovate</span> <span class="m-star">✦</span> Deploy <span class="m-star">✦</span> <span class="m-out">Ship</span> <span class="m-star">✦</span></span>
+    </div>
+  </div>
+
+  <!-- 01: ABOUT SECTION -->
+  <section class="sec sec-about" id="about">
+    <div class="container">
+      <div class="sec-head reveal">
+        <div class="sec-idx">[ 01 ]</div>
+        <div class="sec-title">
+          <p class="eyebrow">About the Community</p>
+          <h2>One community to <span class="ital">level up</span> as a builder.</h2>
+        </div>
+      </div>
+
+      <div class="about-grid reveal">
+        <div class="about-text">
+          <p class="about-lead">
+            The AWS Student Builder Group at <strong>SB Jain Institute of Technology</strong> is a student-led technology community focused on cloud computing, AWS architecture, DevOps, AI, and modern software engineering.
+          </p>
+          <p>
+            No gatekeeping. No passive listening. Just real hands-on learning from people who build in the cloud, practical workshops on scalable architecture, and a passionate student network that supports you throughout your career.
+          </p>
+          <div class="pillars">
+            <div class="pillar">
+              <span class="p-num">01</span>
+              <div>
+                <strong>Learn Cloud &amp; AI</strong>
+                <em>Workshops and training sessions designed specifically for students starting or accelerating their AWS journey.</em>
+              </div>
             </div>
-
-
-            <div class="about-grid">
-
-                <div>
-
-                    <h2 class="huge-heading">
-
-                        ONE COMMUNITY.
-                        <br>
-
-                        <span>ENDLESS POSSIBILITIES.</span>
-
-                    </h2>
-
-                </div>
-
-
-                <div class="about-text">
-
-                    <p>
-                        AWS Student Builder Group at SB Jain Institute
-                        of Technology is a student-led technology community
-                        focused on AWS, cloud computing, DevOps,
-                        artificial intelligence and modern software development.
-                    </p>
-
-                    <p>
-                        We create opportunities for students to learn,
-                        experiment, build real projects and connect with
-                        developers, mentors and technology professionals.
-                    </p>
-
-                    <a href="#join" class="text-link">
-                        DISCOVER THE COMMUNITY →
-                    </a>
-
-                </div>
-
+            <div class="pillar">
+              <span class="p-num">02</span>
+              <div>
+                <strong>Build Real Solutions</strong>
+                <em>Turn conceptual ideas into live, production-grade cloud architectures, serverless backends, and AI applications.</em>
+              </div>
             </div>
-
-        </section>
-
-
-
-        <!-- =================================================
-             WHY JOIN
-        ================================================== -->
-
-        <section class="section features">
-
-            <div class="section-number">02</div>
-
-            <div class="section-label">
-                WHY JOIN
+            <div class="pillar">
+              <span class="p-num">03</span>
+              <div>
+                <strong>Connect with Leaders</strong>
+                <em>Engage directly with AWS Community Builders, industry architects, and peers across Central India.</em>
+              </div>
             </div>
+          </div>
+        </div>
 
+        <!-- Right: Why Attend Card -->
+        <div class="about-card">
+          <div class="ac-glow"></div>
+          <div class="ac-tag">WHY JOIN SB JAIN AWS SBG</div>
+          <ul class="ac-list">
+            <li><span class="ac-dot"></span><div><strong>Hands-on AWS Workshops:</strong> EC2, Lambda, S3, ECS, and Bedrock generative AI sessions.</div></li>
+            <li><span class="ac-dot"></span><div><strong>Certifications &amp; Guidance:</strong> Mentorship for AWS Certified Cloud Practitioner and Solutions Architect.</div></li>
+            <li><span class="ac-dot"></span><div><strong>Hackathons &amp; Challenges:</strong> Team up, build cloud apps, and win official AWS swag kits and prizes.</div></li>
+            <li><span class="ac-dot"></span><div><strong>Direct Industry Access:</strong> Connect with AWS User Groups, guest mentors, and alumni working in top tech firms.</div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
 
-            <h2 class="section-heading">
+  <!-- IMPACT STATS -->
+  <section class="sec-impact">
+    <div class="container">
+      <div class="impact-grid reveal">
+        <div class="imp-cell">
+          <div class="imp-num">500+</div>
+          <div class="imp-lbl">Student Builders<br>connected</div>
+        </div>
+        <div class="imp-sep"></div>
+        <div class="imp-cell">
+          <div class="imp-num">20+</div>
+          <div class="imp-lbl">Hands-on Sessions<br>&amp; Workshops</div>
+        </div>
+        <div class="imp-sep"></div>
+        <div class="imp-cell">
+          <div class="imp-num">100%</div>
+          <div class="imp-lbl">Student-driven<br>&amp; Open to all</div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-                LEARN MORE.
-                <br>
+  <!-- 02: SPEAKERS & MENTORS SECTION -->
+  <section class="sec sec-speakers" id="speakers">
+    <div class="container">
+      <div class="sec-head reveal">
+        <div class="sec-idx">[ 02 ]</div>
+        <div class="sec-title">
+          <p class="eyebrow">Speakers &amp; Mentors</p>
+          <h2>People who <span class="ital">inspire.</span></h2>
+        </div>
+      </div>
 
-                <span>BUILD MORE.</span>
-
-            </h2>
-
-
-            <div class="feature-grid">
-
-                <article class="feature-card">
-
-                    <span class="card-number">01</span>
-
-                    <div class="card-icon">◇</div>
-
-                    <h3>LEARN</h3>
-
-                    <p>
-                        Workshops, technical sessions and
-                        hands-on learning experiences designed
-                        for students.
-                    </p>
-
-                    <span class="card-arrow">↗</span>
-
-                </article>
-
-
-                <article class="feature-card featured">
-
-                    <span class="card-number">02</span>
-
-                    <div class="card-icon">◈</div>
-
-                    <h3>BUILD</h3>
-
-                    <p>
-                        Turn your ideas into real-world projects
-                        using AWS and modern cloud technologies.
-                    </p>
-
-                    <span class="card-arrow">↗</span>
-
-                </article>
-
-
-                <article class="feature-card">
-
-                    <span class="card-number">03</span>
-
-                    <div class="card-icon">✦</div>
-
-                    <h3>CONNECT</h3>
-
-                    <p>
-                        Meet students, developers, mentors and
-                        professionals who share your passion.
-                    </p>
-
-                    <span class="card-arrow">↗</span>
-
-                </article>
-
+      <div class="sp-group reveal">
+        <h3 class="sp-group-title"><span class="sp-group-line"></span>Keynote &amp; Community Mentors</h3>
+        <div class="speakers-grid">
+          <!-- Speaker Card 1 -->
+          <article class="sp-card2">
+            <div class="sp-card2-photo">
+              <div class="sp-avatar-fallback">AWS</div>
             </div>
-
-        </section>
-
-
-
-        <!-- =================================================
-             EVENTS
-        ================================================== -->
-
-        <section class="section event-section" id="events">
-
-            <div class="section-number">03</div>
-
-            <div class="section-label">
-                UPCOMING EVENT
+            <div class="sp-card2-body">
+              <span class="sp-card2-tag">Keynote Speaker</span>
+              <h4 class="sp-card2-name">AWS Community Leader</h4>
+              <p class="sp-card2-role">AWS User Group · Cloud Architect</p>
+              <p class="sp-card2-sub">Cloud Architecture &amp; Scalability</p>
+              <div class="sp-topic">
+                <span class="sp-topic-label">Session Topic</span>
+                <p class="sp-topic-text">The Cloud Builder Mindset: Building resilient architectures at scale.</p>
+              </div>
             </div>
+          </article>
 
-
-            <div class="event-card">
-
-                <div class="event-left">
-
-                    <div class="event-tag">
-                        AWS × SB JAIN
-                    </div>
-
-                    <h2>
-
-                        CLOUD
-                        <br>
-
-                        <span>BUILDERS.</span>
-
-                    </h2>
-
-                    <p>
-                        A hands-on student technology experience
-                        focused on cloud, AWS and innovation.
-                    </p>
-
-                    <a href="#join" class="primary-button">
-                        REGISTER NOW ↗
-                    </a>
-
-                </div>
-
-
-                <div class="event-right">
-
-                    <div class="event-info">
-
-                        <span>DATE</span>
-
-                        <strong>COMING SOON</strong>
-
-                    </div>
-
-
-                    <div class="event-info">
-
-                        <span>VENUE</span>
-
-                        <strong>SB JAIN CAMPUS</strong>
-
-                    </div>
-
-
-                    <div class="event-info">
-
-                        <span>FORMAT</span>
-
-                        <strong>IN-PERSON</strong>
-
-                    </div>
-
-                </div>
-
+          <!-- Speaker Card 2 -->
+          <article class="sp-card2">
+            <div class="sp-card2-photo">
+              <div class="sp-avatar-fallback">AI</div>
             </div>
-
-        </section>
-
-
-
-        <!-- =================================================
-             SPEAKERS
-        ================================================== -->
-
-        <section class="section speakers" id="speakers">
-
-            <div class="section-number">04</div>
-
-            <div class="section-label">
-                SPEAKERS & MENTORS
+            <div class="sp-card2-body">
+              <span class="sp-card2-tag">Guest Expert</span>
+              <h4 class="sp-card2-name">Generative AI Specialist</h4>
+              <p class="sp-card2-role">Machine Learning &amp; Cloud Dev</p>
+              <p class="sp-card2-sub">Applied AI &amp; Serverless</p>
+              <div class="sp-topic">
+                <span class="sp-topic-label">Session Topic</span>
+                <p class="sp-topic-text">Building GenAI apps with Amazon Bedrock and LangChain.</p>
+              </div>
             </div>
+          </article>
 
-
-            <div class="heading-row">
-
-                <h2 class="section-heading">
-
-                    PEOPLE WHO
-                    <br>
-
-                    <span>INSPIRE.</span>
-
-                </h2>
-
-
-                <p>
-                    Learn directly from builders, developers,
-                    cloud professionals and community leaders.
-                </p>
-
+          <!-- Speaker Card 3 -->
+          <article class="sp-card2">
+            <div class="sp-card2-photo">
+              <div class="sp-avatar-fallback">SB</div>
             </div>
-
-
-            <div class="speaker-grid">
-
-                <article class="speaker-card">
-
-                    <div class="speaker-placeholder">
-                        SB
-                    </div>
-
-                    <div class="speaker-details">
-
-                        <span>AWS · CLOUD</span>
-
-                        <h3>
-                            SPEAKER
-                            <br>
-                            <strong>COMING SOON</strong>
-                        </h3>
-
-                        <p>
-                            Cloud computing · AWS · Technology
-                        </p>
-
-                    </div>
-
-                </article>
-
-
-                <article class="speaker-card">
-
-                    <div class="speaker-placeholder">
-                        AWS
-                    </div>
-
-                    <div class="speaker-details">
-
-                        <span>CLOUD · DEVOPS</span>
-
-                        <h3>
-                            TECHNOLOGY
-                            <br>
-                            <strong>EXPERT</strong>
-                        </h3>
-
-                        <p>
-                            DevOps · Cloud · AI
-                        </p>
-
-                    </div>
-
-                </article>
-
-
-                <article class="speaker-card">
-
-                    <div class="speaker-placeholder">
-                        +
-                    </div>
-
-                    <div class="speaker-details">
-
-                        <span>COMMUNITY</span>
-
-                        <h3>
-                            COMMUNITY
-                            <br>
-                            <strong>MENTOR</strong>
-                        </h3>
-
-                        <p>
-                            Build · Learn · Connect
-                        </p>
-
-                    </div>
-
-                </article>
-
+            <div class="sp-card2-body">
+              <span class="sp-card2-tag">Community Mentor</span>
+              <h4 class="sp-card2-name">DevOps &amp; Infrastructure Lead</h4>
+              <p class="sp-card2-role">CI/CD &amp; Containerization</p>
+              <p class="sp-card2-sub">DevOps Engineering</p>
+              <div class="sp-topic">
+                <span class="sp-topic-label">Session Topic</span>
+                <p class="sp-topic-text">From Localhost to Cloud: Automated deployments with AWS CDK.</p>
+              </div>
             </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
 
-        </section>
+  <!-- 03: AGENDA SECTION -->
+  <section class="sec sec-agenda" id="agenda">
+    <div class="container">
+      <div class="sec-head reveal">
+        <div class="sec-idx">[ 03 ]</div>
+        <div class="sec-title">
+          <p class="eyebrow">Event Agenda</p>
+          <h2>A day of building, <span class="ital">start to finish.</span></h2>
+        </div>
+      </div>
 
+      <div class="ag-timeline reveal">
+        <div class="agt-item">
+          <div class="agt-when"><span class="agt-ap">AM</span><span class="agt-hm">09:00</span></div>
+          <span class="agt-dot"></span>
+          <div class="agt-body">
+            <h4>Registration, Badge Collection &amp; Networking</h4>
+            <p class="agt-role">Check-in · Welcome Kit · Fellow Builders Networking</p>
+          </div>
+        </div>
 
+        <div class="agt-item">
+          <div class="agt-when"><span class="agt-ap">AM</span><span class="agt-hm">10:00</span></div>
+          <span class="agt-dot"></span>
+          <div class="agt-body">
+            <h4>Keynote: The Cloud Builder Mindset</h4>
+            <p class="agt-role">Opening address on cloud revolution, career pathways, and student builder opportunities.</p>
+          </div>
+        </div>
 
-        <!-- =================================================
-             AGENDA
-        ================================================== -->
+        <div class="agt-item">
+          <div class="agt-when"><span class="agt-ap">AM</span><span class="agt-hm">11:30</span></div>
+          <span class="agt-dot"></span>
+          <div class="agt-body">
+            <h4>Hands-on Workshop: Deploy Your First Microservice on AWS</h4>
+            <p class="agt-role">Interactive live coding · Lambda, API Gateway, DynamoDB · Practical experience.</p>
+          </div>
+        </div>
 
-        <section class="section agenda" id="agenda">
+        <div class="agt-item">
+          <div class="agt-when"><span class="agt-ap">PM</span><span class="agt-hm">02:00</span></div>
+          <span class="agt-dot"></span>
+          <div class="agt-body">
+            <h4>Builder Challenge &amp; Quiz Hackathon</h4>
+            <p class="agt-role">Team sprint · Solve cloud engineering problems · Win swags &amp; certificates.</p>
+          </div>
+        </div>
 
-            <div class="section-number">05</div>
+        <div class="agt-item">
+          <div class="agt-when"><span class="agt-ap">PM</span><span class="agt-hm">04:00</span></div>
+          <span class="agt-dot"></span>
+          <div class="agt-body">
+            <h4>Closing Panel, Group Photo &amp; Community Wrap</h4>
+            <p class="agt-role">Ask Me Anything (AMA) with mentors · Photo session · Community announcements.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-            <div class="section-label">
-                EVENT AGENDA
+  <!-- 04: VENUE SECTION -->
+  <section class="sec sec-venue" id="venue">
+    <div class="container">
+      <div class="sec-head reveal">
+        <div class="sec-idx">[ 04 ]</div>
+        <div class="sec-title">
+          <p class="eyebrow">Venue</p>
+          <h2>Hosted at <span class="ital">SB Jain</span> Institute.</h2>
+        </div>
+      </div>
+
+      <div class="venue-grid reveal">
+        <div class="venue-info">
+          <h3>SB Jain Institute of Technology</h3>
+          <p class="venue-addr">Katol Road, Nagpur · Maharashtra 441501 · India</p>
+          <p>
+            State-of-the-art auditorium and technical computing labs equipped with high-speed internet, collaborative breakout spaces, and full audio-visual presentation setup for immersive student workshops.
+          </p>
+          <div class="venue-meta">
+            <div><strong>Capacity</strong>Auditorium &amp; Cloud Labs</div>
+            <div><strong>Format</strong>In-Person Hands-on</div>
+          </div>
+          <a href="https://maps.google.com/?q=SB+Jain+Institute+of+Technology+Nagpur" target="_blank" rel="noopener" class="btn-ghost">
+            <span>View on Google Maps ↗</span>
+          </a>
+        </div>
+
+        <div class="venue-card">
+          <div class="vc-photo">
+            <img src="https://media.getmyuni.com/azure/college-images-test/sb-jain-institute-of-technology-management-and-research-sbjitmr-nagpur/cb3973b368f3491b888e97760a4bd58a.jpeg" alt="SB Jain Campus">
+            <span class="vc-photo-tag">MAIN CAMPUS</span>
+          </div>
+          <div class="vc-meta">
+            <span class="vc-coord">21.2185° N, 78.9667° E</span>
+            <span class="vc-name">SB JAIN · NAGPUR</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05: PARTNERS SECTION -->
+  <section class="sec sec-partners" id="partners">
+    <div class="container">
+      <div class="sec-head reveal">
+        <div class="sec-idx">[ 05 ]</div>
+        <div class="sec-title">
+          <p class="eyebrow">Partners &amp; Ecosystem</p>
+          <h2>Backed by the <span class="ital">builders ecosystem.</span></h2>
+        </div>
+      </div>
+
+      <div class="partners-block reveal">
+        <div class="pt-head">
+          <span class="pt-head-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </span>
+          <h3 class="pt-head-title">Community Partners</h3>
+        </div>
+
+        <div class="pt-grid">
+          <div class="pt-card">
+            <!-- Official Transparent AWS Logo -->
+            <img src="images/aws-logo.svg?v=2" alt="Amazon Web Services" style="height: 48px; width: auto;">
+            <div class="pt-meta">
+              <h4>Amazon Web Services</h4>
+              <p>Cloud Platform &amp; Community</p>
             </div>
+          </div>
 
-
-            <h2 class="section-heading">
-
-                A DAY OF
-                <br>
-
-                <span>BUILDING.</span>
-
-            </h2>
-
-
-            <div class="agenda-list">
-
-                <div class="agenda-item">
-
-                    <span class="agenda-time">
-                        09:00 AM
-                    </span>
-
-                    <div>
-
-                        <span class="agenda-type">
-                            WELCOME
-                        </span>
-
-                        <h3>
-                            REGISTRATION & NETWORKING
-                        </h3>
-
-                        <p>
-                            Meet fellow student builders.
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <div class="agenda-item">
-
-                    <span class="agenda-time">
-                        10:00 AM
-                    </span>
-
-                    <div>
-
-                        <span class="agenda-type">
-                            KEYNOTE
-                        </span>
-
-                        <h3>
-                            THE CLOUD BUILDER MINDSET
-                        </h3>
-
-                        <p>
-                            Learn how cloud technology is changing development.
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <div class="agenda-item">
-
-                    <span class="agenda-time">
-                        11:30 AM
-                    </span>
-
-                    <div>
-
-                        <span class="agenda-type">
-                            WORKSHOP
-                        </span>
-
-                        <h3>
-                            BUILD WITH AWS
-                        </h3>
-
-                        <p>
-                            Hands-on cloud experience.
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <div class="agenda-item">
-
-                    <span class="agenda-time">
-                        02:00 PM
-                    </span>
-
-                    <div>
-
-                        <span class="agenda-type">
-                            CHALLENGE
-                        </span>
-
-                        <h3>
-                            BUILD SOMETHING GREAT
-                        </h3>
-
-                        <p>
-                            Team up and turn ideas into projects.
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <div class="agenda-item">
-
-                    <span class="agenda-time">
-                        04:00 PM
-                    </span>
-
-                    <div>
-
-                        <span class="agenda-type">
-                            COMMUNITY
-                        </span>
-
-                        <h3>
-                            NETWORKING & CLOSING
-                        </h3>
-
-                        <p>
-                            Connect with the community.
-                        </p>
-
-                    </div>
-
-                </div>
-
+          <div class="pt-card">
+            <div style="font-family: var(--serif); font-size: 32px; color: #fff; font-style: italic;">SBJIT</div>
+            <div class="pt-meta">
+              <h4>SB Jain Institute</h4>
+              <p>Academic &amp; Venue Host</p>
             </div>
+          </div>
 
-        </section>
-
-
-
-        <!-- =================================================
-             VENUE
-        ================================================== -->
-
-        <section class="venue-section" id="venue">
-
-            <div class="venue-content">
-
-                <div class="section-number">06</div>
-
-                <div class="section-label">
-                    VENUE
-                </div>
-
-                <h2>
-
-                    SB JAIN
-                    <br>
-
-                    <span>INSTITUTE.</span>
-
-                </h2>
-
-                <p>
-                    Nagpur, Maharashtra
-                </p>
-
-                <a href="#join" class="secondary-button">
-                    VIEW LOCATION ↗
-                </a>
-
+          <div class="pt-card">
+            <div style="font-size: 26px; font-weight: 800; color: var(--primary);">AWS SBG</div>
+            <div class="pt-meta">
+              <h4>Student Builder Group</h4>
+              <p>Central India Community</p>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
+  <!-- 06: PARTICIPATION BADGE GENERATOR -->
+  <section class="sec sec-badge" id="badge">
+    <div class="container">
+      <div class="sec-head reveal">
+        <div class="sec-idx">[ 06 ]</div>
+        <div class="sec-title">
+          <p class="eyebrow">Participation Badge</p>
+          <h2>Show you're <span class="ital">in.</span></h2>
+        </div>
+      </div>
 
-            <div class="venue-visual">
-
-                <img
-                    src="https://media.getmyuni.com/azure/college-images-test/sb-jain-institute-of-technology-management-and-research-sbjitmr-nagpur/cb3973b368f3491b888e97760a4bd58a.jpeg"
-                    alt="SB Jain Campus">
-
-                <div class="venue-overlay"></div>
-
-                <div class="venue-text">
-                    SB
-                    <br>
-                    JAIN
-                </div>
-
+      <div class="badge-wrap reveal">
+        <!-- Badge Preview -->
+        <div class="badge-preview">
+          <div class="badge-card">
+            <div class="badge-card-top">
+              <img src="images/aws-logo.svg?v=2" alt="AWS" style="height: 24px; width: auto;">
+              <span style="font-size: 10px; font-weight: 800; color: var(--primary); letter-spacing: 1px;">SCD 2026</span>
             </div>
-
-        </section>
-
-
-
-        <!-- =================================================
-             COMMUNITY VALUES
-        ================================================== -->
-
-        <section class="section community">
-
-            <div class="section-number">07</div>
-
-            <div class="section-label">
-                COMMUNITY VALUES
+            <div class="badge-card-avatar">
+              <span id="badgeAvatarInitials">SB</span>
             </div>
-
-
-            <div class="values-grid">
-
-                <div class="value">
-
-                    <span>01</span>
-
-                    <h3>CREATE</h3>
-
-                    <p>
-                        Ideas become real projects.
-                    </p>
-
-                </div>
-
-
-                <div class="value">
-
-                    <span>02</span>
-
-                    <h3>SHARE</h3>
-
-                    <p>
-                        Knowledge grows when we share it.
-                    </p>
-
-                </div>
-
-
-                <div class="value">
-
-                    <span>03</span>
-
-                    <h3>GROW</h3>
-
-                    <p>
-                        Grow together as technology builders.
-                    </p>
-
-                </div>
-
-
-                <div class="value">
-
-                    <span>04</span>
-
-                    <h3>IMPACT</h3>
-
-                    <p>
-                        Build technology that matters.
-                    </p>
-
-                </div>
-
+            <h3 class="badge-card-name" id="badgePreviewName">Neeraj Khapre</h3>
+            <p class="badge-card-role" id="badgePreviewRole">Community Lead</p>
+            <div class="badge-card-footer">
+              <span>SB JAIN AWS COMMUNITY</span>
+              <span>NAGPUR</span>
             </div>
-
-        </section>
-
-
-
-        <!-- =================================================
-             TEAM
-        ================================================== -->
-
-        <section class="section team" id="team">
-
-            <div class="section-number">08</div>
-
-            <div class="section-label">
-                CORE TEAM
-            </div>
-
-
-            <h2 class="section-heading">
-
-                THE PEOPLE
-                <br>
-
-                <span>BEHIND IT.</span>
-
-            </h2>
-
-
-            <div class="team-grid">
-
-                <article class="team-card">
-
-                    <div class="team-avatar">
-                        NK
-                    </div>
-
-                    <span>
-                        COMMUNITY LEAD
-                    </span>
-
-                    <h3>
-                        NEERAJ KHAPRE
-                    </h3>
-
-                    <p>
-                        SB Jain AWS Student Community
-                    </p>
-
-                </article>
-
-
-                <article class="team-card">
-
-                    <div class="team-avatar">
-                        01
-                    </div>
-
-                    <span>
-                        TECHNICAL LEAD
-                    </span>
-
-                    <h3>
-                        COMING SOON
-                    </h3>
-
-                    <p>
-                        AWS Student Builder
-                    </p>
-
-                </article>
-
-
-                <article class="team-card">
-
-                    <div class="team-avatar">
-                        02
-                    </div>
-
-                    <span>
-                        EVENTS LEAD
-                    </span>
-
-                    <h3>
-                        COMING SOON
-                    </h3>
-
-                    <p>
-                        AWS Student Builder
-                    </p>
-
-                </article>
-
-
-                <article class="team-card">
-
-                    <div class="team-avatar">
-                        03
-                    </div>
-
-                    <span>
-                        DESIGN LEAD
-                    </span>
-
-                    <h3>
-                        COMING SOON
-                    </h3>
-
-                    <p>
-                        AWS Student Builder
-                    </p>
-
-                </article>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =================================================
-             FAQ
-        ================================================== -->
-
-        <section class="section faq" id="faq">
-
-            <div class="section-number">09</div>
-
-            <div class="section-label">
-                FAQ
-            </div>
-
-
-            <h2 class="section-heading">
-
-                QUESTIONS?
-                <br>
-
-                <span>WE GOT YOU.</span>
-
-            </h2>
-
-
-            <div class="faq-list">
-
-                <div class="faq-item">
-
-                    <button class="faq-question">
-
-                        <span>
-                            Who can join the community?
-                        </span>
-
-                        <span>+</span>
-
-                    </button>
-
-                    <div class="faq-answer">
-
-                        Any student interested in AWS,
-                        cloud computing, development,
-                        AI, DevOps or technology can join.
-
-                    </div>
-
-                </div>
-
-
-                <div class="faq-item">
-
-                    <button class="faq-question">
-
-                        <span>
-                            Do I need AWS experience?
-                        </span>
-
-                        <span>+</span>
-
-                    </button>
-
-                    <div class="faq-answer">
-
-                        No. Beginners are welcome.
-                        Our community is designed for
-                        students at different skill levels.
-
-                    </div>
-
-                </div>
-
-
-                <div class="faq-item">
-
-                    <button class="faq-question">
-
-                        <span>
-                            Are the events free?
-                        </span>
-
-                        <span>+</span>
-
-                    </button>
-
-                    <div class="faq-answer">
-
-                        Event participation details will be
-                        announced with each upcoming event.
-
-                    </div>
-
-                </div>
-
-
-                <div class="faq-item">
-
-                    <button class="faq-question">
-
-                        <span>
-                            How can I become a team member?
-                        </span>
-
-                        <span>+</span>
-
-                    </button>
-
-                    <div class="faq-answer">
-
-                        Follow the community announcements
-                        for volunteering and core team opportunities.
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =================================================
-             JOIN
-        ================================================== -->
-
-        <section class="join-section" id="join">
-
-            <div class="join-bg-text">
-                AWS
-            </div>
-
-
-            <div class="join-content">
-
-                <span class="join-label">
-                    SB JAIN AWS STUDENT COMMUNITY
-                </span>
-
-
-                <h2>
-
-                    READY TO
-                    <br>
-
-                    <span>BUILD?</span>
-
-                </h2>
-
-
-                <p>
-
-                    Join a community of students building
-                    the future with cloud technology.
-
-                </p>
-
-
-                <a
-                    href="mailto:neerajk.ml25@sbjit.edu.in"
-                    class="primary-button large"
-                >
-
-                    JOIN THE COMMUNITY ↗
-
-                </a>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =================================================
-             FOOTER
-        ================================================== -->
-
-        <footer class="footer">
-
-            <div class="footer-top">
-
-                <div class="footer-brand">
-
-                    <div class="logo">
-
-                        <div class="aws-logo">
-                            aws
-                            <span></span>
-                        </div>
-
-                        <div class="logo-divider"></div>
-
-                        <div class="student-builder">
-                            STUDENT
-                            <br>
-                            BUILDER
-                            <br>
-                            COMMUNITY
-                        </div>
-
-                    </div>
-
-
-                    <p>
-                        Student builders.
-                        Cloud innovators.
-                        Future creators.
-                    </p>
-
-                </div>
-
-
-                <div class="footer-links">
-
-                    <div>
-
-                        <span>EXPLORE</span>
-
-                        <a href="#about">About</a>
-                        <a href="#events">Events</a>
-                        <a href="#speakers">Speakers</a>
-                        <a href="#team">Team</a>
-
-                    </div>
-
-
-                    <div>
-
-                        <span>CONNECT</span>
-
-                        <a href="#">Instagram</a>
-                        <a href="#">LinkedIn</a>
-                        <a href="#">GitHub</a>
-
-                        <a href="mailto:neerajk.ml25@sbjit.edu.in">
-                            Email
-                        </a>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="footer-bottom">
-
-                <span>
-                    © 2026 SB Jain AWS Student Community
-                </span>
-
-                <span>
-                    BUILD · LEARN · CONNECT
-                </span>
-
-            </div>
-
-        </footer>
-
-    </main>
-
-
-    <script src="script.js"></script>
-
+          </div>
+        </div>
+
+        <!-- Badge Inputs -->
+        <div class="badge-panel">
+          <p style="color: var(--txt-dim); font-size: 15px; line-height: 1.7;">
+            Customize your digital badge to share with your network on LinkedIn and Twitter. Celebrate being a builder in the SB Jain AWS Student Community!
+          </p>
+
+          <div class="badge-input-group">
+            <label for="badgeName">Your Name</label>
+            <input type="text" id="badgeName" placeholder="Enter your full name" value="Neeraj Khapre">
+          </div>
+
+          <div class="badge-input-group">
+            <label for="badgeRole">Your Role / Department</label>
+            <input type="text" id="badgeRole" placeholder="e.g. Student Builder / AIML / CSE" value="Community Lead">
+          </div>
+
+          <a href="mailto:neerajk.ml25@sbjit.edu.in" class="btn-primary" style="align-self: flex-start; margin-top: 10px;">
+            <span>Confirm Attendance ↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07: CORE TEAM SECTION -->
+  <section class="sec sec-team" id="team">
+    <div class="container">
+      <div class="sec-head reveal">
+        <div class="sec-idx">[ 07 ]</div>
+        <div class="sec-title">
+          <p class="eyebrow">Core Team</p>
+          <h2>The crew making it <span class="ital">happen.</span></h2>
+        </div>
+      </div>
+
+      <div class="team-grid reveal">
+        <!-- Team Card: Neeraj Khapre -->
+        <div class="tm-card">
+          <div class="tm-avatar">NK</div>
+          <h3>Neeraj Khapre</h3>
+          <p>Community Lead</p>
+          <span>SB Jain AWS Student Community</span>
+        </div>
+
+        <!-- Team Card 2 -->
+        <div class="tm-card">
+          <div class="tm-avatar">TL</div>
+          <h3>Technical Lead</h3>
+          <p>Cloud &amp; DevOps</p>
+          <span>AWS Student Builder</span>
+        </div>
+
+        <!-- Team Card 3 -->
+        <div class="tm-card">
+          <div class="tm-avatar">EL</div>
+          <h3>Events &amp; Operations</h3>
+          <p>Logistics &amp; Hackathons</p>
+          <span>AWS Student Builder</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08: FAQ SECTION -->
+  <section class="sec sec-faq" id="faq">
+    <div class="container">
+      <div class="sec-head reveal">
+        <div class="sec-idx">[ 08 ]</div>
+        <div class="sec-title">
+          <p class="eyebrow">FAQ</p>
+          <h2>Frequently asked <span class="ital">questions</span></h2>
+        </div>
+      </div>
+
+      <div class="faq-list reveal">
+        <div class="faq-item active">
+          <button class="faq-q" type="button">
+            <span>Who can join the SB Jain AWS Student Community?</span>
+            <span class="faq-x">+</span>
+          </button>
+          <div class="faq-a">
+            <p>
+              Any student from SB Jain Institute of Technology (and neighboring institutions across Nagpur) who is curious about cloud computing, AWS, artificial intelligence, and building real-world projects is welcome to join!
+            </p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" type="button">
+            <span>Do I need prior cloud or AWS experience?</span>
+            <span class="faq-x">+</span>
+          </button>
+          <div class="faq-a">
+            <p>
+              Not at all. The community is beginner-friendly. We host foundational zero-to-hero sessions as well as advanced architectural deep dives for experienced developers.
+            </p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" type="button">
+            <span>Are community sessions and workshops free?</span>
+            <span class="faq-x">+</span>
+          </button>
+          <div class="faq-a">
+            <p>
+              Yes! All regular community sessions, tech talks, hands-on workshops, and hackathons organized by the SB Jain AWS Student Builder Group are free for students.
+            </p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" type="button">
+            <span>How can I contribute or become a core team volunteer?</span>
+            <span class="faq-x">+</span>
+          </button>
+          <div class="faq-a">
+            <p>
+              Reach out to us via email at neerajk.ml25@sbjit.edu.in or attend our community onboarding calls to join the technical, design, social media, or event operations teams.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEGA CLOSING CTA -->
+  <section class="sec-mega" id="join">
+    <div class="mega-watermark" aria-hidden="true">AWS</div>
+    <div class="container mega-inner reveal">
+      <div class="badge" style="margin-bottom: 20px;">
+        <span class="dot"></span>
+        <span>JOIN THE MOVEMENT</span>
+      </div>
+      <h2>Ready to <span class="ital" style="color: var(--primary);">Build?</span></h2>
+      <p>
+        Step into the cloud. Join hundreds of fellow student innovators at SB Jain Institute of Technology building real projects on AWS.
+      </p>
+      <a href="mailto:neerajk.ml25@sbjit.edu.in" class="btn-primary" style="font-size: 15px; padding: 16px 36px;">
+        <span>Join Community Today ↗</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- SITE FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="#hero" class="snav-logo" style="margin-bottom: 14px;">
+            <img class="snav-logo-img" src="images/aws-logo.svg?v=2" alt="AWS Logo" width="56" height="32">
+            <span class="snav-divider"></span>
+            <span class="snav-logo-text">SB JAIN<br><em>COMMUNITY</em></span>
+          </a>
+          <p>
+            Student builders. Cloud innovators. Future creators at SB Jain Institute of Technology, Nagpur.
+          </p>
+        </div>
+
+        <div class="footer-navs">
+          <div class="footer-col">
+            <span>Explore</span>
+            <a href="#about">About</a>
+            <a href="#speakers">Speakers</a>
+            <a href="#agenda">Agenda</a>
+            <a href="#venue">Venue</a>
+          </div>
+          <div class="footer-col">
+            <span>Participate</span>
+            <a href="#badge">Badge</a>
+            <a href="#team">Team</a>
+            <a href="#faq">FAQ</a>
+            <a href="#join">Register</a>
+          </div>
+          <div class="footer-col">
+            <span>Connect</span>
+            <a href="mailto:neerajk.ml25@sbjit.edu.in">Email Organizers</a>
+            <a href="https://maps.google.com/?q=SB+Jain+Institute+of+Technology+Nagpur" target="_blank" rel="noopener">Location</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>© 2026 SB Jain AWS Student Community · All rights reserved.</span>
+        <span>BUILD ✦ LEARN ✦ CONNECT</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
-
 </html>

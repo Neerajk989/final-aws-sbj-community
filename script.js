@@ -1,423 +1,197 @@
-/* =========================================================
-   LOADER
-========================================================= */
+/**
+ * SB Jain AWS Student Community - Interactive Scripts
+ * Styled & architected following AWS Community Day standards
+ */
 
-window.addEventListener("load", () => {
+document.addEventListener('DOMContentLoaded', () => {
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isTouch = window.matchMedia('(pointer: coarse)').matches;
 
-    const loader = document.getElementById("loader");
+  /* =========================================================
+     1. LIVE COUNTDOWN TIMER
+  ========================================================= */
+  // Target date for the upcoming SB Jain AWS Community flagship gathering
+  const targetDate = new Date();
+  targetDate.setDate(targetDate.getDate() + 45); // 45 days from now by default
+  targetDate.setHours(9, 0, 0, 0);
 
-    setTimeout(() => {
+  const cdDays = document.querySelector('[data-key="d"]');
+  const cdHours = document.querySelector('[data-key="h"]');
+  const cdMins = document.querySelector('[data-key="m"]');
+  const cdSecs = document.querySelector('[data-key="s"]');
 
-        loader.classList.add("hide");
+  function pad(n) {
+    return String(Math.max(0, n)).padStart(2, '0');
+  }
 
-    }, 900);
-
-});
-
-
-
-/* =========================================================
-   MOBILE MENU
-========================================================= */
-
-const menuButton = document.getElementById("menuButton");
-const mobileMenu = document.getElementById("mobileMenu");
-
-menuButton.addEventListener("click", () => {
-
-    mobileMenu.classList.toggle("active");
-
-});
-
-
-document.querySelectorAll(".mobile-menu a").forEach(link => {
-
-    link.addEventListener("click", () => {
-
-        mobileMenu.classList.remove("active");
-
-    });
-
-});
-
-
-
-/* =========================================================
-   COUNTDOWN
-========================================================= */
-
-/*
-    Change this date when your real event date is confirmed.
-
-    Example:
-
-    const eventDate = new Date("2026-12-15T09:00:00").getTime();
-*/
-
-const eventDate = new Date("2026-12-31T09:00:00").getTime();
-
-
-function updateCountdown() {
-
+  function updateCountdown() {
     const now = new Date().getTime();
+    const diff = targetDate.getTime() - now;
 
-    const distance = eventDate - now;
-
-
-    if (distance <= 0) {
-
-        document.getElementById("days").textContent = "00";
-        document.getElementById("hours").textContent = "00";
-        document.getElementById("minutes").textContent = "00";
-        document.getElementById("seconds").textContent = "00";
-
-        return;
-
+    if (diff <= 0) {
+      if (cdDays) cdDays.textContent = '00';
+      if (cdHours) cdHours.textContent = '00';
+      if (cdMins) cdMins.textContent = '00';
+      if (cdSecs) cdSecs.textContent = '00';
+      return;
     }
 
-
-    const days = Math.floor(
-        distance / (1000 * 60 * 60 * 24)
-    );
-
-    const hours = Math.floor(
-        (distance % (1000 * 60 * 60 * 24))
-        / (1000 * 60 * 60)
-    );
-
-    const minutes = Math.floor(
-        (distance % (1000 * 60 * 60))
-        / (1000 * 60)
-    );
-
-    const seconds = Math.floor(
-        (distance % (1000 * 60))
-        / 1000
-    );
-
-
-    document.getElementById("days").textContent =
-        String(days).padStart(2, "0");
-
-    document.getElementById("hours").textContent =
-        String(hours).padStart(2, "0");
-
-    document.getElementById("minutes").textContent =
-        String(minutes).padStart(2, "0");
-
-    document.getElementById("seconds").textContent =
-        String(seconds).padStart(2, "0");
-
-}
-
-
-updateCountdown();
-
-setInterval(updateCountdown, 1000);
-
-
-
-/* =========================================================
-   NUMBER COUNTERS
-========================================================= */
-
-const counters = document.querySelectorAll(".counter");
-
-const counterObserver = new IntersectionObserver(
-
-    entries => {
-
-        entries.forEach(entry => {
-
-            if (!entry.isIntersecting) {
-                return;
-            }
-
-            const counter = entry.target;
-
-            const target =
-                Number(counter.dataset.target);
-
-            let current = 0;
-
-            const duration = 1600;
-
-            const startTime = performance.now();
-
-
-            function animateCounter(currentTime) {
-
-                const progress =
-                    Math.min(
-                        (currentTime - startTime) / duration,
-                        1
-                    );
-
-                current =
-                    Math.floor(
-                        progress * target
-                    );
-
-                counter.textContent = current;
-
-
-                if (progress < 1) {
-
-                    requestAnimationFrame(
-                        animateCounter
-                    );
-
-                } else {
-
-                    counter.textContent = target;
-
-                }
-
-            }
-
-
-            requestAnimationFrame(
-                animateCounter
-            );
-
-
-            counterObserver.unobserve(counter);
-
-        });
-
-    },
-
-    {
-        threshold: .7
-    }
-
-);
-
-
-counters.forEach(counter => {
-
-    counterObserver.observe(counter);
-
-});
-
-
-
-/* =========================================================
-   FAQ
-========================================================= */
-
-const faqQuestions =
-    document.querySelectorAll(".faq-question");
-
-
-faqQuestions.forEach(question => {
-
-    question.addEventListener("click", () => {
-
-        const item =
-            question.parentElement;
-
-
-        document
-            .querySelectorAll(".faq-item")
-            .forEach(otherItem => {
-
-                if (otherItem !== item) {
-
-                    otherItem.classList.remove(
-                        "active"
-                    );
-
-                }
-
-            });
-
-
-        item.classList.toggle("active");
-
-    });
-
-});
-
-
-
-/* =========================================================
-   LIVE PARALLAX BACKGROUND
-========================================================= */
-
-const hero = document.querySelector(".hero");
-const heroImage = document.querySelector(".hero-image");
-
-
-if (hero && heroImage) {
-
-    hero.addEventListener("mousemove", event => {
-
-        const x =
-            (event.clientX / window.innerWidth - .5) * 2;
-
-        const y =
-            (event.clientY / window.innerHeight - .5) * 2;
-
-
-        heroImage.style.transform = `
-            scale(1.09)
-            translate3d(
-                ${x * -7}px,
-                ${y * -5}px,
-                0
-            )
-        `;
-
-    });
-
-
-    hero.addEventListener("mouseleave", () => {
-
-        heroImage.style.transform =
-            "scale(1.08) translate3d(0,0,0)";
-
-    });
-
-}
-
-
-
-/* =========================================================
-   SCROLL REVEAL
-========================================================= */
-
-const revealElements = document.querySelectorAll(
-    ".feature-card, .speaker-card, .team-card, .value, .agenda-item"
-);
-
-
-revealElements.forEach(element => {
-
-    element.style.opacity = "0";
-
-    element.style.transform =
-        "translateY(30px)";
-
-    element.style.transition =
-        "opacity .7s ease, transform .7s ease";
-
-});
-
-
-const revealObserver = new IntersectionObserver(
-
-    entries => {
-
-        entries.forEach(entry => {
-
-            if (!entry.isIntersecting) {
-                return;
-            }
-
-            entry.target.style.opacity = "1";
-
-            entry.target.style.transform =
-                "translateY(0)";
-
-            revealObserver.unobserve(
-                entry.target
-            );
-
-        });
-
-    },
-
-    {
-        threshold: .12
-    }
-
-);
-
-
-revealElements.forEach(element => {
-
-    revealObserver.observe(element);
-
-});
-
-
-
-/* =========================================================
-   NAVBAR SCROLL EFFECT
-========================================================= */
-
-const navbar =
-    document.querySelector(".navbar");
-
-
-window.addEventListener("scroll", () => {
-
-    if (window.scrollY > 80) {
-
-        navbar.style.background =
-            "rgba(4,8,14,.94)";
-
-        navbar.style.boxShadow =
-            "0 15px 50px rgba(0,0,0,.4)";
-
-    } else {
-
-        navbar.style.background =
-            "rgba(7,12,21,.82)";
-
-        navbar.style.boxShadow =
-            "0 20px 70px rgba(0,0,0,.35)";
-
-    }
-
-});
-
-
-
-/* =========================================================
-   ACTIVE NAV LINK
-========================================================= */
-
-const sections =
-    document.querySelectorAll("section[id]");
-
-const navLinks =
-    document.querySelectorAll(".nav-links a");
-
-
-window.addEventListener("scroll", () => {
-
-    let current = "";
-
-    sections.forEach(section => {
-
-        const sectionTop =
-            section.offsetTop - 180;
-
-        if (window.scrollY >= sectionTop) {
-
-            current =
-                section.getAttribute("id");
-
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+    if (cdDays) cdDays.textContent = pad(days);
+    if (cdHours) cdHours.textContent = pad(hours);
+    if (cdMins) cdMins.textContent = pad(mins);
+    if (cdSecs) cdSecs.textContent = pad(secs);
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  /* =========================================================
+     2. DUAL CUSTOM CURSOR
+  ========================================================= */
+  if (!isTouch && !reduceMotion) {
+    const dot = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+
+    if (dot && ring) {
+      let mouseX = window.innerWidth / 2;
+      let mouseY = window.innerHeight / 2;
+      let ringX = mouseX;
+      let ringY = mouseY;
+      let isVisible = false;
+
+      window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        if (!isVisible) {
+          dot.classList.add('ready');
+          ring.classList.add('ready');
+          isVisible = true;
         }
+        dot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+      }, { passive: true });
 
-    });
+      function animateRing() {
+        ringX += (mouseX - ringX) * 0.16;
+        ringY += (mouseY - ringY) * 0.16;
+        ring.style.transform = `translate(${ringX}px, ${ringY}px)`;
+        requestAnimationFrame(animateRing);
+      }
+      requestAnimationFrame(animateRing);
 
+      const hoverables = document.querySelectorAll('a, button, input, .sp-card2, .tm-card, .pt-card, .pillar');
+      hoverables.forEach(el => {
+        el.addEventListener('mouseenter', () => ring.classList.add('hover'));
+        el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
+      });
+    }
+  }
 
-    navLinks.forEach(link => {
+  /* =========================================================
+     3. FLOATING RISING PARTICLES
+  ========================================================= */
+  const particlesContainer = document.getElementById('particles');
+  if (particlesContainer && !reduceMotion) {
+    const count = 24;
+    for (let i = 0; i < count; i++) {
+      const span = document.createElement('span');
+      span.style.left = `${Math.random() * 100}%`;
+      span.style.animationDuration = `${6 + Math.random() * 10}s`;
+      span.style.animationDelay = `${Math.random() * 8}s`;
+      span.style.width = `${2 + Math.random() * 3}px`;
+      span.style.height = span.style.width;
+      particlesContainer.appendChild(span);
+    }
+  }
 
-        link.style.color = "#aeb8c7";
-
-        if (
-            link.getAttribute("href") ===
-            "#" + current
-        ) {
-
-            link.style.color = "#ff9900";
-
+  /* =========================================================
+     4. SCROLL REVEAL OBSERVER
+  ========================================================= */
+  const reveals = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window && !reduceMotion) {
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          revealObserver.unobserve(entry.target);
         }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 
+    reveals.forEach(el => revealObserver.observe(el));
+  } else {
+    reveals.forEach(el => el.classList.add('is-visible'));
+  }
+
+  /* =========================================================
+     5. MOBILE NAVIGATION TOGGLE
+  ========================================================= */
+  const nav = document.querySelector('.snav');
+  const toggle = document.querySelector('.snav-toggle');
+  const mobileNav = document.getElementById('snav-mobile-menu');
+
+  if (toggle && nav) {
+    toggle.addEventListener('click', () => {
+      const isOpen = nav.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', String(isOpen));
+      if (mobileNav) mobileNav.setAttribute('aria-hidden', String(!isOpen));
     });
 
+    const mobileLinks = nav.querySelectorAll('.snav-mobile a');
+    mobileLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        nav.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+        if (mobileNav) mobileNav.setAttribute('aria-hidden', 'true');
+      });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && nav.classList.contains('open')) {
+        nav.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+        if (mobileNav) mobileNav.setAttribute('aria-hidden', 'true');
+      }
+    });
+  }
+
+  /* =========================================================
+     6. FAQ ACCORDION
+  ========================================================= */
+  const faqItems = document.querySelectorAll('.faq-item');
+  faqItems.forEach(item => {
+    const btn = item.querySelector('.faq-q');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      const isActive = item.classList.contains('active');
+      faqItems.forEach(other => other.classList.remove('active'));
+      if (!isActive) item.classList.add('active');
+    });
+  });
+
+  /* =========================================================
+     7. COMMUNITY BADGE GENERATOR
+  ========================================================= */
+  const badgeNameInput = document.getElementById('badgeName');
+  const badgeRoleInput = document.getElementById('badgeRole');
+  const badgePreviewName = document.getElementById('badgePreviewName');
+  const badgePreviewRole = document.getElementById('badgePreviewRole');
+
+  if (badgeNameInput && badgePreviewName) {
+    badgeNameInput.addEventListener('input', (e) => {
+      const val = e.target.value.trim();
+      badgePreviewName.textContent = val || 'Your Name';
+    });
+  }
+
+  if (badgeRoleInput && badgePreviewRole) {
+    badgeRoleInput.addEventListener('input', (e) => {
+      const val = e.target.value.trim();
+      badgePreviewRole.textContent = val || 'Student Builder';
+    });
+  }
 });

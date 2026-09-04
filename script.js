@@ -219,4 +219,224 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+
+  /* =========================================================
+     9. TEAM MEMBER PROFILE PHOTO EDITOR & LOCALSTORAGE
+  ========================================================= */
+  const teamModal = document.getElementById('teamModal');
+  const modalClose = document.getElementById('tmModalClose');
+  const modalBackdrop = document.getElementById('tmModalBackdrop');
+  const memberSelect = document.getElementById('tmMemberSelect');
+  const modalTitle = document.getElementById('tmModalMemberName');
+  const previewImg = document.getElementById('tmModalPreviewImg');
+  const previewInitials = document.getElementById('tmModalPreviewInitials');
+  const fileInput = document.getElementById('tmFileInput');
+  const urlInput = document.getElementById('tmUrlInput');
+  const saveBtn = document.getElementById('tmSaveBtn');
+  const resetBtn = document.getElementById('tmResetBtn');
+  const openEditorBtn = document.getElementById('openTeamPhotoEditorBtn');
+
+  // Member initials lookup
+  const memberInitialsMap = {
+    'sarang-chakole': 'SC',
+    'faiz-shaikh': 'FS',
+    'neeraj-khapre': 'NK',
+    'devanshu-kindarlaey': 'DK',
+    'nivedita-nandurkar': 'NN',
+    'tanushree-saundarkar': 'TS',
+    'sankalp-kadse': 'SK',
+    'anshul-motghare': 'AM',
+    'pranav-vispute': 'PV',
+    'isha-dhok': 'ID',
+    'nutan-bhoyar': 'NB',
+    'krutika-dhavde': 'KD',
+    'jiya-sathawane': 'JS',
+    'anmol-chaubey': 'AC',
+    'vaishnavi-sathone': 'VS',
+    'gauri-sangewar': 'GS',
+    'areeba-qureshi': 'AQ',
+    'vansh-lute': 'VL',
+    'pushkar-meshram': 'PM',
+    'shagun-harinkhede': 'SH'
+  };
+
+  let currentMemberId = 'sarang-chakole';
+  let tempPhotoData = '';
+
+  function getStoredPhotos() {
+    try {
+      return JSON.parse(localStorage.getItem('aws_sbj_team_photos') || '{}');
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function setStoredPhotos(data) {
+    try {
+      localStorage.setItem('aws_sbj_team_photos', JSON.stringify(data));
+    } catch (e) {
+      console.warn('Could not save to localStorage', e);
+    }
+  }
+
+  // Render all stored photos on page cards
+  function applyStoredPhotos() {
+    const photos = getStoredPhotos();
+    Object.keys(photos).forEach(id => {
+      const avatarEl = document.getElementById('avatar-' + id);
+      if (avatarEl && photos[id]) {
+        const img = avatarEl.querySelector('.tm-avatar-img');
+        const text = avatarEl.querySelector('.tm-avatar-text');
+        if (img) {
+          img.src = photos[id];
+          img.style.display = 'block';
+        }
+        if (text) text.style.display = 'none';
+      }
+    });
+  }
+
+  applyStoredPhotos();
+
+  function openModalForMember(memberId, memberName) {
+    currentMemberId = memberId;
+    if (memberSelect) memberSelect.value = memberId;
+    if (modalTitle) modalTitle.textContent = memberName || (memberSelect ? memberSelect.options[memberSelect.selectedIndex].text : 'Member');
+    
+    // Check existing photo
+    const photos = getStoredPhotos();
+    const existing = photos[memberId];
+    tempPhotoData = existing || '';
+
+    if (existing) {
+      previewImg.src = existing;
+      previewImg.style.display = 'block';
+      previewInitials.style.display = 'none';
+      if (urlInput && existing.startsWith('http')) urlInput.value = existing;
+    } else {
+      previewImg.style.display = 'none';
+      previewInitials.style.display = 'block';
+      previewInitials.textContent = memberInitialsMap[memberId] || 'SB';
+      if (urlInput) urlInput.value = '';
+    }
+
+    if (fileInput) fileInput.value = '';
+    teamModal?.classList.add('is-open');
+    teamModal?.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeModal() {
+    teamModal?.classList.remove('is-open');
+    teamModal?.setAttribute('aria-hidden', 'true');
+  }
+
+  // Click listener on all member cards / avatars
+  document.querySelectorAll('[data-member-id]').forEach(card => {
+    const avatar = card.querySelector('.tm-leader-avatar, .tm-member-avatar');
+    if (avatar) {
+      avatar.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = card.dataset.memberId;
+        const name = card.dataset.memberName;
+        openModalForMember(id, name);
+      });
+    }
+  });
+
+  openEditorBtn?.addEventListener('click', () => {
+    openModalForMember(memberSelect ? memberSelect.value : 'sarang-chakole');
+  });
+
+  memberSelect?.addEventListener('change', () => {
+    const selectedOption = memberSelect.options[memberSelect.selectedIndex];
+    openModalForMember(memberSelect.value, selectedOption.text);
+  });
+
+  modalClose?.addEventListener('click', closeModal);
+  modalBackdrop?.addEventListener('click', closeModal);
+
+  // File input change -> read as base64 DataURL
+  fileInput?.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size exceeds 5MB. Please choose a smaller image.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        tempPhotoData = event.target.result;
+        previewImg.src = tempPhotoData;
+        previewImg.style.display = 'block';
+        previewInitials.style.display = 'none';
+        if (urlInput) urlInput.value = '';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // URL input change
+  urlInput?.addEventListener('input', (e) => {
+    const url = e.target.value.trim();
+    if (url) {
+      tempPhotoData = url;
+      previewImg.src = url;
+      previewImg.style.display = 'block';
+      previewInitials.style.display = 'none';
+    }
+  });
+
+  // Save button
+  saveBtn?.addEventListener('click', () => {
+    if (!tempPhotoData) {
+      alert('Please select a photo or enter an image URL first.');
+      return;
+    }
+
+    const photos = getStoredPhotos();
+    photos[currentMemberId] = tempPhotoData;
+    setStoredPhotos(photos);
+
+    // Update avatar on page immediately
+    const avatarEl = document.getElementById('avatar-' + currentMemberId);
+    if (avatarEl) {
+      const img = avatarEl.querySelector('.tm-avatar-img');
+      const text = avatarEl.querySelector('.tm-avatar-text');
+      if (img) {
+        img.src = tempPhotoData;
+        img.style.display = 'block';
+      }
+      if (text) text.style.display = 'none';
+    }
+
+    closeModal();
+  });
+
+  // Reset button
+  resetBtn?.addEventListener('click', () => {
+    const photos = getStoredPhotos();
+    delete photos[currentMemberId];
+    setStoredPhotos(photos);
+
+    const avatarEl = document.getElementById('avatar-' + currentMemberId);
+    if (avatarEl) {
+      const img = avatarEl.querySelector('.tm-avatar-img');
+      const text = avatarEl.querySelector('.tm-avatar-text');
+      if (img) {
+        img.src = '';
+        img.style.display = 'none';
+      }
+      if (text) text.style.display = 'block';
+    }
+
+    previewImg.style.display = 'none';
+    previewInitials.style.display = 'block';
+    previewInitials.textContent = memberInitialsMap[currentMemberId] || 'SB';
+    tempPhotoData = '';
+    if (urlInput) urlInput.value = '';
+    if (fileInput) fileInput.value = '';
+
+    closeModal();
+  });
+
 });

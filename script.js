@@ -439,4 +439,41 @@ document.addEventListener('DOMContentLoaded', () => {
     closeModal();
   });
 
+
+  /* =========================================================
+     10. THEME SWITCHER (Light & Dark Mode)
+  ========================================================= */
+  const themeToggle = document.getElementById('themeToggle');
+  const themeToggleMobile = document.getElementById('themeToggleMobile');
+  const logoImgs = document.querySelectorAll('.snav-logo-img');
+
+  function updateLogoForTheme(theme) {
+    logoImgs.forEach(img => {
+      if (theme === 'light') {
+        img.src = 'images/aws-logo-dark.svg?v=2';
+      } else {
+        img.src = 'images/aws-logo.svg?v=2';
+      }
+    });
+  }
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('aws_sbj_theme', theme);
+    updateLogoForTheme(theme);
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+    const next = current === 'light' ? 'dark' : 'light';
+    applyTheme(next);
+  }
+
+  themeToggle?.addEventListener('click', toggleTheme);
+  themeToggleMobile?.addEventListener('click', toggleTheme);
+
+  // Initialize theme from storage or preference
+  const savedTheme = localStorage.getItem('aws_sbj_theme') || 'dark';
+  applyTheme(savedTheme);
+
 });

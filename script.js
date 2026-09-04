@@ -194,4 +194,29 @@ document.addEventListener('DOMContentLoaded', () => {
       badgePreviewRole.textContent = val || 'Student Builder';
     });
   }
+
+  /* =========================================================
+     8. TEAM DEPARTMENT FILTER TABS
+  ========================================================= */
+  const teamTabBtns = document.querySelectorAll('.team-tab-btn');
+  const teamDepts = document.querySelectorAll('[data-team-dept]');
+
+  teamTabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      teamTabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const filter = btn.dataset.filter;
+      teamDepts.forEach(dept => {
+        if (filter === 'all' || dept.dataset.teamDept === filter) {
+          dept.classList.remove('is-hidden');
+          dept.style.display = 'block';
+        } else {
+          dept.classList.add('is-hidden');
+          dept.style.display = 'none';
+        }
+      });
+    });
+  });
+
 });

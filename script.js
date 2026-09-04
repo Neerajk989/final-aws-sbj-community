@@ -76,8 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }, { passive: true });
 
       function animateRing() {
-        ringX += (mouseX - ringX) * 0.16;
-        ringY += (mouseY - ringY) * 0.16;
+        ringX += (mouseX - ringX) * 0.45;
+        ringY += (mouseY - ringY) * 0.45;
         ring.style.transform = `translate(${ringX}px, ${ringY}px)`;
         requestAnimationFrame(animateRing);
       }

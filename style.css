@@ -149,7 +149,8 @@ img {
   width: 36px;
   height: 36px;
   transform: translate(-50%, -50%);
-  transition: transform .2s var(--ease), width .3s var(--ease), height .3s var(--ease), border-color .25s ease;
+  transition: width .2s var(--ease), height .2s var(--ease), border-color .2s ease, background-color .2s ease;
+  will-change: transform;
 }
 
 .cursor-ring.hover {

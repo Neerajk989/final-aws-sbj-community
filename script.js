@@ -50,45 +50,69 @@ document.addEventListener('DOMContentLoaded', () => {
   updateCountdown();
   setInterval(updateCountdown, 1000);
 
-  /* =========================================================
-     2. DUAL CUSTOM CURSOR
+    /* =========================================================
+     2. DUAL CUSTOM CURSOR (Fast & Responsive)
   ========================================================= */
-  if (!isTouch && !reduceMotion) {
-    const dot = document.getElementById('cursor-dot');
-    const ring = document.getElementById('cursor-ring');
+  const dot = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
 
-    if (dot && ring) {
-      let mouseX = window.innerWidth / 2;
-      let mouseY = window.innerHeight / 2;
-      let ringX = mouseX;
-      let ringY = mouseY;
-      let isVisible = false;
+  if (dot && ring) {
+    let mouseX = -100;
+    let mouseY = -100;
+    let ringX = -100;
+    let ringY = -100;
+    let isVisible = false;
 
-      window.addEventListener('mousemove', (e) => {
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+
+      if (!isVisible) {
+        ringX = mouseX;
+        ringY = mouseY;
+        dot.style.opacity = '1';
+        ring.style.opacity = '1';
+        isVisible = true;
+      }
+
+      dot.style.transform = 'translate3d(' + mouseX + 'px, ' + mouseY + 'px, 0) translate(-50%, -50%)';
+    }, { passive: true });
+
+    document.addEventListener('mouseleave', () => {
+      dot.style.opacity = '0';
+      ring.style.opacity = '0';
+      isVisible = false;
+    });
+
+    document.addEventListener('mouseenter', (e) => {
+      if (e.clientX > 0 && e.clientY > 0) {
         mouseX = e.clientX;
         mouseY = e.clientY;
-        if (!isVisible) {
-          dot.classList.add('ready');
-          ring.classList.add('ready');
-          isVisible = true;
-        }
-        dot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
-      }, { passive: true });
+        dot.style.opacity = '1';
+        ring.style.opacity = '1';
+        isVisible = true;
+      }
+    });
 
-      function animateRing() {
-        ringX += (mouseX - ringX) * 0.45;
-        ringY += (mouseY - ringY) * 0.45;
-        ring.style.transform = `translate(${ringX}px, ${ringY}px)`;
-        requestAnimationFrame(animateRing);
+    function animateRing() {
+      if (isVisible) {
+        ringX += (mouseX - ringX) * 0.55;
+        ringY += (mouseY - ringY) * 0.55;
+        ring.style.transform = 'translate3d(' + ringX + 'px, ' + ringY + 'px, 0) translate(-50%, -50%)';
       }
       requestAnimationFrame(animateRing);
-
-      const hoverables = document.querySelectorAll('a, button, input, .sp-card2, .tm-card, .pt-card, .pillar');
-      hoverables.forEach(el => {
-        el.addEventListener('mouseenter', () => ring.classList.add('hover'));
-        el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
-      });
     }
+    requestAnimationFrame(animateRing);
+
+    // Hover detection over interactive elements
+    document.addEventListener('mouseover', (e) => {
+      const hoverable = e.target.closest('a, button, input, select, .tm-card, .tm-member-card, .tm-leader-card, .pillar, .pt-card, .team-tab-btn, .faq-q');
+      if (hoverable) {
+        ring.classList.add('hover');
+      } else {
+        ring.classList.remove('hover');
+      }
+    });
   }
 
   /* =========================================================

@@ -1057,6 +1057,45 @@ img {
 /* =========================================================
    ABOUT SECTION
 ========================================================= */
+/* =========================================================
+   ABOUT THE COMMUNITY SECTION (Custom Dark Teal Background)
+========================================================= */
+.sec-about {
+  background: radial-gradient(circle at 75% 20%, #163630 0%, #132c28 55%, #0d211e 100%) !important;
+  position: relative;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.sec-about::before {
+  content: "";
+  position: absolute;
+  top: -120px;
+  right: -120px;
+  width: 550px;
+  height: 550px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 254, 255, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.sec-about .pillar {
+  background: rgba(13, 27, 24, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sec-about .pillar:hover {
+  background: rgba(19, 44, 40, 0.95);
+  border-color: rgba(255, 153, 0, 0.45);
+}
+
+.sec-about .about-card {
+  background: linear-gradient(135deg, rgba(13, 27, 24, 0.9) 0%, rgba(9, 19, 17, 0.98) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(19, 44, 40, 0.4);
+}
+
 .about-grid {
   grid-template-columns: 1.35fr 1fr;
   align-items: start;
@@ -3159,4 +3198,22 @@ img {
 [data-theme="light"] .footer-bottom {
   border-top-color: #e2e8f0;
   color: #64748b;
+}
+
+/* Light Theme: About the Community */
+[data-theme="light"] .sec-about {
+  background: radial-gradient(circle at 75% 20%, #e6f4f1 0%, #d8ece7 55%, #cde5df 100%) !important;
+  border-top-color: rgba(19, 44, 40, 0.1);
+  border-bottom-color: rgba(19, 44, 40, 0.1);
+}
+
+[data-theme="light"] .sec-about .pillar {
+  background: #ffffff;
+  border-color: rgba(19, 44, 40, 0.12);
+}
+
+[data-theme="light"] .sec-about .about-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f4faf8 100%);
+  border-color: rgba(19, 44, 40, 0.15);
+  box-shadow: 0 20px 50px rgba(19, 44, 40, 0.08);
 }

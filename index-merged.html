@@ -5819,6 +5819,10 @@ img {
         <source src="public-intro-video.mp4" type="video/mp4">
       </video>
     </div>
+    <button class="intro-sound-toggle" id="introSoundToggle" type="button" aria-label="Enable intro video sound" aria-pressed="false">
+      <span class="intro-sound-icon" aria-hidden="true">◖)))</span>
+      <span class="intro-sound-label">Tap for sound</span>
+    </button>
   </div>
 
   <!-- AMBIENT ANIMATED AURA BACKGROUND (Full Page) -->
@@ -6315,6 +6319,19 @@ document.addEventListener('DOMContentLoaded', () => {
       window.setTimeout(() => introVideo.remove(), 700);
     }
 
+    function enableIntroSound() {
+      introSoundEnabled = true;
+      introPlayer.muted = false;
+      introPlayer.defaultMuted = false;
+      introPlayer.volume = 1;
+      introSoundToggle?.classList.add('is-on');
+      introSoundToggle?.setAttribute('aria-pressed', 'true');
+      introSoundToggle?.setAttribute('aria-label', 'Intro video sound enabled');
+      const label = introSoundToggle?.querySelector('.intro-sound-label');
+      if (label) label.textContent = 'Sound on';
+      return introPlayer.play();
+    }
+
     introPlayer.addEventListener('ended', closeIntro);
     introPlayer.addEventListener('timeupdate', () => {
       if (introProgress && introPlayer.duration) {
@@ -6324,24 +6341,14 @@ document.addEventListener('DOMContentLoaded', () => {
     introPlayer.addEventListener('error', closeIntro, { once: true });
     introVideo.addEventListener('click', () => {
       if (!introSoundEnabled) {
-        introSoundEnabled = true;
-        introPlayer.muted = false;
-        introPlayer.volume = 1;
-        introPlayer.play().catch(() => {});
+        enableIntroSound().catch(() => {});
         return;
       }
       closeIntro();
     });
     introSoundToggle?.addEventListener('click', (event) => {
       event.stopPropagation();
-      introPlayer.muted = false;
-      introPlayer.volume = 1;
-      introSoundToggle.classList.add('is-on');
-      introSoundToggle.setAttribute('aria-pressed', 'true');
-      introSoundToggle.setAttribute('aria-label', 'Intro video sound enabled');
-      const label = introSoundToggle.querySelector('.intro-sound-label');
-      if (label) label.textContent = 'Sound on';
-      introPlayer.play().catch(() => {});
+      enableIntroSound().catch(() => {});
     });
     introSkip?.addEventListener('click', (event) => {
       event.stopPropagation();

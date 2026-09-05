@@ -34,6 +34,19 @@ document.addEventListener('DOMContentLoaded', () => {
       window.setTimeout(() => introVideo.remove(), 700);
     }
 
+    function enableIntroSound() {
+      introSoundEnabled = true;
+      introPlayer.muted = false;
+      introPlayer.defaultMuted = false;
+      introPlayer.volume = 1;
+      introSoundToggle?.classList.add('is-on');
+      introSoundToggle?.setAttribute('aria-pressed', 'true');
+      introSoundToggle?.setAttribute('aria-label', 'Intro video sound enabled');
+      const label = introSoundToggle?.querySelector('.intro-sound-label');
+      if (label) label.textContent = 'Sound on';
+      return introPlayer.play();
+    }
+
     introPlayer.addEventListener('ended', closeIntro);
     introPlayer.addEventListener('timeupdate', () => {
       if (introProgress && introPlayer.duration) {
@@ -43,24 +56,14 @@ document.addEventListener('DOMContentLoaded', () => {
     introPlayer.addEventListener('error', closeIntro, { once: true });
     introVideo.addEventListener('click', () => {
       if (!introSoundEnabled) {
-        introSoundEnabled = true;
-        introPlayer.muted = false;
-        introPlayer.volume = 1;
-        introPlayer.play().catch(() => {});
+        enableIntroSound().catch(() => {});
         return;
       }
       closeIntro();
     });
     introSoundToggle?.addEventListener('click', (event) => {
       event.stopPropagation();
-      introPlayer.muted = false;
-      introPlayer.volume = 1;
-      introSoundToggle.classList.add('is-on');
-      introSoundToggle.setAttribute('aria-pressed', 'true');
-      introSoundToggle.setAttribute('aria-label', 'Intro video sound enabled');
-      const label = introSoundToggle.querySelector('.intro-sound-label');
-      if (label) label.textContent = 'Sound on';
-      introPlayer.play().catch(() => {});
+      enableIntroSound().catch(() => {});
     });
     introSkip?.addEventListener('click', (event) => {
       event.stopPropagation();

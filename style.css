@@ -5732,3 +5732,40 @@ img {
   transform: none;
   animation: none;
 }
+
+
+/* Minimal audio affordance for the video-only intro. */
+.intro-sound-toggle {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 14px;
+  color: rgba(255,255,255,.88);
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 999px;
+  background: rgba(0,0,0,.34);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 30px rgba(0,0,0,.24);
+  font: 700 10px var(--font);
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease, transform .2s ease;
+}
+.intro-sound-toggle:hover,
+.intro-sound-toggle:focus-visible {
+  border-color: var(--primary);
+  background: rgba(255,153,0,.18);
+  outline: none;
+  transform: translateY(-2px);
+}
+.intro-sound-icon { color: var(--primary); font-size: 14px; letter-spacing: -2px; }
+.intro-sound-toggle.is-on .intro-sound-icon { color: #7ee787; }
+.intro-sound-toggle.is-on .intro-sound-label { color: #fff; }
+@media (max-width: 640px) {
+  .intro-sound-toggle { right: 16px; bottom: 16px; padding: 9px 12px; }
+}

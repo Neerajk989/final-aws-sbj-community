@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const introPlayer = document.getElementById('introVideoPlayer');
   const introProgress = document.getElementById('introVideoProgress');
   const introSkip = document.getElementById('introVideoSkip');
+  const introSoundToggle = document.getElementById('introSoundToggle');
 
   if (introVideo && introPlayer) {
     let introClosed = false;
@@ -39,7 +40,21 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
     introPlayer.addEventListener('error', closeIntro, { once: true });
-    introVideo.addEventListener('click', closeIntro);
+    introVideo.addEventListener('click', (event) => {
+      if (event.target.closest('#introSoundToggle')) return;
+      closeIntro();
+    });
+    introSoundToggle?.addEventListener('click', (event) => {
+      event.stopPropagation();
+      introPlayer.muted = false;
+      introPlayer.volume = 1;
+      introSoundToggle.classList.add('is-on');
+      introSoundToggle.setAttribute('aria-pressed', 'true');
+      introSoundToggle.setAttribute('aria-label', 'Intro video sound enabled');
+      const label = introSoundToggle.querySelector('.intro-sound-label');
+      if (label) label.textContent = 'Sound on';
+      introPlayer.play().catch(() => {});
+    });
     introSkip?.addEventListener('click', (event) => {
       event.stopPropagation();
       closeIntro();

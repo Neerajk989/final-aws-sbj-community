@@ -6443,7 +6443,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const dot = document.getElementById('cursor-dot');
   const ring = document.getElementById('cursor-ring');
 
-  if (dot && ring) {
+  if (isTouch || window.innerWidth <= 768) {
+    dot?.remove();
+    ring?.remove();
+  } else if (dot && ring) {
     let mouseX = -100;
     let mouseY = -100;
     let ringX = -100;

@@ -5771,3 +5771,22 @@ img {
 @media (max-width: 640px) {
   .intro-sound-toggle { right: 16px; bottom: 16px; padding: 9px 12px; }
 }
+
+
+/* Final responsive frame lock: show the complete 16:9 video on phones and desktops. */
+.intro-video-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  background: #05070b;
+}
+.intro-video-frame video {
+  display: block;
+  width: 100vw;
+  height: auto;
+  max-height: 100vh;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+}

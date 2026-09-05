@@ -5799,3 +5799,19 @@ img {
     display: none !important;
   }
 }
+
+
+/* Hard mobile safeguard: the custom cursor is desktop-only. */
+@media (max-width: 1024px), (hover: none), (pointer: coarse) {
+  html,
+  body,
+  body * {
+    cursor: auto !important;
+  }
+  .cursor-dot,
+  .cursor-ring {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+}

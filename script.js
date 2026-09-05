@@ -262,6 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Member initials lookup
   const memberInitialsMap = {
+    'hod-faculty': 'AT',
     'sarang-chakole': 'SC',
     'faiz-shaikh': 'FS',
     'neeraj-khapre': 'NK',
@@ -499,5 +500,56 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize theme from storage or preference
   const savedTheme = localStorage.getItem('aws_sbj_theme') || 'dark';
   applyTheme(savedTheme);
+
+
+  /* =========================================================
+     11. DEDICATED TEAM OVERLAY TOGGLE
+  ========================================================= */
+  const teamOverlay = document.getElementById('teamOverlay');
+  const teamOverlayClose = document.getElementById('teamOverlayClose');
+  const teamOverlayBackdrop = document.getElementById('teamOverlayBackdrop');
+  const openTeamModalBtn = document.getElementById('openTeamModalBtn');
+  const openPhotoEditorFromOverlay = document.getElementById('openPhotoEditorFromOverlay');
+
+  function openTeamOverlay() {
+    teamOverlay?.classList.add('is-open');
+    teamOverlay?.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden'; // prevent background scrolling
+  }
+
+  function closeTeamOverlay() {
+    teamOverlay?.classList.remove('is-open');
+    teamOverlay?.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  // Intercept all "Team" nav links to open overlay instead of scrolling
+  document.querySelectorAll('a[href="#team"], .open-team-link, .open-team-btn').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      openTeamOverlay();
+    });
+  });
+
+  openTeamModalBtn?.addEventListener('click', openTeamOverlay);
+  teamOverlayClose?.addEventListener('click', closeTeamOverlay);
+  teamOverlayBackdrop?.addEventListener('click', closeTeamOverlay);
+
+  // Close on Escape key
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && teamOverlay?.classList.contains('is-open')) {
+      closeTeamOverlay();
+    }
+  });
+
+  // Open photo editor from overlay button
+  openPhotoEditorFromOverlay?.addEventListener('click', () => {
+    openModalForMember('hod-faculty', 'Dr. Animesh Tayal (Head of Department · HOD)');
+  });
+
+  // Auto-open if URL has #team
+  if (window.location.hash === '#team') {
+    openTeamOverlay();
+  }
 
 });

@@ -8,6 +8,53 @@ document.addEventListener('DOMContentLoaded', () => {
   const isTouch = window.matchMedia('(pointer: coarse)').matches;
 
   /* =========================================================
+     0. INTRO VIDEO EXPERIENCE (Autoplaying MP4, muted by default)
+  ========================================================= */
+  const introVideo = document.getElementById('introVideo');
+  const introPlayer = document.getElementById('introVideoPlayer');
+  const introProgress = document.getElementById('introVideoProgress');
+  const introSkip = document.getElementById('introVideoSkip');
+
+  if (introVideo && introPlayer) {
+    let introClosed = false;
+
+    document.body.classList.add('intro-is-playing');
+    document.body.style.overflow = 'hidden';
+
+    function closeIntro() {
+      if (introClosed) return;
+      introClosed = true;
+      introPlayer.pause();
+      introVideo.classList.add('is-done');
+      introVideo.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('intro-is-playing');
+      document.body.style.overflow = '';
+      window.setTimeout(() => introVideo.remove(), 700);
+    }
+
+    introPlayer.addEventListener('ended', closeIntro);
+    introPlayer.addEventListener('timeupdate', () => {
+      if (introProgress && introPlayer.duration) {
+        introProgress.style.width = `${(introPlayer.currentTime / introPlayer.duration) * 100}%`;
+      }
+    });
+    introPlayer.addEventListener('error', closeIntro, { once: true });
+    introVideo.addEventListener('click', closeIntro);
+    introSkip?.addEventListener('click', (event) => {
+      event.stopPropagation();
+      closeIntro();
+    });
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !introClosed) closeIntro();
+    }, { once: false });
+
+    // Calling play explicitly also covers browsers that delay autoplay until interaction.
+    introPlayer.play().catch(() => {
+      if (reduceMotion) closeIntro();
+    });
+  }
+
+  /* =========================================================
      1. LIVE COUNTDOWN TIMER
   ========================================================= */
   // Target date for the upcoming SB Jain AWS Community flagship gathering

@@ -562,4 +562,47 @@ document.addEventListener('DOMContentLoaded', () => {
   if (window.location.hash === '#team') {
     openTeamFullpage();
   }
+
+  /* =========================================================
+     12. EVENTS "COMING SOON" CONTROLLER
+  ========================================================= */
+  const eventsOverlay = document.getElementById('eventsOverlay');
+  const eventsOverlayClose = document.getElementById('eventsOverlayClose');
+  const eventsOverlayBackdrop = document.getElementById('eventsOverlayBackdrop');
+
+  function openEventsOverlay() {
+    eventsOverlay?.classList.add('is-open');
+    eventsOverlay?.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeEventsOverlay() {
+    eventsOverlay?.classList.remove('is-open');
+    eventsOverlay?.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  // Intercept all "Events" links to open the Coming Soon overlay
+  document.querySelectorAll('a[href="#events"], .open-events-link').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      openEventsOverlay();
+    });
+  });
+
+  eventsOverlayClose?.addEventListener('click', closeEventsOverlay);
+  eventsOverlayBackdrop?.addEventListener('click', closeEventsOverlay);
+
+  // Close on Escape
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && eventsOverlay?.classList.contains('is-open')) {
+      closeEventsOverlay();
+    }
+  });
+
+  // Auto-open if URL hash is #events
+  if (window.location.hash === '#events') {
+    openEventsOverlay();
+  }
+
 });

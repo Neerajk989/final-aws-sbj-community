@@ -23,7 +23,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=9">
+  <link rel="stylesheet" href="style.css?v=10">
 
   <script>
     (function() {
@@ -90,11 +90,8 @@
 
       <div class="snav-links">
         <a href="#about">About</a>
-        
-        <a href="#agenda">Agenda</a>
-        <a href="#venue">Venue</a>
+        <a href="#events" class="open-events-link">Events</a>
         <a href="#partners">Partners</a>
-        <a href="#badge">Badge</a>
         <a href="#team" class="open-team-link">Team</a>
         <a href="#faq">FAQ</a>
       </div>
@@ -121,6 +118,7 @@
       <div class="snav-mobile" id="snav-mobile-menu" aria-hidden="true">
         <div class="snav-mobile-links">
         <a href="#about">About</a>
+        <a href="#events" class="open-events-link">Events</a>
         <a href="#partners">Partners</a>
         <a href="#team" class="open-team-link">Team</a>
         <a href="#faq">FAQ</a>
@@ -171,7 +169,7 @@
             <span>Join Community</span>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
           </a>
-          <a href="#events" class="btn-ghost">
+          <a href="#events" class="btn-ghost open-events-link">
             <span>Explore Events</span>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
           </a>
@@ -470,18 +468,18 @@
 
         <div class="footer-navs">
           <div class="footer-col">
-            <span>Explore</span>
-            <a href="#about">About</a>
-            
-            <a href="#agenda">Agenda</a>
-            <a href="#venue">Venue</a>
+            <span>Navigation</span>
+            <a href="#about">About Community</a>
+            <a href="#events" class="open-events-link">Events (Coming Soon)</a>
+            <a href="#partners">Partners &amp; Ecosystem</a>
+            <a href="#team" class="open-team-link">Core Team</a>
+            <a href="#faq">Frequently Asked Questions</a>
           </div>
           <div class="footer-col">
-            <span>Participate</span>
-            <a href="#badge">Badge</a>
-            <a href="#team" class="open-team-link">Team</a>
-            <a href="#faq">FAQ</a>
-            <a href="#join">Register</a>
+            <span>Get Involved</span>
+            <a href="#events" class="open-events-link">Upcoming Events</a>
+            <a href="#team" class="open-team-link">Meet Leadership</a>
+            <a href="mailto:neerajk.ml25@sbjit.edu.in">Join Community</a>
           </div>
           <div class="footer-col">
             <span>Connect</span>
@@ -498,7 +496,7 @@
     </div>
   </footer>
 
-  <script src="script.js?v=9"></script>
+  <script src="script.js?v=10"></script>
 
   <!-- TEAM MEMBER PROFILE EDIT MODAL -->
   <div class="tm-modal" id="teamModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="tmModalTitle">
@@ -517,7 +515,7 @@
         <div class="badge-input-group" id="tmSelectGroup" style="margin-bottom: 20px;">
           <label for="tmMemberSelect">Select Member</label>
           <select id="tmMemberSelect">
-            <option value="hod-faculty">Dr. Animesh Tayal (Head of Department · HOD)</option> style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 10px; padding: 12px 16px; color: #fff; font-family: inherit; font-size: 13.5px; width: 100%;">
+            <option value="hod-faculty">Dr. Animesh Tayal (Head of Department · HOD)</option>
             <option value="sarang-chakole">Sarang Chakole (Group Leader)</option>
             <option value="faiz-shaikh">Faiz Shaikh (Head · Technical)</option>
             <option value="neeraj-khapre">Neeraj Khapre (Co-Head · Technical)</option>
@@ -576,6 +574,94 @@
           </button>
         </div>
       </div>
+    </div>
+  </div>
+
+
+  
+  <!-- EVENTS COMING SOON VIEW (Opens when clicking "Events") -->
+  <div class="events-overlay" id="eventsOverlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="eventsCsHeading">
+    <div class="events-overlay-backdrop" id="eventsOverlayBackdrop"></div>
+    <div class="events-overlay-dialog">
+      
+      <!-- Close Button -->
+      <button class="events-overlay-close" id="eventsOverlayClose" type="button" aria-label="Close events view">&times;</button>
+      
+      <!-- Header / Badge -->
+      <div class="events-cs-header">
+        <span class="events-status-badge">
+          <span class="events-pulse-dot"></span>
+          COMING SOON · 2026
+        </span>
+        <h2 class="events-cs-title" id="eventsCsHeading">
+          Exciting AWS events are <span class="ital grad">in the works.</span>
+        </h2>
+        <p class="events-cs-sub">
+          We're preparing hands-on cloud architectures, AWS certification bootcamps, and hackathons for the SB Jain builder community. Stay tuned!
+        </p>
+      </div>
+
+      <!-- Preview Teaser Grid -->
+      <div class="events-preview-grid">
+        
+        <!-- Teaser 1 -->
+        <div class="event-preview-card">
+          <div class="epc-top">
+            <span class="epc-tag">FLAGSHIP GATHERING</span>
+            <span class="epc-status">In Planning</span>
+          </div>
+          <h3 class="epc-title">AWS Community Day &amp; Student Hackathon</h3>
+          <p class="epc-desc">Full-day cloud challenge at SB Jain campus. Build scalable applications, test architecture, and win official AWS swag kits and prizes.</p>
+          <div class="epc-footer">
+            <span>📍 SB Jain Auditorium, Nagpur</span>
+            <span>✦ Fall 2026</span>
+          </div>
+        </div>
+
+        <!-- Teaser 2 -->
+        <div class="event-preview-card">
+          <div class="epc-top">
+            <span class="epc-tag" style="color: #73d8ff;">WORKSHOP</span>
+            <span class="epc-status">Announcing Soon</span>
+          </div>
+          <h3 class="epc-title">Generative AI with Amazon Bedrock</h3>
+          <p class="epc-desc">Hands-on lab exploring foundation models, serverless AI integration, prompt engineering, and building agentic systems with Bedrock.</p>
+          <div class="epc-footer">
+            <span>💻 Hands-on Lab</span>
+            <span>✦ Limited Seats</span>
+          </div>
+        </div>
+
+        <!-- Teaser 3 -->
+        <div class="event-preview-card">
+          <div class="epc-top">
+            <span class="epc-tag" style="color: #4ade80;">BOOTCAMP</span>
+            <span class="epc-status">Upcoming</span>
+          </div>
+          <h3 class="epc-title">AWS Certified Cloud Practitioner Bootcamp</h3>
+          <p class="epc-desc">Guided study cohorts, cloud fundamentals roadmap, architectural best practices, and preparation guidance for global certification.</p>
+          <div class="epc-footer">
+            <span>🎓 Student Cohort</span>
+            <span>✦ 4-Week Track</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Notify Box -->
+      <div class="events-notify-box">
+        <div class="enb-content">
+          <h4 style="color: #fff; font-size: 17px; font-weight: 700; margin-bottom: 4px;">Want first access when registration opens?</h4>
+          <p style="color: var(--txt-dim); font-size: 13px;">Enter your email to receive early invitations and workshop passes.</p>
+        </div>
+        <form class="enb-form" id="eventsNotifyForm" onsubmit="event.preventDefault(); alert('Thank you! You will be notified when event registrations open.'); document.getElementById('eventsOverlay').classList.remove('is-open');">
+          <input type="email" id="eventsEmailInput" placeholder="Enter your college email" required>
+          <button class="btn-primary" type="submit" style="padding: 12px 24px; font-size: 12px; white-space: nowrap;">
+            <span>Notify Me ↗</span>
+          </button>
+        </form>
+      </div>
+
     </div>
   </div>
 

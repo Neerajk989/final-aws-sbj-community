@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
       introSeen = false;
     }
 
-    document.body.classList.add('community-intro-active');
     if (introSeen) communityIntro.classList.add('is-repeat');
 
     let introFinished = false;
@@ -29,8 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (introFinished) return;
       introFinished = true;
       communityIntro.classList.add('is-complete');
-      document.body.classList.remove('community-intro-active');
-      document.body.classList.add('community-intro-ready');
       communityIntro.setAttribute('aria-hidden', 'true');
       try {
         sessionStorage.setItem('aws_sbj_intro_seen', '1');

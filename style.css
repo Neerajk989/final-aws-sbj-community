@@ -5774,11 +5774,6 @@ select {
 .community-intro-skip { position: absolute; right: clamp(22px, 5vw, 72px); top: clamp(22px, 5vh, 48px); padding: 9px 12px; color: var(--intro-muted); border: 1px solid rgba(170,181,195,.2); border-radius: 999px; background: rgba(7,11,18,.38); font: 700 9px var(--font); letter-spacing: .14em; text-transform: uppercase; cursor: pointer; opacity: 0; animation: communityIntroTextIn 500ms 1450ms ease-out forwards; }
 .community-intro-skip span { color: var(--intro-orange); padding-left: 4px; }
 .community-intro-skip:hover, .community-intro-skip:focus-visible { color: var(--intro-white); border-color: var(--intro-cyan); outline: none; }
-body.community-intro-active { overflow: hidden; }
-body.community-intro-active .snav,
-body.community-intro-active .ticker,
-body.community-intro-active .hero { opacity: 0; transform: translateY(12px); }
-body.community-intro-ready .snav, body.community-intro-ready .ticker, body.community-intro-ready .hero { opacity: 1; transform: none; transition: opacity 700ms 120ms cubic-bezier(.22, .61, .36, 1), transform 700ms 120ms cubic-bezier(.22, .61, .36, 1); }
 @keyframes communityIntroGridIn { to { opacity: 1; } }
 @keyframes communityIntroGridDrift { to { background-position: 54px 54px; } }
 @keyframes communityIntroOrbitIn { to { opacity: 1; transform: rotate(0deg) scale(1); } }
@@ -5796,4 +5791,136 @@ body.community-intro-ready .snav, body.community-intro-ready .ticker, body.commu
   .community-intro, .community-intro-grid, .community-intro-orbit, .community-intro-logo-wrap, .community-intro-logo-sweep, .community-intro-kicker, .community-intro-brand, .community-intro-status, .community-intro-skip, .community-intro-progress i { animation: none !important; transition: none !important; }
   .community-intro-grid, .community-intro-orbit, .community-intro-logo-wrap, .community-intro-kicker, .community-intro-brand, .community-intro-status, .community-intro-skip { opacity: 1; transform: none; }
   .community-intro-progress i { width: 100%; }
+}
+
+
+/* =========================================================
+   AWS INTRO FIX: EXPLICIT OVERLAY CONSTRAINTS
+   Keep this layer last so the intro cannot be overridden by site-wide rules.
+========================================================= */
+.community-intro {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 99999 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  min-height: 100svh;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 24px;
+  overflow: hidden !important;
+  background: #070b12 !important;
+  transition: opacity 700ms cubic-bezier(.22, .61, .36, 1), visibility 700ms cubic-bezier(.22, .61, .36, 1), transform 700ms cubic-bezier(.22, .61, .36, 1) !important;
+}
+.community-intro-content {
+  position: relative;
+  z-index: 2;
+  display: flex !important;
+  width: min(100%, 520px);
+  max-width: 520px;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-direction: column !important;
+  gap: 0;
+  text-align: center;
+}
+.community-intro-logo-wrap {
+  position: relative !important;
+  display: grid !important;
+  flex: 0 0 auto;
+  place-items: center !important;
+  width: min(190px, 52vw) !important;
+  height: auto !important;
+  min-height: 0 !important;
+  aspect-ratio: 304 / 182;
+  max-height: 100px !important;
+  margin: 0 auto 22px;
+  overflow: visible !important;
+}
+.community-intro-logo {
+  position: relative !important;
+  z-index: 2 !important;
+  display: block !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: 190px !important;
+  max-height: 100px !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  aspect-ratio: 304 / 182;
+  object-fit: contain !important;
+  object-position: center;
+  preserveAspectRatio: xMidYMid meet;
+}
+.community-intro-logo-glow { z-index: 0; pointer-events: none; }
+.community-intro-logo-sweep { z-index: 3; pointer-events: none; }
+.community-intro-kicker,
+.community-intro-brand {
+  position: relative;
+  z-index: 2;
+  display: block !important;
+  width: 100%;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+.community-intro-kicker { font-size: clamp(9px, 1.2vw, 12px) !important; line-height: 1.4 !important; }
+.community-intro-brand { font-size: clamp(22px, 4vw, 36px) !important; line-height: 1.1 !important; }
+.community-intro-brand span { font-size: clamp(9px, 1.2vw, 12px) !important; line-height: 1.4 !important; }
+.community-intro-status {
+  position: absolute !important;
+  right: 190px !important;
+  bottom: clamp(24px, 6vh, 58px) !important;
+  left: clamp(22px, 5vw, 72px) !important;
+  z-index: 4;
+  display: flex !important;
+  min-width: 0;
+  align-items: center !important;
+  gap: 16px !important;
+  line-height: 1.4 !important;
+  white-space: nowrap;
+}
+.community-intro-progress { flex: 1 1 auto; width: min(220px, 28vw) !important; max-width: 220px; min-width: 40px; }
+.community-intro-skip {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  position: absolute !important;
+  right: clamp(22px, 5vw, 72px) !important;
+  bottom: clamp(24px, 6vh, 52px) !important;
+  top: auto !important;
+  z-index: 5 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 34px;
+  margin: 0 !important;
+  padding: 8px 14px !important;
+  color: #f5f7fa !important;
+  border: 1px solid rgba(255,255,255,.25) !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-family: var(--font) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  letter-spacing: .12em !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+}
+.community-intro-skip:hover,
+.community-intro-skip:focus-visible { color: #fff !important; border-color: rgba(255,255,255,.62) !important; background: rgba(255,255,255,.05) !important; outline: none !important; }
+.community-intro-skip:active { transform: translateY(1px); }
+@media (max-width: 600px) {
+  .community-intro { padding: 20px; }
+  .community-intro-logo-wrap { width: min(150px, 44vw) !important; max-height: 90px !important; margin-bottom: 18px; }
+  .community-intro-logo { max-width: 150px !important; max-height: 90px !important; }
+  .community-intro-status { right: 22px !important; bottom: 76px !important; left: 22px !important; display: block !important; white-space: normal; }
+  .community-intro-progress { width: 100% !important; max-width: none; margin-top: 9px; }
+  .community-intro-skip { right: 22px !important; bottom: 22px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .community-intro { transition: opacity 250ms ease, visibility 250ms ease !important; }
+  .community-intro-logo { opacity: 1 !important; transform: none !important; }
 }

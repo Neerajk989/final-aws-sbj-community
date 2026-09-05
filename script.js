@@ -5,7 +5,49 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const isTouch = window.matchMedia('(pointer: coarse)').matches;
+    const isTouch = window.matchMedia('(pointer: coarse)').matches;
+
+  /* =========================================================
+     0. PREMIUM AWS COMMUNITY INTRO
+  ========================================================= */
+  const communityIntro = document.getElementById('communityIntro');
+  const communityIntroSkip = document.getElementById('communityIntroSkip');
+
+  if (communityIntro) {
+    let introSeen = false;
+    try {
+      introSeen = sessionStorage.getItem('aws_sbj_intro_seen') === '1';
+    } catch (error) {
+      introSeen = false;
+    }
+
+    document.body.classList.add('community-intro-active');
+    if (introSeen) communityIntro.classList.add('is-repeat');
+
+    let introFinished = false;
+    const finishCommunityIntro = () => {
+      if (introFinished) return;
+      introFinished = true;
+      communityIntro.classList.add('is-complete');
+      document.body.classList.remove('community-intro-active');
+      document.body.classList.add('community-intro-ready');
+      communityIntro.setAttribute('aria-hidden', 'true');
+      try {
+        sessionStorage.setItem('aws_sbj_intro_seen', '1');
+      } catch (error) {
+        // Session storage can be unavailable in privacy-restricted browsers.
+      }
+      window.setTimeout(() => communityIntro.remove(), 900);
+    };
+
+    communityIntroSkip?.addEventListener('click', finishCommunityIntro);
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') finishCommunityIntro();
+    }, { once: true });
+
+    const introDuration = reduceMotion ? 120 : (introSeen ? 850 : 3200);
+    window.setTimeout(finishCommunityIntro, introDuration);
+  }
 
   /* =========================================================
      1. LIVE COUNTDOWN TIMER

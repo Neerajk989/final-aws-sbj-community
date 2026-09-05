@@ -23,7 +23,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=7">
+  <link rel="stylesheet" href="style.css?v=8">
 
   <script>
     (function() {
@@ -658,7 +658,607 @@
     </div>
   </footer>
 
-  <script src="script.js?v=7"></script>
+  <script src="script.js?v=8"></script>
+
+  <!-- TEAM MEMBER PROFILE EDIT MODAL -->
+  <div class="tm-modal" id="teamModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="tmModalTitle">
+    <div class="tm-modal-backdrop" id="tmModalBackdrop"></div>
+    <div class="tm-modal-dialog">
+      <button class="tm-modal-close" id="tmModalClose" type="button" aria-label="Close modal">&times;</button>
+      
+      <div class="tm-modal-head">
+        <span class="eyebrow" style="margin-bottom: 8px;">TEAM PROFILE PHOTO</span>
+        <h3 id="tmModalTitle" style="font-size: 24px; color: #fff; margin-bottom: 6px;">Update Profile Photo</h3>
+        <p id="tmModalSub" style="color: var(--txt-dim); font-size: 13px;">Upload a custom photo for <strong id="tmModalMemberName" style="color: var(--primary);">Member</strong></p>
+      </div>
+
+      <div class="tm-modal-body">
+        <!-- Member selector dropdown if opened from main button -->
+        <div class="badge-input-group" id="tmSelectGroup" style="margin-bottom: 20px;">
+          <label for="tmMemberSelect">Select Member</label>
+          <select id="tmMemberSelect">
+            <option value="hod-faculty">Dr. Animesh Tayal (Head of Department · HOD)</option> style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 10px; padding: 12px 16px; color: #fff; font-family: inherit; font-size: 13.5px; width: 100%;">
+            <option value="sarang-chakole">Sarang Chakole (Group Leader)</option>
+            <option value="faiz-shaikh">Faiz Shaikh (Head · Technical)</option>
+            <option value="neeraj-khapre">Neeraj Khapre (Co-Head · Technical)</option>
+            <option value="devanshu-kindarlaey">Devanshu Kindarlaey (Volunteer · Technical)</option>
+            <option value="nivedita-nandurkar">Nivedita Nandurkar (Volunteer · Technical)</option>
+            <option value="tanushree-saundarkar">Tanushree Saundarkar (Head · Design & Content)</option>
+            <option value="sankalp-kadse">Sankalp Kadse (Design Co-Head)</option>
+            <option value="anshul-motghare">Anshul Motghare (Content Co-Head)</option>
+            <option value="pranav-vispute">Pranav Vispute (Head · Operations)</option>
+            <option value="isha-dhok">Isha Dhok (Co-Head · Operations)</option>
+            <option value="nutan-bhoyar">Nutan Bhoyar (Volunteer · Operations)</option>
+            <option value="krutika-dhavde">Krutika Dhavde (Volunteer · Operations)</option>
+            <option value="jiya-sathawane">Jiya Sathawane (Head · Marketing & PR)</option>
+            <option value="anmol-chaubey">Anmol Chaubey (Co-Head · Marketing & PR)</option>
+            <option value="vaishnavi-sathone">Vaishnavi Sathone (Volunteer · Marketing & PR)</option>
+            <option value="gauri-sangewar">Gauri Sangewar (Volunteer · Marketing & PR)</option>
+            <option value="areeba-qureshi">Areeba Qureshi (Head · Events)</option>
+            <option value="vansh-lute">Vansh Lute (Co-Head · Events)</option>
+            <option value="pushkar-meshram">Pushkar Meshram (Volunteer · Events)</option>
+            <option value="shagun-harinkhede">Shagun Harinkhede (Volunteer · Events)</option>
+          </select>
+        </div>
+
+        <!-- Live circular preview -->
+        <div class="tm-modal-preview-wrap">
+          <div class="tm-modal-avatar-preview" id="tmModalPreview">
+            <span id="tmModalPreviewInitials">SC</span>
+            <img id="tmModalPreviewImg" src="" alt="Preview" style="display: none;">
+          </div>
+        </div>
+
+        <!-- File Upload Area -->
+        <div class="tm-upload-dropzone" id="tmDropzone">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--primary); margin-bottom: 8px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <p style="font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px;">Choose photo from device</p>
+          <span style="font-size: 11px; color: var(--txt-dim);">Click or drag &amp; drop image here (JPG, PNG, WEBP)</span>
+          <input type="file" id="tmFileInput" accept="image/*" style="position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;">
+        </div>
+
+        <!-- Or paste URL -->
+        <div style="margin: 16px 0; text-align: center; position: relative;">
+          <span style="background: #0f1624; padding: 0 12px; color: var(--txt-dim); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;">or paste photo url</span>
+        </div>
+
+        <div class="badge-input-group" style="margin-bottom: 22px;">
+          <input type="url" id="tmUrlInput" placeholder="https://example.com/profile.jpg" style="font-size: 13px; padding: 10px 14px; width: 100%;">
+        </div>
+
+        <!-- Action buttons -->
+        <div class="tm-modal-actions">
+          <button class="btn-primary" id="tmSaveBtn" type="button" style="flex: 1; justify-content: center; padding: 12px; font-size: 12px;">
+            <span>Apply &amp; Save Photo</span>
+          </button>
+          <button class="btn-ghost" id="tmResetBtn" type="button" style="padding: 12px 18px; font-size: 12px; border-color: rgba(255, 100, 100, 0.4); color: #ff8080;">
+            <span>Remove</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- FULL PAGE TEAM VIEW (Opens in Full Page when clicking "Team") -->
+  <div class="team-fullpage" id="teamFullpage" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="teamFpHeading">
+    
+    <!-- Ambient Aura in Full Page -->
+    <div class="team-fullpage-aura" aria-hidden="true">
+      <div class="tf-blob tfb1"></div>
+      <div class="tf-blob tfb2"></div>
+    </div>
+
+    <!-- Top Sticky Bar -->
+    <header class="team-fp-header">
+      <div class="team-fp-container">
+        <div class="team-fp-brand">
+          <button class="team-fp-back-btn" id="teamFpCloseBtn" type="button" aria-label="Back to home page">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            <span>Back to Home</span>
+          </button>
+          <div class="team-fp-title-wrap">
+            <span class="eyebrow" style="margin-bottom: 0;">SB JAIN AWS COMMUNITY</span>
+            <h2 class="team-fp-heading" id="teamFpHeading">Core Team &amp; Leadership</h2>
+          </div>
+        </div>
+
+        <div class="team-fp-actions">
+          <button class="btn-ghost" id="openPhotoEditorFromFp" type="button" style="font-size: 11.5px; padding: 9px 18px; gap: 6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <span>Upload Photo</span>
+          </button>
+          <button class="team-fp-close-icon" id="teamFpCloseIcon" type="button" aria-label="Close team page">&times;</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Full Page Content -->
+    <main class="team-fp-content">
+      <div class="container" style="max-width: 1280px; padding: 48px 24px 120px;">
+        
+        <!-- Department Filter Tabs -->
+        <div class="team-tabs" role="tablist" aria-label="Team departments" style="margin-bottom: 52px;">
+          <button class="team-tab-btn active" type="button" data-filter="all">All Members (21)</button>
+          <button class="team-tab-btn" type="button" data-filter="leadership">Leadership (2)</button>
+          <button class="team-tab-btn" type="button" data-filter="tech">Technical (4)</button>
+          <button class="team-tab-btn" type="button" data-filter="design">Design &amp; Content (3)</button>
+          <button class="team-tab-btn" type="button" data-filter="ops">Operational (4)</button>
+          <button class="team-tab-btn" type="button" data-filter="marketing">Marketing &amp; PR (4)</button>
+          <button class="team-tab-btn" type="button" data-filter="event">Event (4)</button>
+        </div>
+
+        <!-- ========================================================
+             1. FIRST PLACE ON TOP: HOD (Head of Department) & Patron
+        ======================================================== -->
+        <div class="team-dept" data-team-dept="leadership">
+          <div class="team-dept-header">
+            <h3 class="team-dept-title"><span class="team-dept-line"></span>Head of Department &amp; Patron</h3>
+            <span class="team-dept-count">Faculty Leadership</span>
+          </div>
+
+          <div class="hod-spotlight-wrap">
+            <article class="tm-ref-card tm-hod-spotlight" data-member-id="hod-faculty" data-member-name="Dr. Animesh Tayal" data-member-role="Head of Department (HOD)">
+              <div class="tm-ref-photo">
+                <div class="tm-photo-glow tm-glow-hod"></div>
+                <div class="tm-ref-avatar tm-av-hod" id="avatar-hod-faculty" title="Click to change photo for HOD">
+                  <span class="tm-avatar-text">AT</span>
+                  <img class="tm-avatar-img" src="" alt="Dr. Animesh Tayal" style="display:none;">
+                  <div class="tm-avatar-cam-badge" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-ref-body">
+                <span class="tm-ref-tag tm-tag-hod">★ HEAD OF DEPARTMENT (HOD) &amp; PATRON</span>
+                <h3 class="tm-ref-name" style="font-size: 24px;">Dr. Animesh Tayal</h3>
+                <p class="tm-ref-role">Head of Department · CSE (Artificial Intelligence &amp; Machine Learning)</p>
+                <span class="tm-ref-sub">SB Jain Institute of Technology, Management &amp; Research, Nagpur</span>
+              </div>
+            </article>
+          </div>
+
+          <!-- 2. NEXT: GROUP LEADER (Sarang Chakole) -->
+          <div class="team-dept-header" style="margin-top: 48px;">
+            <h3 class="team-dept-title"><span class="team-dept-line"></span>Student Builder Group Leader</h3>
+            <span class="team-dept-count">Community Lead</span>
+          </div>
+
+          <div class="lead-spotlight-wrap">
+            <article class="tm-ref-card tm-lead-spotlight" data-member-id="sarang-chakole" data-member-name="Sarang Chakole" data-member-role="Group Leader">
+              <div class="tm-ref-photo">
+                <div class="tm-photo-glow tm-glow-lead"></div>
+                <div class="tm-ref-avatar tm-av-lead" id="avatar-sarang-chakole" title="Click to change photo for Sarang Chakole">
+                  <span class="tm-avatar-text">SC</span>
+                  <img class="tm-avatar-img" src="" alt="Sarang Chakole" style="display:none;">
+                  <div class="tm-avatar-cam-badge" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-ref-body">
+                <span class="tm-ref-tag">GROUP LEADER</span>
+                <h3 class="tm-ref-name" style="font-size: 24px;">Sarang Chakole</h3>
+                <p class="tm-ref-role">AWS Student Builder Group Leader</p>
+                <span class="tm-ref-sub">SB Jain Institute of Technology, Management &amp; Research</span>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <!-- ========================================================
+             3. DEPARTMENT MEMBERS (Exact Reference Card Design & Colors)
+        ======================================================== -->
+
+        <!-- TECHNICAL TEAM -->
+        <div class="team-dept" data-team-dept="tech">
+          <div class="team-dept-header">
+            <h3 class="team-dept-title"><span class="team-dept-line"></span>Technical Team</h3>
+            <span class="team-dept-count">4 Builders</span>
+          </div>
+          <div class="team-dept-grid">
+            <article class="tm-ref-card" data-member-id="faiz-shaikh" data-member-name="Faiz Shaikh" data-member-role="Head · Technical">
+              <div class="tm-ref-photo">
+                <div class="tm-photo-glow"></div>
+                <div class="tm-ref-avatar tm-av-tech" id="avatar-faiz-shaikh" title="Click to change photo for Faiz Shaikh">
+                  <span class="tm-avatar-text">FS</span>
+                  <img class="tm-avatar-img" src="" alt="Faiz Shaikh" style="display:none;">
+                  <div class="tm-avatar-cam-badge" aria-hidden="true">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-ref-body">
+                <span class="tm-ref-tag">HEAD</span>
+                <h4 class="tm-ref-name">Faiz Shaikh</h4>
+                <p class="tm-ref-role">Head · Technical</p>
+                <span class="tm-ref-sub">AWS Student Builder Group</span>
+              </div>
+            </article>
+
+            <article class="tm-ref-card" data-member-id="neeraj-khapre" data-member-name="Neeraj Khapre" data-member-role="Co-Head · Technical">
+              <div class="tm-ref-photo">
+                <div class="tm-photo-glow"></div>
+                <div class="tm-ref-avatar tm-av-tech" id="avatar-neeraj-khapre" title="Click to change photo for Neeraj Khapre">
+                  <span class="tm-avatar-text">NK</span>
+                  <img class="tm-avatar-img" src="" alt="Neeraj Khapre" style="display:none;">
+                  <div class="tm-avatar-cam-badge" aria-hidden="true">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-ref-body">
+                <span class="tm-ref-tag">CO-HEAD</span>
+                <h4 class="tm-ref-name">Neeraj Khapre</h4>
+                <p class="tm-ref-role">Co-Head · Technical</p>
+                <span class="tm-ref-sub">AWS Student Builder Group</span>
+              </div>
+            </article>
+
+            <article class="tm-ref-card" data-member-id="devanshu-kindarlaey" data-member-name="Devanshu Kindarlaey" data-member-role="Volunteer · Technical">
+              <div class="tm-ref-photo">
+                <div class="tm-photo-glow"></div>
+                <div class="tm-ref-avatar tm-av-tech" id="avatar-devanshu-kindarlaey" title="Click to change photo for Devanshu Kindarlaey">
+                  <span class="tm-avatar-text">DK</span>
+                  <img class="tm-avatar-img" src="" alt="Devanshu Kindarlaey" style="display:none;">
+                  <div class="tm-avatar-cam-badge" aria-hidden="true">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-ref-body">
+                <span class="tm-ref-tag">VOLUNTEER</span>
+                <h4 class="tm-ref-name">Devanshu Kindarlaey</h4>
+                <p class="tm-ref-role">Volunteer · Technical</p>
+                <span class="tm-ref-sub">AWS Student Builder Group</span>
+              </div>
+            </article>
+
+            <article class="tm-ref-card" data-member-id="nivedita-nandurkar" data-member-name="Nivedita Nandurkar" data-member-role="Volunteer · Technical">
+              <div class="tm-ref-photo">
+                <div class="tm-photo-glow"></div>
+                <div class="tm-ref-avatar tm-av-tech" id="avatar-nivedita-nandurkar" title="Click to change photo for Nivedita Nandurkar">
+                  <span class="tm-avatar-text">NN</span>
+                  <img class="tm-avatar-img" src="" alt="Nivedita Nandurkar" style="display:none;">
+                  <div class="tm-avatar-cam-badge" aria-hidden="true">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-ref-body">
+                <span class="tm-ref-tag">VOLUNTEER</span>
+                <h4 class="tm-ref-name">Nivedita Nandurkar</h4>
+                <p class="tm-ref-role">Volunteer · Technical</p>
+                <span class="tm-ref-sub">AWS Student Builder Group</span>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <!-- DESIGN AND CONTENT TEAM -->
+        <div class="team-dept" data-team-dept="design">
+          <div class="team-dept-header">
+            <h3 class="team-dept-title"><span class="team-dept-line"></span>Design &amp; Content Team</h3>
+            <span class="team-dept-count">3 Builders</span>
+          </div>
+          <div class="team-dept-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <article class="tm-ref-card" data-member-id="tanushree-saundarkar" data-member-name="Tanushree Saundarkar" data-member-role="Head · Design & Content">
+              <div class="tm-ref-photo">
+                <div class="tm-photo-glow"></div>
+                <div class="tm-ref-avatar tm-av-design" id="avatar-tanushree-saundarkar" title="Click to change photo for Tanushree Saundarkar">
+                  <span class="tm-avatar-text">TS</span>
+                  <img class="tm-avatar-img" src="" alt="Tanushree Saundarkar" style="display:none;">
+                  <div class="tm-avatar-cam-badge" aria-hidden="true">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-ref-body">
+                <span class="tm-ref-tag">HEAD</span>
+                <h4 class="tm-ref-name">Tanushree Saundarkar</h4>
+                <p class="tm-ref-role">Head · Design &amp; Content</p>
+                <span class="tm-ref-sub">AWS Student Builder Group</span>
+              </div>
+            </article>
+
+            <article class="tm-ref-card" data-member-id="sankalp-kadse" data-member-name="Sankalp Kadse" data-member-role="Design Co-Head">
+              <div class="tm-ref-photo">
+                <div class="tm-photo-glow"></div>
+                <div class="tm-ref-avatar tm-av-design" id="avatar-sankalp-kadse" title="Click to change photo for Sankalp Kadse">
+                  <span class="tm-avatar-text">SK</span>
+                  <img class="tm-avatar-img" src="" alt="Sankalp Kadse" style="display:none;">
+                  <div class="tm-avatar-cam-badge" aria-hidden="true">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-ref-body">
+                <span class="tm-ref-tag">DESIGN CO-HEAD</span>
+                <h4 class="tm-ref-name">Sankalp Kadse</h4>
+                <p class="tm-ref-role">Design Co-Head</p>
+                <span class="tm-ref-sub">AWS Student Builder Group</span>
+              </div>
+            </article>
+
+            <article class="tm-ref-card" data-member-id="anshul-motghare" data-member-name="Anshul Motghare" data-member-role="Content Co-Head">
+              <div class="tm-ref-photo">
+                <div class="tm-photo-glow"></div>
+                <div class="tm-ref-avatar tm-av-design" id="avatar-anshul-motghare" title="Click to change photo for Anshul Motghare">
+                  <span class="tm-avatar-text">AM</span>
+                  <img class="tm-avatar-img" src="" alt="Anshul Motghare" style="display:none;">
+                  <div class="tm-avatar-cam-badge" aria-hidden="true">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-ref-body">
+                <span class="tm-ref-tag">CONTENT CO-HEAD</span>
+                <h4 class="tm-ref-name">Anshul Motghare</h4>
+                <p class="tm-ref-role">Content Co-Head</p>
+                <span class="tm-ref-sub">AWS Student Builder Group</span>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <!-- OPERATIONAL TEAM -->
+        <div class="team-dept" data-team-dept="ops">
+          <div class="team-dept-header">
+            <h3 class="team-dept-title"><span class="team-dept-line"></span>Operational Team</h3>
+            <span class="team-dept-count">4 Builders</span>
+          </div>
+          <div class="team-dept-grid">
+            <article class="tm-ref-card" data-member-id="pranav-vispute" data-member-name="Pranav Vispute" data-member-role="Head · Operations">
+              <div class="tm-ref-photo">
+                <div class="tm-photo-glow"></div>
+                <div class="tm-ref-avatar tm-av-ops" id="avatar-pranav-vispute" title="Click to change photo for Pranav Vispute">
+                  <span class="tm-avatar-text">PV</span>
+                  <img class="tm-avatar-img" src="" alt="Pranav Vispute" style="display:none;">
+                  <div class="tm-avatar-cam-badge" aria-hidden="true">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-ref-body">
+                <span class="tm-ref-tag">HEAD</span>
+                <h4 class="tm-ref-name">Pranav Vispute</h4>
+                <p class="tm-ref-role">Head · Operations</p>
+                <span class="tm-ref-sub">AWS Student Builder Group</span>
+              </div>
+            </article>
+
+            <article class="tm-ref-card" data-member-id="isha-dhok" data-member-name="Isha Dhok" data-member-role="Co-Head · Operations">
+              <div class="tm-ref-photo">
+                <div class="tm-photo-glow"></div>
+                <div class="tm-ref-avatar tm-av-ops" id="avatar-isha-dhok" title="Click to change photo for Isha Dhok">
+                  <span class="tm-avatar-text">ID</span>
+                  <img class="tm-avatar-img" src="" alt="Isha Dhok" style="display:none;">
+                  <div class="tm-avatar-cam-badge" aria-hidden="true">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-ref-body">
+                <span class="tm-ref-tag">CO-HEAD</span>
+                <h4 class="tm-ref-name">Isha Dhok</h4>
+                <p class="tm-ref-role">Co-Head · Operations</p>
+                <span class="tm-ref-sub">AWS Student Builder Group</span>
+              </div>
+            </article>
+
+            <article class="tm-ref-card" data-member-id="nutan-bhoyar" data-member-name="Nutan Bhoyar" data-member-role="Volunteer · Operations">
+              <div class="tm-ref-photo">
+                <div class="tm-photo-glow"></div>
+                <div class="tm-ref-avatar tm-av-ops" id="avatar-nutan-bhoyar" title="Click to change photo for Nutan Bhoyar">
+                  <span class="tm-avatar-text">NB</span>
+                  <img class="tm-avatar-img" src="" alt="Nutan Bhoyar" style="display:none;">
+                  <div class="tm-avatar-cam-badge" aria-hidden="true">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-ref-body">
+                <span class="tm-ref-tag">VOLUNTEER</span>
+                <h4 class="tm-ref-name">Nutan Bhoyar</h4>
+                <p class="tm-ref-role">Volunteer · Operations</p>
+                <span class="tm-ref-sub">AWS Student Builder Group</span>
+              </div>
+            </article>
+
+            <article class="tm-ref-card" data-member-id="krutika-dhavde" data-member-name="Krutika Dhavde" data-member-role="Volunteer · Operations">
+              <div class="tm-ref-photo">
+                <div class="tm-photo-glow"></div>
+                <div class="tm-ref-avatar tm-av-ops" id="avatar-krutika-dhavde" title="Click to change photo for Krutika Dhavde">
+                  <span class="tm-avatar-text">KD</span>
+                  <img class="tm-avatar-img" src="" alt="Krutika Dhavde" style="display:none;">
+                  <div class="tm-avatar-cam-badge" aria-hidden="true">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-ref-body">
+                <span class="tm-ref-tag">VOLUNTEER</span>
+                <h4 class="tm-ref-name">Krutika Dhavde</h4>
+                <p class="tm-ref-role">Volunteer · Operations</p>
+                <span class="tm-ref-sub">AWS Student Builder Group</span>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <!-- MARKETING AND PR TEAM -->
+        <div class="team-dept" data-team-dept="marketing">
+          <div class="team-dept-header">
+            <h3 class="team-dept-title"><span class="team-dept-line"></span>Marketing &amp; PR Team</h3>
+            <span class="team-dept-count">4 Builders</span>
+          </div>
+          <div class="team-dept-grid">
+            <article class="tm-ref-card" data-member-id="jiya-sathawane" data-member-name="Jiya Sathawane" data-member-role="Head · Marketing & PR">
+              <div class="tm-ref-photo">
+                <div class="tm-photo-glow"></div>
+                <div class="tm-ref-avatar tm-av-marketing" id="avatar-jiya-sathawane" title="Click to change photo for Jiya Sathawane">
+                  <span class="tm-avatar-text">JS</span>
+                  <img class="tm-avatar-img" src="" alt="Jiya Sathawane" style="display:none;">
+                  <div class="tm-avatar-cam-badge" aria-hidden="true">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-ref-body">
+                <span class="tm-ref-tag">HEAD</span>
+                <h4 class="tm-ref-name">Jiya Sathawane</h4>
+                <p class="tm-ref-role">Head · Marketing &amp; PR</p>
+                <span class="tm-ref-sub">AWS Student Builder Group</span>
+              </div>
+            </article>
+
+            <article class="tm-ref-card" data-member-id="anmol-chaubey" data-member-name="Anmol Chaubey" data-member-role="Co-Head · Marketing & PR">
+              <div class="tm-ref-photo">
+                <div class="tm-photo-glow"></div>
+                <div class="tm-ref-avatar tm-av-marketing" id="avatar-anmol-chaubey" title="Click to change photo for Anmol Chaubey">
+                  <span class="tm-avatar-text">AC</span>
+                  <img class="tm-avatar-img" src="" alt="Anmol Chaubey" style="display:none;">
+                  <div class="tm-avatar-cam-badge" aria-hidden="true">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-ref-body">
+                <span class="tm-ref-tag">CO-HEAD</span>
+                <h4 class="tm-ref-name">Anmol Chaubey</h4>
+                <p class="tm-ref-role">Co-Head · Marketing &amp; PR</p>
+                <span class="tm-ref-sub">AWS Student Builder Group</span>
+              </div>
+            </article>
+
+            <article class="tm-ref-card" data-member-id="vaishnavi-sathone" data-member-name="Vaishnavi Sathone" data-member-role="Volunteer · Marketing & PR">
+              <div class="tm-ref-photo">
+                <div class="tm-photo-glow"></div>
+                <div class="tm-ref-avatar tm-av-marketing" id="avatar-vaishnavi-sathone" title="Click to change photo for Vaishnavi Sathone">
+                  <span class="tm-avatar-text">VS</span>
+                  <img class="tm-avatar-img" src="" alt="Vaishnavi Sathone" style="display:none;">
+                  <div class="tm-avatar-cam-badge" aria-hidden="true">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-ref-body">
+                <span class="tm-ref-tag">VOLUNTEER</span>
+                <h4 class="tm-ref-name">Vaishnavi Sathone</h4>
+                <p class="tm-ref-role">Volunteer · Marketing &amp; PR</p>
+                <span class="tm-ref-sub">AWS Student Builder Group</span>
+              </div>
+            </article>
+
+            <article class="tm-ref-card" data-member-id="gauri-sangewar" data-member-name="Gauri Sangewar" data-member-role="Volunteer · Marketing & PR">
+              <div class="tm-ref-photo">
+                <div class="tm-photo-glow"></div>
+                <div class="tm-ref-avatar tm-av-marketing" id="avatar-gauri-sangewar" title="Click to change photo for Gauri Sangewar">
+                  <span class="tm-avatar-text">GS</span>
+                  <img class="tm-avatar-img" src="" alt="Gauri Sangewar" style="display:none;">
+                  <div class="tm-avatar-cam-badge" aria-hidden="true">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-ref-body">
+                <span class="tm-ref-tag">VOLUNTEER</span>
+                <h4 class="tm-ref-name">Gauri Sangewar</h4>
+                <p class="tm-ref-role">Volunteer · Marketing &amp; PR</p>
+                <span class="tm-ref-sub">AWS Student Builder Group</span>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <!-- EVENT TEAM -->
+        <div class="team-dept" data-team-dept="event">
+          <div class="team-dept-header">
+            <h3 class="team-dept-title"><span class="team-dept-line"></span>Event Team</h3>
+            <span class="team-dept-count">4 Builders</span>
+          </div>
+          <div class="team-dept-grid">
+            <article class="tm-ref-card" data-member-id="areeba-qureshi" data-member-name="Areeba Qureshi" data-member-role="Head · Events">
+              <div class="tm-ref-photo">
+                <div class="tm-photo-glow"></div>
+                <div class="tm-ref-avatar tm-av-event" id="avatar-areeba-qureshi" title="Click to change photo for Areeba Qureshi">
+                  <span class="tm-avatar-text">AQ</span>
+                  <img class="tm-avatar-img" src="" alt="Areeba Qureshi" style="display:none;">
+                  <div class="tm-avatar-cam-badge" aria-hidden="true">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-ref-body">
+                <span class="tm-ref-tag">HEAD</span>
+                <h4 class="tm-ref-name">Areeba Qureshi</h4>
+                <p class="tm-ref-role">Head · Events</p>
+                <span class="tm-ref-sub">AWS Student Builder Group</span>
+              </div>
+            </article>
+
+            <article class="tm-ref-card" data-member-id="vansh-lute" data-member-name="Vansh Lute" data-member-role="Co-Head · Events">
+              <div class="tm-ref-photo">
+                <div class="tm-photo-glow"></div>
+                <div class="tm-ref-avatar tm-av-event" id="avatar-vansh-lute" title="Click to change photo for Vansh Lute">
+                  <span class="tm-avatar-text">VL</span>
+                  <img class="tm-avatar-img" src="" alt="Vansh Lute" style="display:none;">
+                  <div class="tm-avatar-cam-badge" aria-hidden="true">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-ref-body">
+                <span class="tm-ref-tag">CO-HEAD</span>
+                <h4 class="tm-ref-name">Vansh Lute</h4>
+                <p class="tm-ref-role">Co-Head · Events</p>
+                <span class="tm-ref-sub">AWS Student Builder Group</span>
+              </div>
+            </article>
+
+            <article class="tm-ref-card" data-member-id="pushkar-meshram" data-member-name="Pushkar Meshram" data-member-role="Volunteer · Events">
+              <div class="tm-ref-photo">
+                <div class="tm-photo-glow"></div>
+                <div class="tm-ref-avatar tm-av-event" id="avatar-pushkar-meshram" title="Click to change photo for Pushkar Meshram">
+                  <span class="tm-avatar-text">PM</span>
+                  <img class="tm-avatar-img" src="" alt="Pushkar Meshram" style="display:none;">
+                  <div class="tm-avatar-cam-badge" aria-hidden="true">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-ref-body">
+                <span class="tm-ref-tag">VOLUNTEER</span>
+                <h4 class="tm-ref-name">Pushkar Meshram</h4>
+                <p class="tm-ref-role">Volunteer · Events</p>
+                <span class="tm-ref-sub">AWS Student Builder Group</span>
+              </div>
+            </article>
+
+            <article class="tm-ref-card" data-member-id="shagun-harinkhede" data-member-name="Shagun Harinkhede" data-member-role="Volunteer · Events">
+              <div class="tm-ref-photo">
+                <div class="tm-photo-glow"></div>
+                <div class="tm-ref-avatar tm-av-event" id="avatar-shagun-harinkhede" title="Click to change photo for Shagun Harinkhede">
+                  <span class="tm-avatar-text">SH</span>
+                  <img class="tm-avatar-img" src="" alt="Shagun Harinkhede" style="display:none;">
+                  <div class="tm-avatar-cam-badge" aria-hidden="true">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-ref-body">
+                <span class="tm-ref-tag">VOLUNTEER</span>
+                <h4 class="tm-ref-name">Shagun Harinkhede</h4>
+                <p class="tm-ref-role">Volunteer · Events</p>
+                <span class="tm-ref-sub">AWS Student Builder Group</span>
+              </div>
+            </article>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
 
   <!-- TEAM MEMBER PROFILE EDIT MODAL -->
   <div class="tm-modal" id="teamModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="tmModalTitle">

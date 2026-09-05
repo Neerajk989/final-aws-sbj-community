@@ -2201,6 +2201,703 @@ img {
 }
 
 /* =========================================================
+   FULL PAGE TEAM VIEW (Takes over entire screen!)
+========================================================= */
+.team-fullpage {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100000;
+  background: #070a10;
+  color: var(--txt);
+  overflow-y: auto;
+  overflow-x: hidden;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .35s var(--ease), visibility .35s var(--ease);
+}
+
+.team-fullpage.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.team-fullpage-aura {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.tf-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(140px);
+  opacity: 0.35;
+  animation: auraFloat 18s infinite alternate ease-in-out;
+}
+
+.tfb1 {
+  width: 650px;
+  height: 650px;
+  background: radial-gradient(circle, rgba(0, 200, 255, 0.35), transparent 70%);
+  top: -120px;
+  left: -120px;
+}
+
+.tfb2 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(255, 153, 0, 0.25), transparent 70%);
+  bottom: 80px;
+  right: -120px;
+}
+
+/* Top Sticky Header */
+.team-fp-header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(13, 19, 28, 0.94);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid #252b36;
+  padding: 16px 0;
+}
+
+.team-fp-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.team-fp-brand {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.team-fp-back-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  color: #fff;
+  padding: 9px 18px;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.team-fp-back-btn:hover {
+  background: rgba(255, 153, 0, 0.15);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.team-fp-heading {
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.3px;
+}
+
+.team-fp-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.team-fp-close-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 24px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.team-fp-close-icon:hover {
+  background: rgba(255, 153, 0, 0.2);
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: rotate(90deg);
+}
+
+.team-fp-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================================================
+   SPOTLIGHT LAYOUTS: HOD ON TOP, THEN GROUP LEADER
+========================================================= */
+.hod-spotlight-wrap,
+.lead-spotlight-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.tm-hod-spotlight,
+.tm-lead-spotlight {
+  max-width: 680px;
+  width: 100%;
+}
+
+.tm-hod-spotlight {
+  border-color: rgba(255, 153, 0, 0.6) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65), 0 0 50px rgba(255, 153, 0, 0.2) !important;
+}
+
+.tm-tag-hod {
+  color: #ff9900 !important;
+  font-weight: 900 !important;
+  letter-spacing: 1.6px !important;
+}
+
+/* =========================================================
+   EXACT REFERENCE CARD STYLING (Matching awscommunityday.dev)
+========================================================= */
+.tm-ref-card {
+  background: linear-gradient(180deg, #101726 0%, #0c121e 100%) !important;
+  border: 1px solid #252b36 !important;
+  border-radius: 20px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  transition: transform .35s var(--ease), border-color .35s var(--ease), box-shadow .35s var(--ease) !important;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.5) !important;
+  position: relative;
+  cursor: pointer;
+  text-align: left !important;
+}
+
+.tm-ref-card:hover {
+  transform: translateY(-8px) !important;
+  border-color: rgba(255, 153, 0, 0.5) !important;
+  box-shadow: 0 28px 75px rgba(0, 0, 0, 0.75), 0 0 45px rgba(255, 153, 0, 0.2) !important;
+}
+
+/* Photo Stage with Soft Glowing Aura Well */
+.tm-ref-photo {
+  height: 200px;
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 60%, rgba(20, 30, 48, 0.65) 0%, transparent 70%);
+}
+
+.tm-photo-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -46%);
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 153, 0, 0.3) 0%, rgba(255, 153, 0, 0.05) 55%, transparent 75%);
+  pointer-events: none;
+  transition: transform .35s ease, opacity .35s ease;
+}
+
+.tm-glow-hod {
+  background: radial-gradient(circle, rgba(255, 153, 0, 0.45) 0%, rgba(255, 153, 0, 0.08) 60%, transparent 75%) !important;
+}
+
+.tm-glow-lead {
+  background: radial-gradient(circle, rgba(2, 132, 199, 0.4) 0%, rgba(2, 132, 199, 0.08) 60%, transparent 75%) !important;
+}
+
+.tm-ref-card:hover .tm-photo-glow {
+  transform: translate(-50%, -46%) scale(1.15);
+}
+
+/* 132px Circular Avatar Well */
+.tm-ref-avatar {
+  position: relative;
+  z-index: 2;
+  width: 132px !important;
+  height: 132px !important;
+  border-radius: 50% !important;
+  border: 2px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6) !important;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 32px;
+  font-weight: 800;
+  transition: transform .35s ease, border-color .35s ease;
+}
+
+.tm-ref-card:hover .tm-ref-avatar {
+  transform: scale(1.05);
+  border-color: var(--primary) !important;
+}
+
+/* Avatar Gradients */
+.tm-av-hod {
+  background: radial-gradient(circle, #f59e0b 0%, #b45309 100%) !important;
+  border-color: var(--primary) !important;
+}
+
+.tm-av-lead {
+  background: radial-gradient(circle, #0284c7 0%, #0369a1 100%) !important;
+}
+
+.tm-av-tech {
+  background: radial-gradient(circle, #8b5cf6 0%, #5b21b6 100%) !important;
+}
+
+.tm-av-design {
+  background: radial-gradient(circle, #ec4899 0%, #9d174d 100%) !important;
+}
+
+.tm-av-ops {
+  background: radial-gradient(circle, #06b6d4 0%, #0e7490 100%) !important;
+}
+
+.tm-av-marketing {
+  background: radial-gradient(circle, #f59e0b 0%, #b45309 100%) !important;
+}
+
+.tm-av-event {
+  background: radial-gradient(circle, #d946ef 0%, #86198f 100%) !important;
+}
+
+/* Card Body (Left-aligned text below photo stage) */
+.tm-ref-body {
+  padding: 10px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.tm-ref-tag {
+  color: #eb8f2f !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: 1.6px !important;
+  text-transform: uppercase !important;
+  margin-bottom: 8px !important;
+  display: block;
+}
+
+.tm-ref-name {
+  color: #ffffff !important;
+  font-size: 21px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.3px !important;
+  margin-bottom: 6px !important;
+  line-height: 1.25 !important;
+}
+
+.tm-ref-role {
+  color: #5ebde0 !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.2px !important;
+  margin-bottom: 5px !important;
+  line-height: 1.4 !important;
+}
+
+.tm-ref-sub {
+  color: #8892a4 !important;
+  font-size: 12.5px !important;
+  line-height: 1.4 !important;
+  display: block;
+}
+
+.team-dept-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 1100px) {
+  .team-dept-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .team-dept-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Light Theme Support */
+[data-theme="light"] .team-fullpage {
+  background: #f8fafc;
+  color: var(--txt);
+}
+
+[data-theme="light"] .team-fp-header {
+  background: rgba(255, 255, 255, 0.94);
+  border-bottom-color: #e2e8f0;
+}
+
+[data-theme="light"] .team-fp-heading {
+  color: #0f172a;
+}
+
+[data-theme="light"] .team-fp-back-btn {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+[data-theme="light"] .team-fp-close-icon {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+[data-theme="light"] .tm-ref-card {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-theme="light"] .tm-ref-name {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .tm-ref-tag {
+  color: #d97706 !important;
+}
+
+[data-theme="light"] .tm-ref-role {
+  color: #0284c7 !important;
+}
+
+[data-theme="light"] .tm-ref-sub {
+  color: #64748b !important;
+}
+
+/* =========================================================
+   FAQ SECTION
+========================================================= */
+.faq-list {
+  max-width: 900px;
+  margin: 0 auto;
+  border-top: 1px solid var(--line);
+}
+
+.faq-item {
+  border-bottom: 1px solid var(--line);
+}
+
+.faq-q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 24px 0;
+  border: none;
+  background: transparent;
+  color: #fff;
+  text-align: left;
+  font: inherit;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color .2s ease;
+}
+
+.faq-q:hover {
+  color: var(--primary);
+}
+
+.faq-x {
+  color: var(--primary);
+  font-size: 24px;
+  font-weight: 400;
+  transition: transform .3s var(--ease);
+}
+
+.faq-item.active .faq-x {
+  transform: rotate(45deg);
+}
+
+.faq-a {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows .3s var(--ease), opacity .25s ease;
+}
+
+.faq-item.active .faq-a {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.faq-a p {
+  min-height: 0;
+  overflow: hidden;
+  padding-bottom: 24px;
+  color: var(--txt-dim);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* =========================================================
+   MEGA FINAL CTA
+========================================================= */
+.sec-mega {
+  padding: 140px 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, transparent 0%, rgba(255, 153, 0, 0.05) 50%, transparent 100%);
+}
+
+.mega-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(140px, 26vw, 360px);
+  font-weight: 900;
+  letter-spacing: -.05em;
+  color: rgba(255, 255, 255, 0.02);
+  pointer-events: none;
+  z-index: 0;
+  user-select: none;
+}
+
+.mega-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.mega-inner h2 {
+  font-size: clamp(48px, 7vw, 92px);
+  font-weight: 800;
+  line-height: .95;
+  letter-spacing: -2px;
+  margin-bottom: 24px;
+}
+
+.mega-inner p {
+  color: var(--txt-dim);
+  font-size: 18px;
+  line-height: 1.7;
+  margin-bottom: 38px;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+.site-footer {
+  background: #05080e;
+  border-top: 1px solid var(--line);
+  padding: 80px 0 40px;
+  position: relative;
+  z-index: 1;
+}
+
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 60px;
+  padding-bottom: 60px;
+}
+
+.footer-brand p {
+  color: var(--txt-dim);
+  max-width: 300px;
+  margin-top: 18px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.footer-navs {
+  display: flex;
+  gap: 60px;
+}
+
+.footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-col span {
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.footer-col a {
+  color: var(--txt);
+  font-size: 13.5px;
+  transition: color .2s ease;
+}
+
+.footer-col a:hover {
+  color: var(--primary);
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--txt-dim);
+  letter-spacing: 1px;
+}
+
+/* =========================================================
+   REVEAL ON SCROLL
+========================================================= */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity .7s var(--ease), transform .7s var(--ease);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translate(0);
+}
+
+/* =========================================================
+   RESPONSIVE BREAKPOINTS
+========================================================= */
+@media (max-width: 1000px) {
+  .hero-layout {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .venue-grid {
+    grid-template-columns: 1fr;
+  }
+  .speakers-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .team-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .pt-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .badge-wrap {
+    grid-template-columns: 1fr;
+  }
+  .impact-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 30px;
+  }
+  .imp-sep {
+    display: none;
+  }
+}
+
+@media (max-width: 650px) {
+  .container {
+    padding: 0 20px;
+  }
+  .sec {
+    padding: 80px 0;
+  }
+  .speakers-grid, .team-grid, .pt-grid {
+    grid-template-columns: 1fr;
+  }
+  .agt-item {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .footer-top {
+    flex-direction: column;
+    gap: 40px;
+  }
+  .footer-navs {
+    flex-wrap: wrap;
+    gap: 40px;
+  }
+  .footer-bottom {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+}
+
+/* =========================================================
+   TEAM TEASER LAUNCHPAD (Downslide is clean & minimal)
+========================================================= */
+.sec-team-teaser {
+  padding: 80px 0;
+  position: relative;
+}
+
+.team-teaser-card {
+  background: #0d131c;
+  border: 1px solid #252b36;
+  border-radius: 24px;
+  padding: 48px 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 36px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(255, 153, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.team-teaser-card::before {
+  content: "";
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 153, 0, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+@media (max-width: 850px) {
+  .team-teaser-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 32px 24px;
+  }
+}
+
+/* =========================================================
    DEDICATED FULL-SCREEN TEAM SHOWCASE OVERLAY
 ========================================================= */
 .team-overlay {

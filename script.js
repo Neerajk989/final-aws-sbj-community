@@ -503,53 +503,63 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   /* =========================================================
-     11. DEDICATED TEAM OVERLAY TOGGLE
+     11. FULL PAGE TEAM CONTROLLER
   ========================================================= */
-  const teamOverlay = document.getElementById('teamOverlay');
-  const teamOverlayClose = document.getElementById('teamOverlayClose');
-  const teamOverlayBackdrop = document.getElementById('teamOverlayBackdrop');
+  const teamFullpage = document.getElementById('teamFullpage');
+  const teamFpCloseBtn = document.getElementById('teamFpCloseBtn');
+  const teamFpCloseIcon = document.getElementById('teamFpCloseIcon');
   const openTeamModalBtn = document.getElementById('openTeamModalBtn');
-  const openPhotoEditorFromOverlay = document.getElementById('openPhotoEditorFromOverlay');
+  const openPhotoEditorFromFp = document.getElementById('openPhotoEditorFromFp');
 
-  function openTeamOverlay() {
-    teamOverlay?.classList.add('is-open');
-    teamOverlay?.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden'; // prevent background scrolling
+  function openTeamFullpage() {
+    teamFullpage?.classList.add('is-open');
+    teamFullpage?.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
   }
 
-  function closeTeamOverlay() {
-    teamOverlay?.classList.remove('is-open');
-    teamOverlay?.setAttribute('aria-hidden', 'true');
+  function closeTeamFullpage() {
+    teamFullpage?.classList.remove('is-open');
+    teamFullpage?.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
   }
 
-  // Intercept all "Team" nav links to open overlay instead of scrolling
+  // Intercept all "Team" nav links to open the Full Page Team View
   document.querySelectorAll('a[href="#team"], .open-team-link, .open-team-btn').forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
-      openTeamOverlay();
+      openTeamFullpage();
     });
   });
 
-  openTeamModalBtn?.addEventListener('click', openTeamOverlay);
-  teamOverlayClose?.addEventListener('click', closeTeamOverlay);
-  teamOverlayBackdrop?.addEventListener('click', closeTeamOverlay);
+  openTeamModalBtn?.addEventListener('click', openTeamFullpage);
+  teamFpCloseBtn?.addEventListener('click', closeTeamFullpage);
+  teamFpCloseIcon?.addEventListener('click', closeTeamFullpage);
 
   // Close on Escape key
   window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && teamOverlay?.classList.contains('is-open')) {
-      closeTeamOverlay();
+    if (e.key === 'Escape' && teamFullpage?.classList.contains('is-open')) {
+      closeTeamFullpage();
     }
   });
 
-  // Open photo editor from overlay button
-  openPhotoEditorFromOverlay?.addEventListener('click', () => {
+  // Open photo editor from fullpage button
+  openPhotoEditorFromFp?.addEventListener('click', () => {
     openModalForMember('hod-faculty', 'Dr. Animesh Tayal (Head of Department · HOD)');
   });
 
-  // Auto-open if URL has #team
-  if (window.location.hash === '#team') {
-    openTeamOverlay();
-  }
+  // Click listeners on all tm-ref-card items to edit photo
+  document.querySelectorAll('.tm-ref-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const id = card.dataset.memberId;
+      const name = card.dataset.memberName;
+      if (id && name) {
+        openModalForMember(id, name);
+      }
+    });
+  });
 
+  // Auto-open if URL hash is #team
+  if (window.location.hash === '#team') {
+    openTeamFullpage();
+  }
 });

@@ -5817,6 +5817,15 @@ img {
   object-fit: contain;
 }
 
+
+/* Desktop-only custom cursor: never render it on touch/mobile screens. */
+@media (pointer: coarse), (max-width: 768px) {
+  .cursor-dot,
+  .cursor-ring {
+    display: none !important;
+  }
+}
+
 </style>
 
   <script>

@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (introVideo && introPlayer) {
     let introClosed = false;
+    let introSoundEnabled = false;
 
     document.body.classList.add('intro-is-playing');
     document.body.style.overflow = 'hidden';
@@ -40,8 +41,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
     introPlayer.addEventListener('error', closeIntro, { once: true });
-    introVideo.addEventListener('click', (event) => {
-      if (event.target.closest('#introSoundToggle')) return;
+    introVideo.addEventListener('click', () => {
+      if (!introSoundEnabled) {
+        introSoundEnabled = true;
+        introPlayer.muted = false;
+        introPlayer.volume = 1;
+        introPlayer.play().catch(() => {});
+        return;
+      }
       closeIntro();
     });
     introSoundToggle?.addEventListener('click', (event) => {

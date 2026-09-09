@@ -1049,4 +1049,54 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load gallery immediately
   fetchGallery();
 
+
+  /* =========================================================
+     GALLERY FULLPAGE OVERLAY CONTROLLER
+  ========================================================= */
+  const galleryFullpage = document.getElementById('galleryFullpage');
+  const galleryFullpageClose = document.getElementById('galleryFullpageClose');
+
+  function openGalleryFullpage() {
+    if (!galleryFullpage) return;
+    galleryFullpage.classList.add('is-open');
+    galleryFullpage.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    // Fetch latest gallery items
+    if (typeof fetchGallery === 'function') {
+      fetchGallery();
+    }
+  }
+
+  function closeGalleryFullpage() {
+    if (!galleryFullpage) return;
+    galleryFullpage.classList.remove('is-open');
+    galleryFullpage.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  // Open triggers: any link with .open-gallery-link or href="#gallery"
+  document.querySelectorAll('a[href="#gallery"], .open-gallery-link').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      openGalleryFullpage();
+    });
+  });
+
+  galleryFullpageClose?.addEventListener('click', closeGalleryFullpage);
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && galleryFullpage?.classList.contains('is-open')) {
+      // If lightbox or upload modal is open, close them first
+      if (galleryLightbox?.classList.contains('is-open')) {
+        closeLightbox();
+        return;
+      }
+      if (galleryUploadModal?.classList.contains('is-open')) {
+        closeUploadModal();
+        return;
+      }
+      closeGalleryFullpage();
+    }
+  });
+
 });

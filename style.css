@@ -6610,3 +6610,477 @@ select {
 [data-theme="light"] .glb-title {
   color: #0f172a;
 }
+
+/* =========================================================
+   HERO LIVE CLOUD VISUALIZATION (SEAMLESS / MERGED WITH BACKGROUND)
+========================================================= */
+.hero-media {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  width: 100% !important;
+}
+
+.hero-cloud-seamless {
+  position: relative;
+  width: 100%;
+  max-width: 580px;
+  height: 440px;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform .4s var(--ease);
+}
+
+.hero-cloud-seamless:hover {
+  transform: translateY(-4px) scale(1.01);
+}
+
+/* Ambient Radial Auras behind cloud (blends into page background) */
+.cloud-aura-wrap {
+  position: absolute;
+  inset: -20px;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.cloud-aura {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(65px);
+  will-change: transform, opacity;
+}
+
+.ca-cyan {
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, rgba(85, 199, 232, 0.4) 0%, rgba(85, 199, 232, 0) 70%);
+  top: 10%;
+  left: 5%;
+  animation: auraCyanBreath 6s ease-in-out infinite alternate;
+}
+
+.ca-amber {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255, 153, 0, 0.45) 0%, rgba(255, 153, 0, 0) 70%);
+  top: 8%;
+  right: 2%;
+  animation: auraAmberBreath 7s ease-in-out infinite alternate;
+}
+
+@keyframes auraCyanBreath {
+  0% { transform: scale(0.92) translate(0, 0); opacity: 0.65; }
+  100% { transform: scale(1.15) translate(12px, 10px); opacity: 0.95; }
+}
+
+@keyframes auraAmberBreath {
+  0% { transform: scale(0.94) translate(0, 0); opacity: 0.7; }
+  100% { transform: scale(1.18) translate(-14px, 8px); opacity: 1; }
+}
+
+.cloud-grid-mesh {
+  position: absolute;
+  inset: -10%;
+  background-image: 
+    linear-gradient(rgba(85, 199, 232, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 153, 0, 0.05) 1px, transparent 1px);
+  background-size: 34px 34px;
+  opacity: 0.45;
+  mask-image: radial-gradient(circle at 50% 50%, #000 35%, transparent 75%);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 35%, transparent 75%);
+}
+
+.cloud-shimmer {
+  position: absolute;
+  inset: -40%;
+  background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.05) 50%, transparent 60%);
+  animation: cloudShimmerSweep 9s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes cloudShimmerSweep {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* SVG Cloud Contour & Canvas */
+.hero-cloud-canvas-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+  overflow: visible;
+}
+
+.cloud-svg-contour {
+  width: 100%;
+  height: 100%;
+  max-width: 540px;
+  overflow: visible;
+  filter: drop-shadow(0 0 25px rgba(255, 153, 0, 0.3));
+  animation: cloudFloat 6s ease-in-out infinite alternate;
+}
+
+@keyframes cloudFloat {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-7px) scale(1.018); }
+}
+
+.cloud-path-core {
+  animation: cloudPulseEdge 4s ease-in-out infinite alternate;
+}
+
+@keyframes cloudPulseEdge {
+  0% { opacity: 0.88; stroke-width: 2.4; }
+  100% { opacity: 1; stroke-width: 3; }
+}
+
+/* Constellation Node Pulses */
+.cn-pulse1 { animation: cnodePulse 2.2s ease-in-out infinite alternate; }
+.cn-pulse2 { animation: cnodePulse 3s ease-in-out infinite alternate 0.6s; }
+.cn-pulse3 { animation: cnodePulse 2.6s ease-in-out infinite alternate 1.2s; }
+
+@keyframes cnodePulse {
+  0% { transform: scale(0.85); opacity: 0.6; }
+  100% { transform: scale(1.35); opacity: 1; filter: drop-shadow(0 0 6px currentColor); }
+}
+
+/* Central AWS Logo */
+.cloud-logo-stage {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: logoBreathing 5s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+.cloud-aws-logo {
+  width: 145px;
+  height: auto;
+  max-height: 88px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 24px rgba(255, 153, 0, 0.45));
+  transition: transform .3s ease, filter .3s ease;
+}
+
+.hero-cloud-seamless:hover .cloud-aws-logo {
+  transform: scale(1.06);
+  filter: drop-shadow(0 0 36px rgba(255, 153, 0, 0.7));
+}
+
+@keyframes logoBreathing {
+  0% { transform: scale(0.98); filter: drop-shadow(0 0 18px rgba(255, 153, 0, 0.4)); }
+  100% { transform: scale(1.03); filter: drop-shadow(0 0 28px rgba(255, 153, 0, 0.6)); }
+}
+
+/* Floating Technology Orbit Tags */
+.cloud-orbit-tag {
+  position: absolute;
+  z-index: 6;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(10, 16, 26, 0.65);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 4px 10px;
+  border-radius: 999px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  transition: transform .3s ease, border-color .3s ease;
+}
+
+.cot-text {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: #cbd5e1;
+}
+
+.cot-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.cyan-dot {
+  background: #55c7e8;
+  box-shadow: 0 0 8px #55c7e8;
+}
+
+.amber-dot {
+  background: #ff9900;
+  box-shadow: 0 0 8px #ff9900;
+}
+
+.cot-cloud { animation: orbitDriftA 5.5s ease-in-out infinite alternate; }
+.cot-devops { animation: orbitDriftB 6.5s ease-in-out infinite alternate; }
+.cot-genai { animation: orbitDriftA 6s ease-in-out infinite alternate 1s; }
+.cot-innovate { animation: orbitDriftB 5s ease-in-out infinite alternate 0.5s; }
+.cot-aws { animation: orbitDriftA 7s ease-in-out infinite alternate 1.5s; }
+
+@keyframes orbitDriftA {
+  0% { transform: translateY(0) translateX(0); }
+  100% { transform: translateY(-6px) translateX(4px); }
+}
+
+@keyframes orbitDriftB {
+  0% { transform: translateY(0) translateX(0); }
+  100% { transform: translateY(5px) translateX(-5px); }
+}
+
+/* Floating Particles */
+.cloud-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.cp {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+  animation: cpFloat linear infinite;
+}
+
+.cp-1 { width: 3px; height: 3px; background: #55c7e8; box-shadow: 0 0 6px #55c7e8; left: 16%; bottom: 12%; animation-duration: 7s; animation-delay: 0s; }
+.cp-2 { width: 2.5px; height: 2.5px; background: #ff9900; box-shadow: 0 0 6px #ff9900; left: 78%; bottom: 18%; animation-duration: 8.5s; animation-delay: 1.2s; }
+.cp-3 { width: 2px; height: 2px; background: #55c7e8; box-shadow: 0 0 6px #55c7e8; left: 32%; bottom: 22%; animation-duration: 6.5s; animation-delay: 2.5s; }
+.cp-4 { width: 3px; height: 3px; background: #ffb84d; box-shadow: 0 0 6px #ffb84d; left: 84%; bottom: 26%; animation-duration: 9s; animation-delay: 0.8s; }
+.cp-5 { width: 2.5px; height: 2.5px; background: #38bdf8; box-shadow: 0 0 6px #38bdf8; left: 25%; bottom: 8%; animation-duration: 7.8s; animation-delay: 3s; }
+.cp-6 { width: 3px; height: 3px; background: #ff9900; box-shadow: 0 0 6px #ff9900; left: 65%; bottom: 10%; animation-duration: 8.2s; animation-delay: 2s; }
+.cp-7 { width: 2px; height: 2px; background: #55c7e8; box-shadow: 0 0 6px #55c7e8; left: 42%; bottom: 15%; animation-duration: 7.2s; animation-delay: 4.2s; }
+.cp-8 { width: 2.5px; height: 2.5px; background: #ffb84d; box-shadow: 0 0 6px #ffb84d; left: 90%; bottom: 20%; animation-duration: 6.8s; animation-delay: 1.8s; }
+
+@keyframes cpFloat {
+  0% { transform: translateY(0) scale(0.6); opacity: 0; }
+  20% { opacity: 0.85; }
+  80% { opacity: 0.6; }
+  100% { transform: translateY(-180px) scale(1.2); opacity: 0; }
+}
+
+/* Light Theme Adaptations (Seamless in light mode) */
+[data-theme="light"] .hero-cloud-seamless {
+  background: transparent !important;
+}
+
+[data-theme="light"] .cloud-orbit-tag {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] .cot-text {
+  color: #1e293b;
+}
+
+[data-theme="light"] .cloud-aws-logo.logo-dark-theme {
+  display: none !important;
+}
+
+[data-theme="light"] .cloud-aws-logo.logo-light-theme {
+  display: block !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .hero-cloud-seamless {
+    height: 380px;
+    max-width: 480px;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero-cloud-seamless {
+    height: 300px;
+    max-width: 100%;
+  }
+  .cloud-aws-logo {
+    width: 110px;
+    max-height: 68px;
+  }
+  .cot-text {
+    font-size: 8px;
+    letter-spacing: 0.8px;
+  }
+  .cloud-orbit-tag {
+    padding: 3px 7px;
+  }
+}
+
+/* =========================================================
+   FULLPAGE GALLERY OVERLAY (.gallery-fullpage)
+========================================================= */
+.gallery-fullpage {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100000;
+  background: radial-gradient(circle at 50% 15%, #0d1522 0%, #070a10 60%, #04060a 100%) !important;
+  color: var(--txt);
+  overflow-y: auto;
+  overflow-x: hidden;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .35s var(--ease), visibility .35s var(--ease);
+}
+
+.gallery-fullpage.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.gallery-fullpage-aura {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.gf-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(140px);
+  opacity: 0.28;
+  animation: auraFloat 18s infinite alternate ease-in-out;
+}
+
+.gfb1 {
+  width: 650px;
+  height: 650px;
+  background: radial-gradient(circle, rgba(85, 199, 232, 0.4), transparent 70%);
+  top: -120px;
+  left: -100px;
+}
+
+.gfb2 {
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(255, 153, 0, 0.35), transparent 70%);
+  bottom: -150px;
+  right: -100px;
+  animation-delay: -9s;
+}
+
+.gallery-fp-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  background: rgba(7, 10, 16, 0.85);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.gallery-fp-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.gallery-fp-divider {
+  width: 1px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.gallery-fp-brand-text {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #fff;
+}
+
+.gallery-fp-brand-text em {
+  font-family: var(--serif);
+  color: var(--primary);
+  font-style: italic;
+  font-size: 1.25em;
+  margin-left: 2px;
+}
+
+.gallery-fp-close {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 8px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all .25s var(--ease);
+}
+
+.gallery-fp-close:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #070a10;
+  transform: translateY(-1px);
+}
+
+.gallery-close-x {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.gallery-fp-container {
+  position: relative;
+  z-index: 2;
+  padding: 24px 32px 80px;
+  max-width: var(--container);
+  margin: 0 auto;
+}
+
+[data-theme="light"] .gallery-fullpage {
+  background: radial-gradient(circle at 50% 15%, #f8fafc 0%, #ffffff 60%, #f1f5f9 100%) !important;
+  color: #0f172a;
+}
+
+[data-theme="light"] .gallery-fp-topbar {
+  background: rgba(255, 255, 255, 0.88);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .gallery-fp-brand-text {
+  color: #0f172a;
+}
+
+[data-theme="light"] .gallery-fp-close {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+[data-theme="light"] .gallery-fp-close:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #070a10;
+}

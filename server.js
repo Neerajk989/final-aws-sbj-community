@@ -5,9 +5,9 @@ const crypto = require('crypto');
 
 const PORT = process.env.PORT || 8080;
 const ROOT_DIR = __dirname;
-const DATA_DIR = path.join(ROOT_DIR, 'data');
+const DATA_DIR = process.env.VERCEL ? path.join('/tmp', 'data') : path.join(ROOT_DIR, 'data');
 const DB_FILE = path.join(DATA_DIR, 'gallery.json');
-const UPLOADS_DIR = path.join(ROOT_DIR, 'uploads', 'gallery');
+const UPLOADS_DIR = process.env.VERCEL ? path.join('/tmp', 'uploads', 'gallery') : path.join(ROOT_DIR, 'uploads', 'gallery');
 
 // Ensure data & upload directories exist
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });

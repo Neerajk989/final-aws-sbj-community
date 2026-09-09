@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
     "server.js": {
-      "includeFiles": "{index.html,style.css,script.js,images/**,data/**}"
+      "includeFiles": "{index.html,style.css,script.js,images/**,data/**,robots.txt,sitemap.xml}"
     }
   }
 }

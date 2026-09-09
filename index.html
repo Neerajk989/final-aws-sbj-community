@@ -112,7 +112,7 @@
       <div class="snav-links">
         <a href="#about">About</a>
         <a href="#events" class="open-events-link">Events</a>
-        <a href="#partners">Partners</a>
+        <a href="#gallery">Gallery</a>
         <a href="#team" class="open-team-link">Team</a>
         <a href="#faq">FAQ</a>
       </div>
@@ -140,7 +140,7 @@
         <div class="snav-mobile-links">
         <a href="#about">About</a>
         <a href="#events" class="open-events-link">Events</a>
-        <a href="#partners">Partners</a>
+        <a href="#gallery">Gallery</a>
         <a href="#team" class="open-team-link">Team</a>
         <a href="#faq">FAQ</a>
       </div>
@@ -319,50 +319,55 @@
     </div>
   </section>
 
-  <!-- 02: PARTNERS SECTION -->
-  <section class="sec sec-partners" id="partners">
+    <!-- 02: GALLERY / MOMENTS SECTION -->
+  <section class="sec sec-gallery" id="gallery">
     <div class="container">
       <div class="sec-head reveal">
         <div class="sec-idx">[ 02 ]</div>
         <div class="sec-title">
-          <p class="eyebrow">Partners &amp; Ecosystem</p>
-          <h2>Backed by the <span class="ital">builders ecosystem.</span></h2>
+          <p class="eyebrow">Moments &amp; Event Gallery</p>
+          <h2>Capturing the <span class="ital">builders in action.</span></h2>
         </div>
       </div>
 
-      <div class="partners-block reveal">
-        <div class="pt-head">
-          <span class="pt-head-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          </span>
-          <h3 class="pt-head-title">Community Partners</h3>
+      <div class="gallery-toolbar reveal">
+        <div class="gallery-filters" id="galleryFilters" role="tablist" aria-label="Event gallery filters">
+          <button class="gallery-filter-btn active" data-filter="all" type="button" role="tab" aria-selected="true">
+            <span>All Moments</span>
+            <span class="gfb-count" id="countAll">0</span>
+          </button>
+          <button class="gallery-filter-btn" data-filter="workshops" type="button" role="tab" aria-selected="false">
+            <span>Workshops</span>
+            <span class="gfb-count" id="countWorkshops">0</span>
+          </button>
+          <button class="gallery-filter-btn" data-filter="hackathons" type="button" role="tab" aria-selected="false">
+            <span>Hackathons</span>
+            <span class="gfb-count" id="countHackathons">0</span>
+          </button>
+          <button class="gallery-filter-btn" data-filter="community-day" type="button" role="tab" aria-selected="false">
+            <span>Community Day</span>
+            <span class="gfb-count" id="countCommunityDay">0</span>
+          </button>
+          <button class="gallery-filter-btn" data-filter="meetups" type="button" role="tab" aria-selected="false">
+            <span>Campus Meetups</span>
+            <span class="gfb-count" id="countMeetups">0</span>
+          </button>
         </div>
 
-        <div class="pt-grid">
-          <div class="pt-card">
-            <!-- Official Transparent AWS Logo -->
-            <img src="images/aws-logo.svg?v=2" alt="Amazon Web Services" style="height: 48px; width: auto;">
-            <div class="pt-meta">
-              <h4>Amazon Web Services</h4>
-              <p>Cloud Platform &amp; Community</p>
-            </div>
-          </div>
+        <div class="gallery-actions">
+          <button class="btn-primary" id="openGalleryUploadBtn" type="button">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <span>+ Add Event Photo</span>
+          </button>
+        </div>
+      </div>
 
-          <div class="pt-card">
-            <div style="font-family: var(--serif); font-size: 32px; color: #fff; font-style: italic;">SBJIT</div>
-            <div class="pt-meta">
-              <h4>SB Jain Institute</h4>
-              <p>Academic &amp; Venue Host</p>
-            </div>
-          </div>
-
-          <div class="pt-card">
-            <div style="font-size: 26px; font-weight: 800; color: var(--primary);">AWS SBG</div>
-            <div class="pt-meta">
-              <h4>Student Builder Group</h4>
-              <p>Central India Community</p>
-            </div>
-          </div>
+      <!-- Dynamic Gallery Grid -->
+      <div class="gallery-grid" id="galleryGrid" aria-live="polite">
+        <!-- Rendered dynamically by script.js?v=12 from /api/gallery -->
+        <div class="gallery-loading">
+          <div class="gallery-spinner"></div>
+          <span>Loading event memories...</span>
         </div>
       </div>
     </div>
@@ -492,7 +497,7 @@
             <span>Navigation</span>
             <a href="#about">About Community</a>
             <a href="#events" class="open-events-link">Events (Coming Soon)</a>
-            <a href="#partners">Partners &amp; Ecosystem</a>
+            <a href="#gallery">Event Gallery</a>
             <a href="#team" class="open-team-link">Core Team</a>
             <a href="#faq">Frequently Asked Questions</a>
           </div>
@@ -517,7 +522,7 @@
     </div>
   </footer>
 
-  <script src="script.js?v=11"></script>
+  <script src="script.js?v=12"></script>
 
   <!-- TEAM MEMBER PROFILE EDIT MODAL -->
   <div class="tm-modal" id="teamModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="tmModalTitle">
@@ -683,6 +688,118 @@
         </form>
       </div>
 
+    </div>
+  </div>
+
+
+  
+  <!-- GALLERY PHOTO UPLOAD MODAL -->
+  <div class="gallery-modal" id="galleryUploadModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="gumTitle">
+    <div class="gallery-modal-backdrop" id="gumBackdrop"></div>
+    <div class="gallery-modal-dialog">
+      <button class="gallery-modal-close" id="gumClose" type="button" aria-label="Close upload modal">&times;</button>
+      
+      <div class="gum-header">
+        <span class="eyebrow" style="margin-bottom: 6px;">COMMUNITY MEMORIES</span>
+        <h3 id="gumTitle" style="font-size: 24px; color: #fff; margin-bottom: 6px; font-weight: 700;">Add Event Photo</h3>
+        <p style="color: var(--txt-dim); font-size: 13px;">Publish photos from AWS workshops, hackathons, and gatherings to the community wall.</p>
+      </div>
+
+      <form id="galleryUploadForm" class="gum-form">
+        <div class="gum-row">
+          <div class="gum-field">
+            <label for="gumEventTitle">Event Title *</label>
+            <input type="text" id="gumEventTitle" placeholder="e.g. Amazon Bedrock GenAI Lab" required>
+          </div>
+          <div class="gum-field">
+            <label for="gumCategory">Event Category *</label>
+            <select id="gumCategory" required>
+              <option value="workshops">Hands-on Workshop</option>
+              <option value="hackathons">Student Hackathon</option>
+              <option value="community-day">AWS Community Day</option>
+              <option value="meetups">Campus Meetup &amp; Team</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="gum-row">
+          <div class="gum-field">
+            <label for="gumDate">Date *</label>
+            <input type="date" id="gumDate" required>
+          </div>
+          <div class="gum-field">
+            <label for="gumLocation">Venue / Location</label>
+            <input type="text" id="gumLocation" placeholder="e.g. SB Jain Auditorium, Nagpur" value="SB Jain Institute of Technology, Nagpur">
+          </div>
+        </div>
+
+        <div class="gum-field">
+          <label for="gumCaption">Description / Caption</label>
+          <textarea id="gumCaption" rows="2" placeholder="Briefly describe what happened in this moment..."></textarea>
+        </div>
+
+        <!-- Photo Upload Dropzone -->
+        <div class="gum-dropzone" id="gumDropzone">
+          <input type="file" id="gumFileInput" accept="image/*" style="display:none;">
+          <div class="gum-dropzone-inner" id="gumDropzoneInner">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--primary); margin-bottom: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <p style="font-weight: 700; color: #fff; font-size: 13.5px; margin-bottom: 4px;">Choose a photo from your device</p>
+            <span style="font-size: 11.5px; color: var(--txt-dim);">Click to browse or drag and drop image (JPG, PNG, WEBP)</span>
+          </div>
+
+          <!-- Preview box -->
+          <div class="gum-preview" id="gumPreview" style="display:none;">
+            <img id="gumPreviewImg" src="" alt="Uploaded photo preview">
+            <button class="gum-remove-btn" id="gumRemoveImgBtn" type="button" title="Remove photo">&times;</button>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin: 12px 0 6px; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--txt-dim);">
+          — or paste photo url —
+        </div>
+
+        <div class="gum-field" style="margin-bottom: 22px;">
+          <input type="url" id="gumUrlInput" placeholder="https://images.unsplash.com/photo-...">
+        </div>
+
+        <div class="gum-actions">
+          <button class="btn-ghost" id="gumCancelBtn" type="button"><span>Cancel</span></button>
+          <button class="btn-primary" id="gumSubmitBtn" type="submit">
+            <span>Publish to Gallery ↗</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- GALLERY LIGHTBOX FULLSCREEN VIEWER -->
+  <div class="gallery-lightbox" id="galleryLightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="glbTitle">
+    <div class="gallery-lightbox-backdrop" id="glbBackdrop"></div>
+    <div class="gallery-lightbox-dialog">
+      <button class="glb-close" id="glbClose" type="button" aria-label="Close fullscreen view">&times;</button>
+      
+      <button class="glb-nav glb-prev" id="glbPrev" type="button" aria-label="Previous photo">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+
+      <button class="glb-nav glb-next" id="glbNext" type="button" aria-label="Next photo">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+
+      <div class="glb-content">
+        <div class="glb-media-wrap">
+          <img class="glb-img" id="glbImg" src="" alt="Fullscreen event photo">
+        </div>
+        <div class="glb-info">
+          <div class="glb-meta-top">
+            <span class="glb-badge" id="glbBadge">WORKSHOP</span>
+            <span class="glb-date" id="glbDate">Feb 24, 2026</span>
+            <span class="glb-location" id="glbLocation">📍 SBJITMR Nagpur</span>
+          </div>
+          <h3 class="glb-title" id="glbTitle">Amazon Bedrock GenAI Hands-on Workshop</h3>
+          <p class="glb-caption" id="glbCaption"></p>
+        </div>
+      </div>
     </div>
   </div>
 

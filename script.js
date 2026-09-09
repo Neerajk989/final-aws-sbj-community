@@ -647,4 +647,406 @@ document.addEventListener('DOMContentLoaded', () => {
     openEventsOverlay();
   }
 
+
+  /* =========================================================
+     13. EVENT GALLERY CONTROLLER & REST API CLIENT
+  ========================================================= */
+  let galleryItems = [];
+  let currentFilter = 'all';
+  let activeLightboxIndex = 0;
+
+  const galleryGrid = document.getElementById('galleryGrid');
+  const galleryFilters = document.getElementById('galleryFilters');
+  const galleryUploadModal = document.getElementById('galleryUploadModal');
+  const openGalleryUploadBtn = document.getElementById('openGalleryUploadBtn');
+  const gumClose = document.getElementById('gumClose');
+  const gumBackdrop = document.getElementById('gumBackdrop');
+  const gumCancelBtn = document.getElementById('gumCancelBtn');
+  const galleryUploadForm = document.getElementById('galleryUploadForm');
+  const gumDropzone = document.getElementById('gumDropzone');
+  const gumFileInput = document.getElementById('gumFileInput');
+  const gumPreview = document.getElementById('gumPreview');
+  const gumPreviewImg = document.getElementById('gumPreviewImg');
+  const gumRemoveImgBtn = document.getElementById('gumRemoveImgBtn');
+  const gumDropzoneInner = document.getElementById('gumDropzoneInner');
+
+  const galleryLightbox = document.getElementById('galleryLightbox');
+  const glbBackdrop = document.getElementById('glbBackdrop');
+  const glbClose = document.getElementById('glbClose');
+  const glbPrev = document.getElementById('glbPrev');
+  const glbNext = document.getElementById('glbNext');
+  const glbImg = document.getElementById('glbImg');
+  const glbBadge = document.getElementById('glbBadge');
+  const glbDate = document.getElementById('glbDate');
+  const glbLocation = document.getElementById('glbLocation');
+  const glbTitle = document.getElementById('glbTitle');
+  const glbCaption = document.getElementById('glbCaption');
+
+  let uploadedBase64 = '';
+
+  // Initial seed fallback if running statically / offline
+  const fallbackGallerySeed = [{"id":"gal-1","title":"AWS Cloud Practitioner Kickoff & Roadmap","category":"workshops","categoryLabel":"Workshop","date":"2026-02-24","dateFormatted":"Feb 24, 2026","location":"Auditorium, SBJITMR","caption":"Student builders gathered for an in-depth orientation on AWS architecture, certification tracks, and building cloud fundamentals.","imageUrl":"https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&auto=format&fit=crop&q=80","createdAt":"2026-02-24T10:00:00.000Z"},{"id":"gal-2","title":"Hands-on GenAI with Amazon Bedrock","category":"workshops","categoryLabel":"Workshop","date":"2026-02-12","dateFormatted":"Feb 12, 2026","location":"Cloud Computing Lab 402","caption":"Deep dive into foundation models, prompt engineering, and building agentic workflows on Amazon Bedrock.","imageUrl":"https://images.unsplash.com/photo-1531482615713-2afd69097998?w=1200&auto=format&fit=crop&q=80","createdAt":"2026-02-12T14:30:00.000Z"},{"id":"gal-3","title":"SB Jain Cloud Builder Hackathon 2026","category":"hackathons","categoryLabel":"Hackathon","date":"2026-01-20","dateFormatted":"Jan 20, 2026","location":"Innovation Center, SBJITMR","caption":"24-hour non-stop cloud challenge where student teams built scalable, serverless full-stack web applications.","imageUrl":"https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200&auto=format&fit=crop&q=80","createdAt":"2026-01-20T09:00:00.000Z"},{"id":"gal-4","title":"Central India AWS Community Day Connect","category":"community-day","categoryLabel":"Community Day","date":"2026-01-05","dateFormatted":"Jan 05, 2026","location":"Main Seminar Hall","caption":"Keynote discussions with AWS Community Builders and industry solutions architects on career pathways in cloud and DevOps.","imageUrl":"https://images.unsplash.com/photo-1511578314322-379afb476865?w=1200&auto=format&fit=crop&q=80","createdAt":"2026-01-05T11:00:00.000Z"},{"id":"gal-5","title":"AWS Student Builder Group Core Team Meetup","category":"meetups","categoryLabel":"Campus Meetup","date":"2025-12-15","dateFormatted":"Dec 15, 2025","location":"Department Conference Room","caption":"Brainstorming session aligning event roadmaps, workshop schedules, and student mentor programs for the upcoming semester.","imageUrl":"https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&auto=format&fit=crop&q=80","createdAt":"2025-12-15T15:00:00.000Z"},{"id":"gal-6","title":"Serverless Architecture & Lambda Microservices","category":"workshops","categoryLabel":"Workshop","date":"2025-11-28","dateFormatted":"Nov 28, 2025","location":"CSE Lab 2","caption":"Practical demonstration on event-driven architecture using AWS Lambda, API Gateway, and DynamoDB.","imageUrl":"https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200&auto=format&fit=crop&q=80","createdAt":"2025-11-28T13:30:00.000Z"}];
+
+  async function fetchGallery() {
+    try {
+      const res = await fetch('/api/gallery');
+      if (!res.ok) throw new Error('API request failed');
+      const data = await res.json();
+      galleryItems = data.items || [];
+      // Cache in localStorage for offline resilience
+      localStorage.setItem('sbj_aws_gallery', JSON.stringify(galleryItems));
+    } catch (err) {
+      console.warn('[Gallery] Offline / API unavailable, falling back to local storage or seed data:', err);
+      const cached = localStorage.getItem('sbj_aws_gallery');
+      galleryItems = cached ? JSON.parse(cached) : fallbackGallerySeed;
+    }
+    updateFilterCounts();
+    renderGallery();
+  }
+
+  function updateFilterCounts() {
+    const counts = {
+      all: galleryItems.length,
+      workshops: 0,
+      hackathons: 0,
+      'community-day': 0,
+      meetups: 0
+    };
+
+    galleryItems.forEach(item => {
+      if (counts[item.category] !== undefined) {
+        counts[item.category]++;
+      }
+    });
+
+    const elAll = document.getElementById('countAll');
+    const elWorkshops = document.getElementById('countWorkshops');
+    const elHackathons = document.getElementById('countHackathons');
+    const elCommunityDay = document.getElementById('countCommunityDay');
+    const elMeetups = document.getElementById('countMeetups');
+
+    if (elAll) elAll.textContent = counts.all;
+    if (elWorkshops) elWorkshops.textContent = counts.workshops;
+    if (elHackathons) elHackathons.textContent = counts.hackathons;
+    if (elCommunityDay) elCommunityDay.textContent = counts['community-day'];
+    if (elMeetups) elMeetups.textContent = counts.meetups;
+  }
+
+  function getFilteredItems() {
+    if (currentFilter === 'all') return galleryItems;
+    return galleryItems.filter(item => item.category === currentFilter);
+  }
+
+  function renderGallery() {
+    if (!galleryGrid) return;
+    const filtered = getFilteredItems();
+
+    if (filtered.length === 0) {
+      galleryGrid.innerHTML = `
+        <div class="gallery-loading">
+          <p style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 4px;">No photos found in this category</p>
+          <span style="font-size: 13px; color: var(--txt-dim);">Click "+ Add Event Photo" to share the first moment!</span>
+        </div>
+      `;
+      return;
+    }
+
+    galleryGrid.innerHTML = filtered.map((item, index) => {
+      const escape = str => (str || '').replace(/"/g, '&quot;');
+      return `
+        <article class="gallery-card" data-id="${item.id}" data-index="${index}">
+          <div class="gc-media">
+            <img class="gc-img" src="${escape(item.imageUrl)}" alt="${escape(item.title)}" loading="lazy">
+            <span class="gc-overlay-badge">${escape(item.categoryLabel || item.category)}</span>
+            <span class="gc-overlay-date">${escape(item.dateFormatted || item.date)}</span>
+          </div>
+          <div class="gc-body">
+            <span class="gc-location">📍 ${escape(item.location || 'SBJITMR Nagpur')}</span>
+            <h3 class="gc-title">${escape(item.title)}</h3>
+            <p class="gc-caption">${escape(item.caption || '')}</p>
+            <div class="gc-footer">
+              <span class="gc-view-btn">View Fullscreen ↗</span>
+              <button class="gc-del-btn" data-delete-id="${item.id}" title="Delete photo" type="button" aria-label="Delete photo">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </div>
+          </div>
+        </article>
+      `;
+    }).join('');
+
+    // Attach click events
+    galleryGrid.querySelectorAll('.gallery-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        // If delete button clicked, handle delete
+        const delBtn = e.target.closest('.gc-del-btn');
+        if (delBtn) {
+          e.stopPropagation();
+          const delId = delBtn.getAttribute('data-delete-id');
+          handleDeletePhoto(delId);
+          return;
+        }
+
+        const idx = parseInt(card.getAttribute('data-index'), 10);
+        openLightbox(idx);
+      });
+    });
+  }
+
+  // Filter tabs
+  galleryFilters?.addEventListener('click', (e) => {
+    const btn = e.target.closest('.gallery-filter-btn');
+    if (!btn) return;
+
+    galleryFilters.querySelectorAll('.gallery-filter-btn').forEach(b => {
+      b.classList.remove('active');
+      b.setAttribute('aria-selected', 'false');
+    });
+
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+    currentFilter = btn.getAttribute('data-filter') || 'all';
+    renderGallery();
+  });
+
+  /* ----------------------------------------------------
+     LIGHTBOX VIEWER LOGIC
+  ---------------------------------------------------- */
+  function openLightbox(index) {
+    const filtered = getFilteredItems();
+    if (!filtered[index]) return;
+    activeLightboxIndex = index;
+    updateLightboxContent();
+    galleryLightbox?.classList.add('is-open');
+    galleryLightbox?.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    galleryLightbox?.classList.remove('is-open');
+    galleryLightbox?.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  function updateLightboxContent() {
+    const filtered = getFilteredItems();
+    const item = filtered[activeLightboxIndex];
+    if (!item) return;
+
+    if (glbImg) glbImg.src = item.imageUrl;
+    if (glbBadge) glbBadge.textContent = item.categoryLabel || item.category;
+    if (glbDate) glbDate.textContent = item.dateFormatted || item.date;
+    if (glbLocation) glbLocation.textContent = '📍 ' + (item.location || 'SB Jain Nagpur');
+    if (glbTitle) glbTitle.textContent = item.title;
+    if (glbCaption) glbCaption.textContent = item.caption || '';
+  }
+
+  glbClose?.addEventListener('click', closeLightbox);
+  glbBackdrop?.addEventListener('click', closeLightbox);
+
+  glbPrev?.addEventListener('click', () => {
+    const filtered = getFilteredItems();
+    activeLightboxIndex = (activeLightboxIndex - 1 + filtered.length) % filtered.length;
+    updateLightboxContent();
+  });
+
+  glbNext?.addEventListener('click', () => {
+    const filtered = getFilteredItems();
+    activeLightboxIndex = (activeLightboxIndex + 1) % filtered.length;
+    updateLightboxContent();
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (galleryLightbox?.classList.contains('is-open')) {
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') glbPrev?.click();
+      if (e.key === 'ArrowRight') glbNext?.click();
+    }
+  });
+
+  /* ----------------------------------------------------
+     ADD / UPLOAD PHOTO MODAL LOGIC
+  ---------------------------------------------------- */
+  function openUploadModal() {
+    galleryUploadModal?.classList.add('is-open');
+    galleryUploadModal?.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    // Set today's date default
+    const gumDate = document.getElementById('gumDate');
+    if (gumDate && !gumDate.value) {
+      gumDate.value = new Date().toISOString().slice(0, 10);
+    }
+  }
+
+  function closeUploadModal() {
+    galleryUploadModal?.classList.remove('is-open');
+    galleryUploadModal?.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    resetUploadForm();
+  }
+
+  function resetUploadForm() {
+    galleryUploadForm?.reset();
+    uploadedBase64 = '';
+    if (gumPreview) gumPreview.style.display = 'none';
+    if (gumDropzoneInner) gumDropzoneInner.style.display = 'block';
+  }
+
+  openGalleryUploadBtn?.addEventListener('click', openUploadModal);
+  gumClose?.addEventListener('click', closeUploadModal);
+  gumBackdrop?.addEventListener('click', closeUploadModal);
+  gumCancelBtn?.addEventListener('click', closeUploadModal);
+
+  // File dropzone click
+  gumDropzone?.addEventListener('click', (e) => {
+    if (e.target.closest('#gumRemoveImgBtn')) return;
+    gumFileInput?.click();
+  });
+
+  // File input change
+  gumFileInput?.addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    processImageFile(file);
+  });
+
+  // Drag & drop
+  gumDropzone?.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    gumDropzone.classList.add('drag-over');
+  });
+
+  gumDropzone?.addEventListener('dragleave', () => {
+    gumDropzone.classList.remove('drag-over');
+  });
+
+  gumDropzone?.addEventListener('drop', (e) => {
+    e.preventDefault();
+    gumDropzone.classList.remove('drag-over');
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      processImageFile(file);
+    }
+  });
+
+  function processImageFile(file) {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      uploadedBase64 = ev.target.result;
+      if (gumPreviewImg) gumPreviewImg.src = uploadedBase64;
+      if (gumPreview) gumPreview.style.display = 'inline-block';
+      if (gumDropzoneInner) gumDropzoneInner.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  gumRemoveImgBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    uploadedBase64 = '';
+    if (gumFileInput) gumFileInput.value = '';
+    if (gumPreview) gumPreview.style.display = 'none';
+    if (gumDropzoneInner) gumDropzoneInner.style.display = 'block';
+  });
+
+  // Form submit
+  galleryUploadForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const title = document.getElementById('gumEventTitle')?.value.trim();
+    const categorySelect = document.getElementById('gumCategory');
+    const category = categorySelect?.value || 'workshops';
+    const categoryLabel = categorySelect?.options[categorySelect.selectedIndex]?.text || 'Workshop';
+    const date = document.getElementById('gumDate')?.value;
+    const location = document.getElementById('gumLocation')?.value.trim();
+    const caption = document.getElementById('gumCaption')?.value.trim();
+    const urlInput = document.getElementById('gumUrlInput')?.value.trim();
+
+    if (!title) {
+      alert('Please enter an event title.');
+      return;
+    }
+
+    const submitBtn = document.getElementById('gumSubmitBtn');
+    const originalText = submitBtn ? submitBtn.innerHTML : '';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>Uploading...</span>';
+    }
+
+    const payload = {
+      title,
+      category,
+      categoryLabel,
+      date,
+      location,
+      caption,
+      imageData: uploadedBase64,
+      imageUrl: urlInput || (!uploadedBase64 ? 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&auto=format&fit=crop&q=80' : '')
+    };
+
+    try {
+      const res = await fetch('/api/gallery', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        const result = await res.json();
+        if (result.success && result.item) {
+          galleryItems.unshift(result.item);
+          localStorage.setItem('sbj_aws_gallery', JSON.stringify(galleryItems));
+        }
+      } else {
+        throw new Error('Server responded with error');
+      }
+    } catch (err) {
+      console.warn('[Gallery] Offline / server error, saving to local state:', err);
+      // Offline fallback item
+      const newItem = {
+        id: 'gal-local-' + Date.now(),
+        title,
+        category,
+        categoryLabel,
+        date: date || new Date().toISOString().slice(0, 10),
+        dateFormatted: date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        location: location || 'SB Jain Institute of Technology, Nagpur',
+        caption,
+        imageUrl: uploadedBase64 || urlInput || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&auto=format&fit=crop&q=80',
+        createdAt: new Date().toISOString()
+      };
+      galleryItems.unshift(newItem);
+      localStorage.setItem('sbj_aws_gallery', JSON.stringify(galleryItems));
+    }
+
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalText;
+    }
+
+    closeUploadModal();
+    updateFilterCounts();
+    renderGallery();
+  });
+
+  // Delete photo
+  async function handleDeletePhoto(id) {
+    if (!confirm('Are you sure you want to delete this event photo from the gallery?')) {
+      return;
+    }
+
+    try {
+      await fetch(`/api/gallery/${id}`, { method: 'DELETE' });
+    } catch (err) {
+      console.warn('[Gallery] Offline delete fallback:', err);
+    }
+
+    galleryItems = galleryItems.filter(it => it.id !== id);
+    localStorage.setItem('sbj_aws_gallery', JSON.stringify(galleryItems));
+    updateFilterCounts();
+    renderGallery();
+  }
+
+  // Load gallery immediately
+  fetchGallery();
+
 });

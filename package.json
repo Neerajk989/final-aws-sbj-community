@@ -1,0 +1,19 @@
+{
+  "name": "sb-jain-aws-community",
+  "version": "1.0.0",
+  "description": "Official website for AWS Student Builder Group at SB Jain Institute of Technology, Nagpur",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "aws",
+    "community",
+    "student-builder-group",
+    "sb-jain",
+    "nagpur",
+    "gallery"
+  ],
+  "author": "SB Jain AWS Community",
+  "license": "MIT"
+}

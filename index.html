@@ -31,7 +31,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=35">
+  <link rel="stylesheet" href="style.css?v=36">
 
   <script>
     (function() {
@@ -448,9 +448,57 @@
           <h2 style="font-size: clamp(28px, 4vw, 44px); color: #fff; line-height: 1.15; margin-bottom: 14px;">
             The minds making it <span class="ital">happen.</span>
           </h2>
-          <p style="color: var(--txt-dim); font-size: 15px; line-height: 1.7; max-width: 580px;">
+          <p style="color: var(--txt-dim); font-size: 15px; line-height: 1.7; max-width: 580px; margin-bottom: 20px;">
             Guided by our respected <strong>Head of Department (HOD)</strong> and driven by passionate student builders across Technical, Design, Operations, Marketing, and Event teams.
           </p>
+
+          <!-- LIVE TEAM DP SHOWCASE ON HOMEPAGE -->
+          <div class="team-dp-preview-row" style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 8px;">
+            <div class="team-dp-stack" style="display: flex; align-items: center;">
+              <!-- HOD -->
+              <div class="team-dp-item" data-member-id="hod-faculty" data-member-name="Dr. Animesh Tayal" title="Dr. Animesh Tayal (HOD) - Click to upload/change DP">
+                <div class="team-dp-circle tm-av-hod" id="avatar-preview-hod-faculty">
+                  <span class="tm-avatar-text">AT</span>
+                  <img class="tm-avatar-img" src="" alt="Dr. Animesh Tayal" style="display:none;">
+                </div>
+              </div>
+              <!-- Sarang -->
+              <div class="team-dp-item" data-member-id="sarang-chakole" data-member-name="Sarang Chakole" title="Sarang Chakole (Group Leader) - Click to upload/change DP">
+                <div class="team-dp-circle tm-av-lead" id="avatar-preview-sarang-chakole">
+                  <span class="tm-avatar-text">SC</span>
+                  <img class="tm-avatar-img" src="" alt="Sarang Chakole" style="display:none;">
+                </div>
+              </div>
+              <!-- Faiz -->
+              <div class="team-dp-item" data-member-id="faiz-shaikh" data-member-name="Faiz Shaikh" title="Faiz Shaikh (Head · Technical) - Click to upload/change DP">
+                <div class="team-dp-circle tm-av-tech" id="avatar-preview-faiz-shaikh">
+                  <span class="tm-avatar-text">FS</span>
+                  <img class="tm-avatar-img" src="" alt="Faiz Shaikh" style="display:none;">
+                </div>
+              </div>
+              <!-- Neeraj -->
+              <div class="team-dp-item" data-member-id="neeraj-khapre" data-member-name="Neeraj Khapre" title="Neeraj Khapre (Co-Head · Technical) - Click to upload/change DP">
+                <div class="team-dp-circle tm-av-tech" id="avatar-preview-neeraj-khapre">
+                  <span class="tm-avatar-text">NK</span>
+                  <img class="tm-avatar-img" src="" alt="Neeraj Khapre" style="display:none;">
+                </div>
+              </div>
+              <!-- Tanushree -->
+              <div class="team-dp-item" data-member-id="tanushree-saundarkar" data-member-name="Tanushree Saundarkar" title="Tanushree Saundarkar (Design & Content) - Click to upload/change DP">
+                <div class="team-dp-circle tm-av-design" id="avatar-preview-tanushree-saundarkar">
+                  <span class="tm-avatar-text">TS</span>
+                  <img class="tm-avatar-img" src="" alt="Tanushree Saundarkar" style="display:none;">
+                </div>
+              </div>
+              <!-- +16 badge -->
+              <div class="team-dp-more open-team-btn" style="width: 44px; height: 44px; border-radius: 50%; background: #141c2c; border: 2px solid #ff9900; color: #ff9900; display: grid; place-items: center; font-size: 11px; font-weight: 800; margin-left: -10px; z-index: 6; box-shadow: 0 4px 12px rgba(0,0,0,0.5); cursor: pointer;" title="View all 21 team builders">
+                +16
+              </div>
+            </div>
+            <div style="font-size: 13px; color: var(--txt-dim);">
+              <strong style="color: #fff;">21 Core Builders</strong> · Click avatar to add / change DP
+            </div>
+          </div>
         </div>
         <div class="tt-right">
           <button class="btn-primary open-team-btn" id="openTeamModalBtn" type="button" style="padding: 16px 28px; font-size: 12.5px;">
@@ -590,7 +638,7 @@
     </div>
   </footer>
 
-  <script src="script.js?v=35"></script>
+  <script src="script.js?v=36"></script>
 
   <!-- TEAM MEMBER PROFILE EDIT MODAL -->
   <div class="tm-modal" id="teamModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="tmModalTitle">

@@ -7256,3 +7256,40 @@ select {
   visibility: visible;
   transform: translateX(-50%) translateY(0);
 }
+
+/* Team DP Stack (Homepage Live Preview) */
+.team-dp-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid #0a0e17;
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.25s ease, border-color 0.25s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.team-dp-item {
+  margin-left: -10px;
+  cursor: pointer;
+  position: relative;
+}
+
+.team-dp-item:first-child {
+  margin-left: 0;
+}
+
+.team-dp-item:hover {
+  z-index: 10;
+}
+
+.team-dp-item:hover .team-dp-circle {
+  transform: translateY(-4px) scale(1.15);
+  border-color: #ff9900;
+}

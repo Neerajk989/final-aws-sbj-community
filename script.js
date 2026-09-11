@@ -373,16 +373,34 @@ document.addEventListener('DOMContentLoaded', () => {
   function applyStoredPhotos() {
     const photos = teamPhotosCache || getStoredPhotos();
     Object.keys(photos).forEach(id => {
-      const avatarEl = document.getElementById('avatar-' + id);
-      if (avatarEl && photos[id]) {
+      const photoUrl = photos[id];
+      // Target ALL avatar elements matching this member ID across the whole page (Cards, Homepage preview row, Modals)
+      const avatarElements = document.querySelectorAll(
+        '#avatar-' + id + ', ' +
+        '#avatar-preview-' + id + ', ' +
+        '[data-avatar-id="' + id + '"], ' +
+        '[data-member-id="' + id + '"] .tm-ref-avatar, ' +
+        '[data-member-id="' + id + '"] .tm-member-avatar, ' +
+        '[data-member-id="' + id + '"] .team-dp-circle'
+      );
+
+      avatarElements.forEach(avatarEl => {
         const img = avatarEl.querySelector('.tm-avatar-img');
         const text = avatarEl.querySelector('.tm-avatar-text');
-        if (img) {
-          img.src = photos[id];
-          img.style.display = 'block';
+        if (photoUrl) {
+          if (img) {
+            img.src = photoUrl;
+            img.style.display = 'block';
+          }
+          if (text) text.style.display = 'none';
+        } else {
+          if (img) {
+            img.src = '';
+            img.style.display = 'none';
+          }
+          if (text) text.style.display = 'block';
         }
-        if (text) text.style.display = 'none';
-      }
+      });
     });
   }
 
@@ -430,7 +448,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const name = card.dataset.memberName;
 
       // Click on avatar
-      const avatar = card.querySelector('.tm-ref-avatar, .tm-leader-avatar, .tm-member-avatar');
+      const avatar = card.querySelector('.tm-ref-avatar, .tm-leader-avatar, .tm-member-avatar, .team-dp-circle');
       if (avatar) {
         avatar.style.cursor = 'pointer';
         avatar.setAttribute('role', 'button');
@@ -466,6 +484,15 @@ document.addEventListener('DOMContentLoaded', () => {
           openModalForMember(id, name);
         });
       }
+    });
+  }
+
+  // Also handle homepage team-dp-item clicks
+    document.querySelectorAll('.team-dp-item').forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openModalForMember(item.dataset.memberId, item.dataset.memberName);
+      });
     });
   }
 
@@ -550,17 +577,8 @@ document.addEventListener('DOMContentLoaded', () => {
       teamPhotosCache[currentMemberId] = finalUrl;
       setStoredPhotos(teamPhotosCache);
 
-      // 3. Update DOM immediately
-      const avatarEl = document.getElementById('avatar-' + currentMemberId);
-      if (avatarEl) {
-        const img = avatarEl.querySelector('.tm-avatar-img');
-        const text = avatarEl.querySelector('.tm-avatar-text');
-        if (img) {
-          img.src = finalUrl;
-          img.style.display = 'block';
-        }
-        if (text) text.style.display = 'none';
-      }
+      // 3. Update DOM immediately everywhere on the site (Homepage, Fullpage, Modals)
+      applyStoredPhotos();
 
       closeModal();
     } catch (err) {
@@ -599,16 +617,7 @@ document.addEventListener('DOMContentLoaded', () => {
     delete teamPhotosCache[currentMemberId];
     setStoredPhotos(teamPhotosCache);
 
-    const avatarEl = document.getElementById('avatar-' + currentMemberId);
-    if (avatarEl) {
-      const img = avatarEl.querySelector('.tm-avatar-img');
-      const text = avatarEl.querySelector('.tm-avatar-text');
-      if (img) {
-        img.src = '';
-        img.style.display = 'none';
-      }
-      if (text) text.style.display = 'block';
-    }
+    applyStoredPhotos();
 
     previewImg.style.display = 'none';
     previewInitials.style.display = 'block';

@@ -309,6 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const resetBtn = document.getElementById('tmResetBtn');
   const dropzone = document.getElementById('tmDropzone');
   const openEditorBtn = document.getElementById('openTeamPhotoEditorBtn');
+  const photoStatus = document.getElementById('tmPhotoStatus');
 
   const memberInitialsMap = {
     'hod-faculty': 'AT',
@@ -334,32 +335,21 @@ document.addEventListener('DOMContentLoaded', () => {
     'shagun-harinkhede': 'SH'
   };
 
-  const TEAM_PHOTO_STORAGE_KEY = 'aws_sbj_team_photos_v2';
-  const NETLIFY_SITE_ORIGIN = window.location.origin;
-
   let currentMemberId = 'sarang-chakole';
   let tempPhotoData = '';
   let teamPhotosCache = {};
 
-  function getStoredPhotos() {
-    try {
-      const current = JSON.parse(localStorage.getItem(TEAM_PHOTO_STORAGE_KEY) || '{}');
-      const legacy = JSON.parse(localStorage.getItem('aws_sbj_team_photos') || '{}');
-      return { ...legacy, ...current };
-    } catch (e) {
-      return {};
-    }
-  }
-
   function setStoredPhotos(data) {
     teamPhotosCache = { ...data };
-    try {
-      localStorage.setItem(TEAM_PHOTO_STORAGE_KEY, JSON.stringify(teamPhotosCache));
-      return true;
-    } catch (e) {
-      console.warn('[Team Photos] Browser storage failed:', e);
-      return false;
-    }
+    return true;
+  }
+
+  function setPhotoStatus(message, type = '') {
+    if (!photoStatus) return;
+    photoStatus.textContent = message;
+    photoStatus.dataset.state = type;
+    photoStatus.style.color = type === 'error' ? '#ff8080' : type === 'success' ? '#8ee6b0' : 'var(--txt-dim)';
+    photoStatus.hidden = !message;
   }
 
   function resolvePhotoUrl(url) {
@@ -421,16 +411,18 @@ document.addEventListener('DOMContentLoaded', () => {
   async function syncPhotosFromServer() {
     try {
       const res = await fetch(getTeamApiUrl(), { cache: 'no-store' });
-      if (!res.ok) return;
-      const data = await res.json();
-      if (!data || !data.success || !data.photos) return;
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data || !data.success || !data.photos) {
+        throw new Error(data.error || 'Could not load permanent team photos.');
+      }
 
       const merged = { ...data.photos };
       setStoredPhotos(merged);
       applyStoredPhotos();
+      setPhotoStatus('Permanent team photos loaded.', 'success');
     } catch (err) {
-      // GitHub Pages or an offline deployment can still use browser storage.
-      console.info('[Team Photos] Using browser-saved photos.');
+      console.error('[Team Photos] Load failed:', err);
+      setPhotoStatus(err.message || 'Could not load permanent team photos.', 'error');
     }
   }
 
@@ -480,7 +472,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (urlInput) urlInput.value = '';
       updateMemberPhotoEverywhere(currentMemberId, tempPhotoData);
     } catch (err) {
-      alert('Could not prepare this photo. Please try another image.');
+      setPhotoStatus('Could not prepare this photo. Please try another image.', 'error');
     }
   }
 
@@ -550,6 +542,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Direct avatar binding: every visible DP opens the editor, including duplicate
+  // avatars rendered in different sections of the page.
+  document.addEventListener('click', e => {
+    const avatar = e.target.closest('.tm-ref-avatar, .tm-leader-avatar, .tm-member-avatar, .team-dp-circle');
+    if (!avatar) return;
+    const card = avatar.closest('[data-member-id]');
+    if (!card) return;
+    e.preventDefault();
+    e.stopPropagation();
+    openModalForMember(card.dataset.memberId, card.dataset.memberName || 'Member');
+  });
+
   fileInput?.addEventListener('change', e => choosePhotoFile(e.target.files?.[0]));
 
   dropzone?.addEventListener('dragover', e => {
@@ -602,9 +606,9 @@ document.addEventListener('DOMContentLoaded', () => {
       setStoredPhotos(teamPhotosCache);
       updateMemberPhotoEverywhere(currentMemberId, data.photoUrl);
       closeModal();
-      alert('Photo saved permanently. All visitors will see it.');
+      setPhotoStatus('Photo saved permanently. All visitors will see it.', 'success');
     } catch (err) {
-      alert(err.message || 'Permanent photo upload failed.');
+      setPhotoStatus(err.message || 'Permanent photo upload failed.', 'error');
     } finally {
       saveBtn.disabled = false;
       saveBtn.innerHTML = originalLabel;
@@ -637,9 +641,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (urlInput) urlInput.value = '';
       if (fileInput) fileInput.value = '';
       closeModal();
-      alert('Permanent profile photo removed.');
+      setPhotoStatus('Permanent profile photo removed for all visitors.', 'success');
     } catch (err) {
-      alert(err.message || 'Could not remove photo.');
+      setPhotoStatus(err.message || 'Could not remove photo.', 'error');
     }
   });
 
@@ -657,9 +661,7 @@ document.addEventListener('DOMContentLoaded', () => {
   modalClose?.addEventListener('click', closeModal);
   modalBackdrop?.addEventListener('click', closeModal);
 
-  // Load browser-saved photos immediately, then merge any photos available from the website API.
-  teamPhotosCache = getStoredPhotos();
-  applyStoredPhotos();
+  // Netlify Blobs is authoritative; never use browser storage for team photos.
   bindMemberPhotoEditors();
   syncPhotosFromServer();
 

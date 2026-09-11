@@ -195,6 +195,74 @@ const server = http.createServer(async (req, res) => {
     });
   }
 
+
+  // NVIDIA Nemotron chatbot API
+  if (pathname === '/api/chat' && req.method === 'POST') {
+    try {
+      const apiKey = process.env.NVIDIA_API_KEY;
+      if (!apiKey) {
+        return sendJson(res, 503, {
+          success: false,
+          error: 'Chatbot is not configured yet. NVIDIA_API_KEY is missing.'
+        });
+      }
+
+      const payload = await parseBody(req);
+      const message = typeof payload.message === 'string' ? payload.message.trim() : '';
+      const history = Array.isArray(payload.history) ? payload.history.slice(-8) : [];
+
+      if (!message) {
+        return sendJson(res, 400, { success: false, error: 'Message is required.' });
+      }
+
+      if (message.length > 3000) {
+        return sendJson(res, 400, { success: false, error: 'Message is too long.' });
+      }
+
+      const safeHistory = history
+        .filter(item => item && (item.role === 'user' || item.role === 'assistant') && typeof item.content === 'string')
+        .map(item => ({ role: item.role, content: item.content.slice(0, 3000) }));
+
+      const upstream = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + apiKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'nvidia/nemotron-3.5-lightning-30b-a3b',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are the AI assistant for the SB Jain AWS Student Community in Nagpur. Be helpful, concise, student-friendly, and especially useful for AWS, cloud computing, programming, projects, events, and learning questions. If asked about information not provided by the website or conversation, say you may not have the latest community-specific details.'
+            },
+            ...safeHistory,
+            { role: 'user', content: message }
+          ],
+          temperature: 0.6,
+          top_p: 0.9,
+          max_tokens: 700
+        })
+      });
+
+      const data = await upstream.json();
+
+      if (!upstream.ok) {
+        console.error('[Nemotron API] Upstream error:', data);
+        return sendJson(res, upstream.status, {
+          success: false,
+          error: 'The AI service could not answer right now.'
+        });
+      }
+
+      const reply = data?.choices?.[0]?.message?.content || 'Sorry, I could not generate a response.';
+      return sendJson(res, 200, { success: true, reply });
+    } catch (err) {
+      console.error('[Nemotron API] Chat error:', err);
+      return sendJson(res, 500, { success: false, error: 'Chatbot request failed.' });
+    }
+  }
+
   // 2. GET /api/gallery
   if (pathname === '/api/gallery' && req.method === 'GET') {
     const category = parsedUrl.searchParams.get('category');

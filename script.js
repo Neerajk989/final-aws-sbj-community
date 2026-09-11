@@ -405,7 +405,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function getTeamApiUrl() {
-    return '/api/team-photos';
+    return 'https://aws-community-sbjit.netlify.app/api/team-photos';
   }
 
   async function syncPhotosFromServer() {

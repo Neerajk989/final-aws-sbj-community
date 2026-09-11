@@ -7,7 +7,11 @@ function json(data, status = 200) {
     status,
     headers: {
       "content-type": "application/json; charset=utf-8",
-      "cache-control": "no-store"
+      "cache-control": "no-store",
+      "access-control-allow-origin": "https://neerajk989.github.io",
+      "access-control-allow-methods": "GET, POST, DELETE, OPTIONS",
+      "access-control-allow-headers": "Content-Type",
+      "vary": "Origin"
     }
   });
 }
@@ -19,6 +23,9 @@ function validMemberId(value) {
 
 export default async (request) => {
   const url = new URL(request.url);
+  if (request.method === "OPTIONS") {
+    return json({}, 204);
+  }
   const store = getStore(STORE_NAME);
 
   if (request.method === "GET") {

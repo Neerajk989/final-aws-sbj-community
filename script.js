@@ -1154,10 +1154,44 @@ document.addEventListener('DOMContentLoaded', () => {
       return (clone.innerText || '')
         .replace(/\s+/g, ' ')
         .trim()
-        .slice(0, 18000);
+        .slice(0, 7000);
     } catch (error) {
       return '';
     }
+  }
+
+  function answerFromPage(message) {
+    const q = message.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+    const page = getWebsiteContext();
+
+    const rolePatterns = [
+      { keys: ['technical head', 'tech head'], answer: 'Sarang Chakole is listed as Head · Technical. Neeraj Khapre is listed as Co-Head · Technical.' },
+      { keys: ['technical co head', 'tech co head', 'co head technical'], answer: 'Neeraj Khapre is listed as Co-Head · Technical in the SB Jain AWS Student Builder Group.' },
+      { keys: ['design head'], answer: 'Tanushree Saundarkar is listed as Head · Design & Content.' },
+      { keys: ['operations head', 'operational head'], answer: 'Pranav Vispute is listed as Head · Operations.' },
+      { keys: ['marketing head', 'pr head'], answer: 'Jiya Sathawane is listed as Head · Marketing & PR.' },
+      { keys: ['event head', 'events head'], answer: 'Areeba Qureshi is listed as Head · Events.' }
+    ];
+
+    for (const item of rolePatterns) {
+      if (item.keys.some(k => q.includes(k))) return item.answer;
+    }
+
+    // Simple exact-name lookup against visible page text.
+    const names = [
+      'Neeraj Khapre','Sarang Chakole','Faiz Shaikh','Devanshu Kindarlaey',
+      'Nivedita Nandurkar','Tanushree Saundarkar','Sankalp Kadse','Anshul Motghare',
+      'Pranav Vispute','Isha Dhok','Nutan Bhoyar','Krutika Dhavde',
+      'Jiya Sathawane','Anmol Chaubey','Vaishnavi Sathone','Gauri Sangewar',
+      'Areeba Qureshi','Vansh Lute','Pushkar Meshram','Shagun Harinkhede'
+    ];
+    const found = names.find(n => q.includes(n.toLowerCase()));
+    if (found && page.includes(found)) {
+      const pos = page.indexOf(found);
+      const snippet = page.slice(Math.max(0, pos - 100), Math.min(page.length, pos + 180));
+      return 'From this website: ' + snippet.replace(/\s+/g, ' ').trim();
+    }
+    return '';
   }
 
   const history = [];
@@ -1194,6 +1228,16 @@ document.addEventListener('DOMContentLoaded', () => {
       'who is tech head': 'Sarang Chakole is listed as Head · Technical, and Neeraj Khapre is listed as Co-Head · Technical.',
       'who is technical head': 'Sarang Chakole is listed as Head · Technical, and Neeraj Khapre is listed as Co-Head · Technical.'
     };
+    const pageAnswer = answerFromPage(message);
+    if (pageAnswer) {
+      addMessage(message, 'user');
+      input.value = '';
+      addMessage(pageAnswer, 'bot');
+      history.push({ role: 'user', content: message });
+      history.push({ role: 'assistant', content: pageAnswer });
+      return;
+    }
+
     const quickKey = message.toLowerCase().replace(/[?!.]/g, '').trim();
     if (instantReplies[quickKey]) {
       addMessage(message, 'user');
@@ -1213,7 +1257,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000);
+      const timeoutId = setTimeout(() => controller.abort(), 35000);
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

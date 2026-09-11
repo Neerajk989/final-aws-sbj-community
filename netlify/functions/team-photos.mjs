@@ -16,11 +16,6 @@ function validMemberId(value) {
   return /^[a-z0-9-]{2,80}$/.test(value);
 }
 
-function adminAllowed(request) {
-  const configured = String(process.env.TEAM_PHOTO_ADMIN_KEY || "");
-  const supplied = String(request.headers.get("x-team-admin-key") || "");
-  return Boolean(configured && supplied && configured === supplied);
-}
 
 export default async (request) => {
   const url = new URL(request.url);
@@ -49,15 +44,6 @@ export default async (request) => {
   }
 
   if (request.method === "POST") {
-    if (!adminAllowed(request)) {
-      return json({
-        success: false,
-        error: process.env.TEAM_PHOTO_ADMIN_KEY
-          ? "Invalid team photo admin key."
-          : "TEAM_PHOTO_ADMIN_KEY is not configured in Netlify."
-      }, 401);
-    }
-
     try {
       const body = await request.json();
       const memberId = String(body.memberId || "").trim().toLowerCase();
@@ -94,15 +80,6 @@ export default async (request) => {
   }
 
   if (request.method === "DELETE") {
-    if (!adminAllowed(request)) {
-      return json({
-        success: false,
-        error: process.env.TEAM_PHOTO_ADMIN_KEY
-          ? "Invalid team photo admin key."
-          : "TEAM_PHOTO_ADMIN_KEY is not configured in Netlify."
-      }, 401);
-    }
-
     try {
       const memberId = decodeURIComponent(url.pathname.split("/").filter(Boolean).pop() || "")
         .trim()

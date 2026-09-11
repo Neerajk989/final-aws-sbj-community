@@ -341,6 +341,23 @@ document.addEventListener('DOMContentLoaded', () => {
   let tempPhotoData = '';
   let teamPhotosCache = {};
 
+  function getTeamPhotoAdminKey() {
+    let key = '';
+    try { key = sessionStorage.getItem('aws_sbj_team_photo_admin_key') || ''; } catch (e) {}
+    if (!key) {
+      key = window.prompt('Enter the team photo admin key to save this photo permanently:') || '';
+      key = key.trim();
+      if (key) {
+        try { sessionStorage.setItem('aws_sbj_team_photo_admin_key', key); } catch (e) {}
+      }
+    }
+    return key;
+  }
+
+  function clearTeamPhotoAdminKey() {
+    try { sessionStorage.removeItem('aws_sbj_team_photo_admin_key'); } catch (e) {}
+  }
+
   function getStoredPhotos() {
     try {
       const current = JSON.parse(localStorage.getItem(TEAM_PHOTO_STORAGE_KEY) || '{}');
@@ -428,7 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!data || !data.success || !data.photos) return;
 
       const local = getStoredPhotos();
-      const merged = { ...data.photos, ...local };
+      const merged = { ...local, ...data.photos };
       setStoredPhotos(merged);
       applyStoredPhotos();
     } catch (err) {
@@ -567,84 +584,93 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   urlInput?.addEventListener('input', e => {
-    const url = e.target.value.trim();
-    if (!url) return;
-    tempPhotoData = url;
-    if (previewImg) {
-      previewImg.src = url;
-      previewImg.style.display = 'block';
+    if (e.target.value.trim()) {
+      e.target.value = '';
+      alert('For permanent team photos, please choose an image from your device.');
     }
-    if (previewInitials) previewInitials.style.display = 'none';
-    updateMemberPhotoEverywhere(currentMemberId, tempPhotoData);
   });
 
   saveBtn?.addEventListener('click', async () => {
-    if (!tempPhotoData) {
-      alert('Please choose a photo or enter an image URL first.');
+    if (!tempPhotoData || !tempPhotoData.startsWith('data:image/')) {
+      alert('Please choose a photo from your device first.');
       return;
     }
 
+    const adminKey = getTeamPhotoAdminKey();
+    if (!adminKey) return;
+
     const originalLabel = saveBtn.innerHTML;
     saveBtn.disabled = true;
-    saveBtn.innerHTML = '<span>Saving...</span>';
+    saveBtn.innerHTML = '<span>Saving permanently...</span>';
 
-    // Save locally first so the deployed site keeps the photo after refresh on this device.
-    teamPhotosCache[currentMemberId] = tempPhotoData;
-    const stored = setStoredPhotos(teamPhotosCache);
-    updateMemberPhotoEverywhere(currentMemberId, tempPhotoData);
-
-    // Best-effort sync to the website API when it is available.
     try {
       const res = await fetch(getTeamApiUrl(), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ memberId: currentMemberId, photoData: tempPhotoData })
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Team-Admin-Key': adminKey
+        },
+        body: JSON.stringify({
+          memberId: currentMemberId,
+          photoData: tempPhotoData
+        })
       });
-      if (res.ok) {
-        // Keep the browser-saved data URL as the visible source.
-        // Vercel's serverless /tmp upload path is temporary and must not replace it.
-        await res.json().catch(() => null);
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || !data.success || !data.photoUrl) {
+        if (res.status === 401) clearTeamPhotoAdminKey();
+        throw new Error(data.error || 'Could not save photo permanently.');
       }
+
+      teamPhotosCache[currentMemberId] = data.photoUrl;
+      setStoredPhotos(teamPhotosCache);
+      updateMemberPhotoEverywhere(currentMemberId, data.photoUrl);
+      closeModal();
+      alert('Photo saved permanently. All visitors will see it.');
     } catch (err) {
-      console.info('[Team Photos] Server sync unavailable; browser copy remains saved.');
-    }
-
-    saveBtn.disabled = false;
-    saveBtn.innerHTML = originalLabel;
-    closeModal();
-
-    if (stored) {
-      console.info('[Team Photos] Photo saved in this browser and applied to the deployed site view.');
-    }
-
-    if (!stored) {
-      alert('The photo was applied, but your browser could not save it permanently. Try a smaller image.');
+      alert(err.message || 'Permanent photo upload failed.');
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = originalLabel;
     }
   });
 
   resetBtn?.addEventListener('click', async () => {
-    delete teamPhotosCache[currentMemberId];
-    setStoredPhotos(teamPhotosCache);
-    updateMemberPhotoEverywhere(currentMemberId, '');
+    const adminKey = getTeamPhotoAdminKey();
+    if (!adminKey) return;
 
     try {
-      await fetch(getTeamApiUrl() + '/' + encodeURIComponent(currentMemberId), { method: 'DELETE' });
-    } catch (err) {
-      // Local removal still works.
-    }
+      const res = await fetch(getTeamApiUrl() + '/' + encodeURIComponent(currentMemberId), {
+        method: 'DELETE',
+        headers: { 'X-Team-Admin-Key': adminKey }
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) {
+        if (res.status === 401) clearTeamPhotoAdminKey();
+        throw new Error(data.error || 'Could not remove the permanent photo.');
+      }
 
-    if (previewImg) {
-      previewImg.removeAttribute('src');
-      previewImg.style.display = 'none';
+      delete teamPhotosCache[currentMemberId];
+      setStoredPhotos(teamPhotosCache);
+      updateMemberPhotoEverywhere(currentMemberId, '');
+
+      if (previewImg) {
+        previewImg.removeAttribute('src');
+        previewImg.style.display = 'none';
+      }
+      if (previewInitials) {
+        previewInitials.style.display = 'block';
+        previewInitials.textContent = memberInitialsMap[currentMemberId] || 'SB';
+      }
+      tempPhotoData = '';
+      if (urlInput) urlInput.value = '';
+      if (fileInput) fileInput.value = '';
+      closeModal();
+      alert('Permanent profile photo removed.');
+    } catch (err) {
+      alert(err.message || 'Could not remove photo.');
     }
-    if (previewInitials) {
-      previewInitials.style.display = 'block';
-      previewInitials.textContent = memberInitialsMap[currentMemberId] || 'SB';
-    }
-    tempPhotoData = '';
-    if (urlInput) urlInput.value = '';
-    if (fileInput) fileInput.value = '';
-    closeModal();
   });
 
   openEditorBtn?.addEventListener('click', () => {

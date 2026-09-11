@@ -163,7 +163,7 @@ function sendJson(res, statusCode, data) {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type'
+    'Access-Control-Allow-Headers': 'Content-Type, X-Team-Admin-Key'
   });
   res.end(JSON.stringify(data));
 }
@@ -178,7 +178,7 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(204, {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type'
+      'Access-Control-Allow-Headers': 'Content-Type, X-Team-Admin-Key'
     });
     return res.end();
   }
@@ -332,101 +332,138 @@ const server = http.createServer(async (req, res) => {
   }
 
   /* ----------------------------------------------------
-     TEAM PHOTOS REST API (Persistent Storage)
+     TEAM PHOTOS REST API (Permanent Vercel Blob Storage)
   ---------------------------------------------------- */
-  // GET /api/team-photos
+  const getTeamBlobApi = async () => {
+    return await import('@vercel/blob');
+  };
+
+  const teamPhotoAdminAllowed = () => {
+    const configured = process.env.TEAM_PHOTO_ADMIN_KEY;
+    if (!configured) return false;
+    const supplied = String(req.headers['x-team-admin-key'] || '');
+    return supplied && crypto.timingSafeEqual(
+      Buffer.from(supplied),
+      Buffer.from(configured)
+    );
+  };
+
+  // GET /api/team-photos - public read for all visitors/devices
   if (pathname === '/api/team-photos' && req.method === 'GET') {
-    const photos = readTeamPhotosData();
-    return sendJson(res, 200, { success: true, count: Object.keys(photos).length, photos });
+    try {
+      const { list } = await getTeamBlobApi();
+      const result = await list({ prefix: 'team-profiles/' });
+      const photos = {};
+
+      for (const blob of result.blobs || []) {
+        const match = String(blob.pathname || '').match(/^team-profiles\/([^/]+)\.jpg$/);
+        if (match && blob.url) photos[match[1]] = blob.url;
+      }
+
+      return sendJson(res, 200, {
+        success: true,
+        count: Object.keys(photos).length,
+        photos
+      });
+    } catch (err) {
+      console.error('[Team Photos] Blob list failed:', err);
+      return sendJson(res, 503, {
+        success: false,
+        error: 'Permanent team photo storage is not connected yet.'
+      });
+    }
   }
 
-  // POST /api/team-photos (Upload / Update / Delete member photo)
+  // POST /api/team-photos - admin-only permanent upload/replace
   if (pathname === '/api/team-photos' && req.method === 'POST') {
     try {
+      if (!teamPhotoAdminAllowed()) {
+        return sendJson(res, 401, {
+          success: false,
+          error: process.env.TEAM_PHOTO_ADMIN_KEY
+            ? 'Invalid team photo admin key.'
+            : 'TEAM_PHOTO_ADMIN_KEY is not configured in Vercel.'
+        });
+      }
+
       const payload = await parseBody(req);
-      const { memberId, photoData, action } = payload;
+      const memberId = String(payload.memberId || '').trim().toLowerCase();
+      const photoData = payload.photoData;
 
-      if (!memberId) {
-        return sendJson(res, 400, { success: false, error: 'Member ID is required.' });
+      if (!/^[a-z0-9-]{2,80}$/.test(memberId)) {
+        return sendJson(res, 400, { success: false, error: 'Invalid member ID.' });
       }
 
-      const photos = readTeamPhotosData();
-
-      // Handle Delete action
-      if (action === 'delete' || !photoData) {
-        const oldPhoto = photos[memberId];
-        delete photos[memberId];
-        writeTeamPhotosData(photos);
-
-        if (oldPhoto && oldPhoto.startsWith('/uploads/team/')) {
-          const oldFile = path.join(ROOT_DIR, oldPhoto.replace(/^\//, ''));
-          if (fs.existsSync(oldFile)) {
-            try { fs.unlinkSync(oldFile); } catch(e) {}
-          }
-        }
-
-        console.log(`[Team API] Removed photo for member: ${memberId}`);
-        return sendJson(res, 200, { success: true, action: 'deleted', memberId });
+      if (typeof photoData !== 'string' || !photoData.startsWith('data:image/')) {
+        return sendJson(res, 400, {
+          success: false,
+          error: 'Please upload an image from your device.'
+        });
       }
 
-      // Handle Save / Upload action
-      let finalPhotoUrl = photoData;
-
-      // If Base64 image, save as physical image file on disk
-      if (typeof photoData === 'string' && photoData.startsWith('data:image/')) {
-        const matches = photoData.match(/^data:image\/([a-zA-Z0-9+]+);base64,(.+)$/);
-        if (matches) {
-          const rawExt = matches[1].toLowerCase();
-          const ext = rawExt === 'jpeg' ? 'jpg' : rawExt;
-          const fileName = `${memberId}-${Date.now()}.${ext}`;
-          const filePath = path.join(TEAM_UPLOADS_DIR, fileName);
-          const buffer = Buffer.from(matches[2], 'base64');
-          fs.writeFileSync(filePath, buffer);
-          finalPhotoUrl = `/uploads/team/${fileName}`;
-        }
+      const match = photoData.match(/^data:image\/(png|jpe?g|webp);base64,(.+)$/i);
+      if (!match) {
+        return sendJson(res, 400, { success: false, error: 'Unsupported image format.' });
       }
 
-      // Clean up previous image file if it was a local upload
-      const previousPhoto = photos[memberId];
-      if (previousPhoto && previousPhoto.startsWith('/uploads/team/') && previousPhoto !== finalPhotoUrl) {
-        const oldFile = path.join(ROOT_DIR, previousPhoto.replace(/^\//, ''));
-        if (fs.existsSync(oldFile)) {
-          try { fs.unlinkSync(oldFile); } catch(e) {}
-        }
+      const buffer = Buffer.from(match[2], 'base64');
+      if (!buffer.length || buffer.length > 5 * 1024 * 1024) {
+        return sendJson(res, 400, { success: false, error: 'Image must be under 5 MB after compression.' });
       }
 
-      photos[memberId] = finalPhotoUrl;
-      writeTeamPhotosData(photos);
+      const { put } = await getTeamBlobApi();
+      const blob = await put('team-profiles/' + memberId + '.jpg', buffer, {
+        access: 'public',
+        contentType: 'image/jpeg',
+        addRandomSuffix: false,
+        allowOverwrite: true
+      });
 
-      console.log(`[Team API] Successfully saved photo for member ${memberId} -> ${finalPhotoUrl}`);
-      return sendJson(res, 200, { success: true, memberId, photoUrl: finalPhotoUrl });
+      return sendJson(res, 200, {
+        success: true,
+        memberId,
+        photoUrl: blob.url
+      });
     } catch (err) {
-      console.error('[Team API] Error saving member photo:', err);
-      return sendJson(res, 500, { success: false, error: 'Failed to process team photo: ' + err.message });
+      console.error('[Team Photos] Permanent upload failed:', err);
+      return sendJson(res, 500, {
+        success: false,
+        error: 'Permanent photo upload failed: ' + (err.message || 'unknown error')
+      });
     }
   }
 
-  // DELETE /api/team-photos/:id
+  // DELETE /api/team-photos/:id - admin-only permanent removal
   if (pathname.startsWith('/api/team-photos/') && req.method === 'DELETE') {
-    const memberId = pathname.replace('/api/team-photos/', '').trim();
-    if (!memberId) {
-      return sendJson(res, 400, { success: false, error: 'Member ID is required.' });
-    }
-
-    const photos = readTeamPhotosData();
-    const oldPhoto = photos[memberId];
-    delete photos[memberId];
-    writeTeamPhotosData(photos);
-
-    if (oldPhoto && oldPhoto.startsWith('/uploads/team/')) {
-      const oldFile = path.join(ROOT_DIR, oldPhoto.replace(/^\//, ''));
-      if (fs.existsSync(oldFile)) {
-        try { fs.unlinkSync(oldFile); } catch(e) {}
+    try {
+      if (!teamPhotoAdminAllowed()) {
+        return sendJson(res, 401, {
+          success: false,
+          error: process.env.TEAM_PHOTO_ADMIN_KEY
+            ? 'Invalid team photo admin key.'
+            : 'TEAM_PHOTO_ADMIN_KEY is not configured in Vercel.'
+        });
       }
-    }
 
-    console.log(`[Team API] Deleted photo for member: ${memberId}`);
-    return sendJson(res, 200, { success: true, memberId });
+      const memberId = decodeURIComponent(pathname.replace('/api/team-photos/', '')).trim().toLowerCase();
+      if (!/^[a-z0-9-]{2,80}$/.test(memberId)) {
+        return sendJson(res, 400, { success: false, error: 'Invalid member ID.' });
+      }
+
+      const { list, del } = await getTeamBlobApi();
+      const result = await list({ prefix: 'team-profiles/' + memberId + '.jpg' });
+      const blob = (result.blobs || []).find(item => item.pathname === 'team-profiles/' + memberId + '.jpg');
+
+      if (blob?.url) await del(blob.url);
+
+      return sendJson(res, 200, { success: true, memberId });
+    } catch (err) {
+      console.error('[Team Photos] Permanent delete failed:', err);
+      return sendJson(res, 500, {
+        success: false,
+        error: 'Permanent photo removal failed: ' + (err.message || 'unknown error')
+      });
+    }
   }
 
   // 2. GET /api/gallery

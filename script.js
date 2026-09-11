@@ -1145,6 +1145,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const messages = wrap.querySelector('.aws-ai-messages');
   const sendBtn = wrap.querySelector('.aws-ai-send');
 
+  function getWebsiteContext() {
+    try {
+      const clone = document.body.cloneNode(true);
+      const chat = clone.querySelector('#awsAiChat');
+      if (chat) chat.remove();
+      clone.querySelectorAll('script, style, noscript').forEach(el => el.remove());
+      return (clone.innerText || '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, 18000);
+    } catch (error) {
+      return '';
+    }
+  }
+
   const history = [];
 
   const setOpen = (open) => {
@@ -1175,7 +1190,9 @@ document.addEventListener('DOMContentLoaded', () => {
       'hi': 'Hi! How can I help you with AWS, cloud, coding, or the SB Jain AWS community?',
       'hello': 'Hello! Ask me anything about AWS, cloud, coding, projects, or the community.',
       'who is tech co head': 'Neeraj Khapre is listed as Co-Head · Technical in the SB Jain AWS Student Builder Group.',
-      'who is technical co head': 'Neeraj Khapre is listed as Co-Head · Technical in the SB Jain AWS Student Builder Group.'
+      'who is technical co head': 'Neeraj Khapre is listed as Co-Head · Technical in the SB Jain AWS Student Builder Group.',
+      'who is tech head': 'Sarang Chakole is listed as Head · Technical, and Neeraj Khapre is listed as Co-Head · Technical.',
+      'who is technical head': 'Sarang Chakole is listed as Head · Technical, and Neeraj Khapre is listed as Co-Head · Technical.'
     };
     const quickKey = message.toLowerCase().replace(/[?!.]/g, '').trim();
     if (instantReplies[quickKey]) {
@@ -1200,7 +1217,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, history }),
+        body: JSON.stringify({ message, history, pageContext: getWebsiteContext() }),
         signal: controller.signal
       });
       clearTimeout(timeoutId);

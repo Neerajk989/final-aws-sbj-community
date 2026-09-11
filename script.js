@@ -45,15 +45,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const introDuration = reduceMotion ? 80 : (introSeen ? 450 : 2600);
     window.setTimeout(finishCommunityIntro, introDuration);
 
-    // Hard failsafe for GitHub Pages / slow or partially cached loads.
+    // Hard safety net: the intro must never trap the page.
     window.setTimeout(() => {
       if (document.body.contains(communityIntro)) {
-        communityIntro.style.opacity = '0';
-        communityIntro.style.visibility = 'hidden';
-        communityIntro.style.pointerEvents = 'none';
-        window.setTimeout(() => communityIntro.remove(), 350);
+        finishCommunityIntro();
       }
-    }, 4200);
+    }, 3800);
   }
 
   /* =========================================================
@@ -297,7 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   /* =========================================================
-     9. TEAM MEMBER PROFILE PHOTO EDITOR & PERSISTENT STORAGE
+     9. TEAM MEMBER PROFILE PHOTO EDITOR & LOCALSTORAGE
   ========================================================= */
   const teamModal = document.getElementById('teamModal');
   const modalClose = document.getElementById('tmModalClose');
@@ -339,7 +336,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let currentMemberId = 'sarang-chakole';
   let tempPhotoData = '';
-  let teamPhotosCache = {};
 
   function getStoredPhotos() {
     try {
@@ -357,76 +353,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Fetch photos from server and apply to page
-  async function fetchTeamPhotos() {
-    // 1. First apply any locally cached photos for instantaneous render
-    teamPhotosCache = getStoredPhotos();
-    applyStoredPhotos();
-
-    // 2. Fetch latest persistent photos from backend server
-    try {
-      const res = await fetch('/api/team-photos');
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.success && data.photos) {
-          teamPhotosCache = Object.assign({}, teamPhotosCache, data.photos);
-          setStoredPhotos(teamPhotosCache);
-          applyStoredPhotos();
-        }
-      }
-    } catch (err) {
-      console.warn('[Team Photos] Could not reach backend server, using cached photos:', err);
-    }
-  }
-
   // Render all stored photos on page cards
   function applyStoredPhotos() {
-    const photos = teamPhotosCache || getStoredPhotos();
+    const photos = getStoredPhotos();
     Object.keys(photos).forEach(id => {
-      const photoUrl = photos[id];
-      // Target ALL avatar elements matching this member ID across the whole page (Cards, Homepage preview row, Modals)
-      const avatarElements = document.querySelectorAll(
-        '#avatar-' + id + ', ' +
-        '#avatar-preview-' + id + ', ' +
-        '[data-avatar-id="' + id + '"], ' +
-        '[data-member-id="' + id + '"] .tm-ref-avatar, ' +
-        '[data-member-id="' + id + '"] .tm-member-avatar, ' +
-        '[data-member-id="' + id + '"] .team-dp-circle'
-      );
-
-      avatarElements.forEach(avatarEl => {
+      const avatarEl = document.getElementById('avatar-' + id);
+      if (avatarEl && photos[id]) {
         const img = avatarEl.querySelector('.tm-avatar-img');
         const text = avatarEl.querySelector('.tm-avatar-text');
-        if (photoUrl) {
-          if (img) {
-            img.src = photoUrl;
-            img.style.display = 'block';
-          }
-          if (text) text.style.display = 'none';
-        } else {
-          if (img) {
-            img.src = '';
-            img.style.display = 'none';
-          }
-          if (text) text.style.display = 'block';
+        if (img) {
+          img.src = photos[id];
+          img.style.display = 'block';
         }
-      });
+        if (text) text.style.display = 'none';
+      }
     });
   }
 
-  // Call on initialization
-  fetchTeamPhotos();
+  applyStoredPhotos();
 
   function openModalForMember(memberId, memberName) {
-    currentMemberId = memberId || 'sarang-chakole';
-    if (memberSelect) memberSelect.value = currentMemberId;
-    if (modalTitle) {
-      modalTitle.textContent = memberName || (memberSelect ? memberSelect.options[memberSelect.selectedIndex].text : 'Member');
-    }
+    currentMemberId = memberId;
+    if (memberSelect) memberSelect.value = memberId;
+    if (modalTitle) modalTitle.textContent = memberName || (memberSelect ? memberSelect.options[memberSelect.selectedIndex].text : 'Member');
     
     // Check existing photo
-    const photos = teamPhotosCache || getStoredPhotos();
-    const existing = photos[currentMemberId];
+    const photos = getStoredPhotos();
+    const existing = photos[memberId];
     tempPhotoData = existing || '';
 
     if (existing) {
@@ -437,7 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       previewImg.style.display = 'none';
       previewInitials.style.display = 'block';
-      previewInitials.textContent = memberInitialsMap[currentMemberId] || 'SB';
+      previewInitials.textContent = memberInitialsMap[memberId] || 'SB';
       if (urlInput) urlInput.value = '';
     }
 
@@ -451,62 +404,18 @@ document.addEventListener('DOMContentLoaded', () => {
     teamModal?.setAttribute('aria-hidden', 'true');
   }
 
-  // Click listener on all member cards / avatars / cam-badges
-  function initTeamCardClickListeners() {
-    document.querySelectorAll('[data-member-id]').forEach(card => {
-      const id = card.dataset.memberId;
-      const name = card.dataset.memberName;
-
-      // Click on avatar
-      const avatar = card.querySelector('.tm-ref-avatar, .tm-leader-avatar, .tm-member-avatar, .team-dp-circle');
-      if (avatar) {
-        avatar.style.cursor = 'pointer';
-        avatar.setAttribute('role', 'button');
-        avatar.setAttribute('tabindex', '0');
-        avatar.addEventListener('click', (e) => {
-          e.stopPropagation();
-          openModalForMember(id, name);
-        });
-        avatar.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            openModalForMember(id, name);
-          }
-        });
-      }
-
-      // Click on cam-badge
-      const camBadge = card.querySelector('.tm-avatar-cam-badge');
-      if (camBadge) {
-        camBadge.style.cursor = 'pointer';
-        camBadge.addEventListener('click', (e) => {
-          e.stopPropagation();
-          openModalForMember(id, name);
-        });
-      }
-
-      // Click on photo wrapper
-      const photoWrap = card.querySelector('.tm-ref-photo');
-      if (photoWrap) {
-        photoWrap.style.cursor = 'pointer';
-        photoWrap.addEventListener('click', (e) => {
-          e.stopPropagation();
-          openModalForMember(id, name);
-        });
-      }
-    });
-  }
-
-  // Also handle homepage team-dp-item clicks
-    document.querySelectorAll('.team-dp-item').forEach(item => {
-      item.addEventListener('click', (e) => {
+  // Click listener on all member cards / avatars
+  document.querySelectorAll('[data-member-id]').forEach(card => {
+    const avatar = card.querySelector('.tm-leader-avatar, .tm-member-avatar');
+    if (avatar) {
+      avatar.addEventListener('click', (e) => {
         e.stopPropagation();
-        openModalForMember(item.dataset.memberId, item.dataset.memberName);
+        const id = card.dataset.memberId;
+        const name = card.dataset.memberName;
+        openModalForMember(id, name);
       });
-    });
-  }
-
-  initTeamCardClickListeners();
+    }
+  });
 
   openEditorBtn?.addEventListener('click', () => {
     openModalForMember(memberSelect ? memberSelect.value : 'sarang-chakole');
@@ -524,8 +433,8 @@ document.addEventListener('DOMContentLoaded', () => {
   fileInput?.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 8 * 1024 * 1024) {
-        alert('Image size exceeds 8MB. Please choose a smaller image.');
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size exceeds 5MB. Please choose a smaller image.');
         return;
       }
       const reader = new FileReader();
@@ -551,83 +460,48 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Save button with server synchronization
-  saveBtn?.addEventListener('click', async () => {
+  // Save button
+  saveBtn?.addEventListener('click', () => {
     if (!tempPhotoData) {
-      alert('Please choose a photo from your device or enter an image URL first.');
+      alert('Please select a photo or enter an image URL first.');
       return;
     }
 
-    const originalBtnContent = saveBtn.innerHTML;
-    saveBtn.disabled = true;
-    saveBtn.innerHTML = '<span>Saving photo...</span>';
+    const photos = getStoredPhotos();
+    photos[currentMemberId] = tempPhotoData;
+    setStoredPhotos(photos);
 
-    try {
-      // 1. Send to server for persistent storage
-      const res = await fetch('/api/team-photos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          memberId: currentMemberId,
-          photoData: tempPhotoData
-        })
-      });
-
-      let finalUrl = tempPhotoData;
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.photoUrl) {
-          finalUrl = data.photoUrl;
-        }
-      } else {
-        console.warn('[Team Photos] Server returned error, saving to local cache fallback');
+    // Update avatar on page immediately
+    const avatarEl = document.getElementById('avatar-' + currentMemberId);
+    if (avatarEl) {
+      const img = avatarEl.querySelector('.tm-avatar-img');
+      const text = avatarEl.querySelector('.tm-avatar-text');
+      if (img) {
+        img.src = tempPhotoData;
+        img.style.display = 'block';
       }
-
-      // 2. Update local state and localStorage
-      teamPhotosCache[currentMemberId] = finalUrl;
-      setStoredPhotos(teamPhotosCache);
-
-      // 3. Update DOM immediately everywhere on the site (Homepage, Fullpage, Modals)
-      applyStoredPhotos();
-
-      closeModal();
-    } catch (err) {
-      console.error('[Team Photos] Error saving photo to server:', err);
-      // Fallback: save locally
-      teamPhotosCache[currentMemberId] = tempPhotoData;
-      setStoredPhotos(teamPhotosCache);
-      applyStoredPhotos();
-      closeModal();
-    } finally {
-      saveBtn.disabled = false;
-      saveBtn.innerHTML = originalBtnContent;
+      if (text) text.style.display = 'none';
     }
+
+    closeModal();
   });
 
-  // Reset / Remove photo button
-  resetBtn?.addEventListener('click', async () => {
-    const originalBtnContent = resetBtn.innerHTML;
-    resetBtn.disabled = true;
-    resetBtn.innerHTML = '<span>Removing...</span>';
+  // Reset button
+  resetBtn?.addEventListener('click', () => {
+    const photos = getStoredPhotos();
+    delete photos[currentMemberId];
+    setStoredPhotos(photos);
 
-    try {
-      // Send delete to server
-      await fetch('/api/team-photos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          memberId: currentMemberId,
-          action: 'delete'
-        })
-      });
-    } catch (err) {
-      console.warn('[Team Photos] Could not delete from server:', err);
+    const avatarEl = document.getElementById('avatar-' + currentMemberId);
+    if (avatarEl) {
+      const img = avatarEl.querySelector('.tm-avatar-img');
+      const text = avatarEl.querySelector('.tm-avatar-text');
+      if (img) {
+        img.src = '';
+        img.style.display = 'none';
+      }
+      if (text) text.style.display = 'block';
     }
-
-    delete teamPhotosCache[currentMemberId];
-    setStoredPhotos(teamPhotosCache);
-
-    applyStoredPhotos();
 
     previewImg.style.display = 'none';
     previewInitials.style.display = 'block';
@@ -636,10 +510,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (urlInput) urlInput.value = '';
     if (fileInput) fileInput.value = '';
 
-    resetBtn.disabled = false;
-    resetBtn.innerHTML = originalBtnContent;
     closeModal();
   });
+
 
   /* =========================================================
      10. THEME SWITCHER (Light & Dark Mode)
@@ -819,8 +692,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let uploadedBase64 = '';
 
   // Initial seed fallback if running statically / offline
-  const fallbackGallerySeed = [];
-  try { localStorage.removeItem("sbj_aws_gallery"); } catch(e) {}
+  const fallbackGallerySeed = [{"id":"gal-1","title":"AWS Cloud Practitioner Kickoff & Roadmap","category":"workshops","categoryLabel":"Workshop","date":"2026-02-24","dateFormatted":"Feb 24, 2026","location":"Auditorium, SBJITMR","caption":"Student builders gathered for an in-depth orientation on AWS architecture, certification tracks, and building cloud fundamentals.","imageUrl":"https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&auto=format&fit=crop&q=80","createdAt":"2026-02-24T10:00:00.000Z"},{"id":"gal-2","title":"Hands-on GenAI with Amazon Bedrock","category":"workshops","categoryLabel":"Workshop","date":"2026-02-12","dateFormatted":"Feb 12, 2026","location":"Cloud Computing Lab 402","caption":"Deep dive into foundation models, prompt engineering, and building agentic workflows on Amazon Bedrock.","imageUrl":"https://images.unsplash.com/photo-1531482615713-2afd69097998?w=1200&auto=format&fit=crop&q=80","createdAt":"2026-02-12T14:30:00.000Z"},{"id":"gal-3","title":"SB Jain Cloud Builder Hackathon 2026","category":"hackathons","categoryLabel":"Hackathon","date":"2026-01-20","dateFormatted":"Jan 20, 2026","location":"Innovation Center, SBJITMR","caption":"24-hour non-stop cloud challenge where student teams built scalable, serverless full-stack web applications.","imageUrl":"https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200&auto=format&fit=crop&q=80","createdAt":"2026-01-20T09:00:00.000Z"},{"id":"gal-4","title":"Central India AWS Community Day Connect","category":"community-day","categoryLabel":"Community Day","date":"2026-01-05","dateFormatted":"Jan 05, 2026","location":"Main Seminar Hall","caption":"Keynote discussions with AWS Community Builders and industry solutions architects on career pathways in cloud and DevOps.","imageUrl":"https://images.unsplash.com/photo-1511578314322-379afb476865?w=1200&auto=format&fit=crop&q=80","createdAt":"2026-01-05T11:00:00.000Z"},{"id":"gal-5","title":"AWS Student Builder Group Core Team Meetup","category":"meetups","categoryLabel":"Campus Meetup","date":"2025-12-15","dateFormatted":"Dec 15, 2025","location":"Department Conference Room","caption":"Brainstorming session aligning event roadmaps, workshop schedules, and student mentor programs for the upcoming semester.","imageUrl":"https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&auto=format&fit=crop&q=80","createdAt":"2025-12-15T15:00:00.000Z"},{"id":"gal-6","title":"Serverless Architecture & Lambda Microservices","category":"workshops","categoryLabel":"Workshop","date":"2025-11-28","dateFormatted":"Nov 28, 2025","location":"CSE Lab 2","caption":"Practical demonstration on event-driven architecture using AWS Lambda, API Gateway, and DynamoDB.","imageUrl":"https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200&auto=format&fit=crop&q=80","createdAt":"2025-11-28T13:30:00.000Z"}];
 
   async function fetchGallery() {
     try {

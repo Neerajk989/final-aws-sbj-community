@@ -1179,11 +1179,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const typing = addMessage('Thinking…', 'bot', 'typing');
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 50000);
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, history })
+        body: JSON.stringify({ message, history }),
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
       const data = await response.json();
       typing.remove();
 
@@ -1198,7 +1202,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (history.length > 8) history.splice(0, history.length - 8);
     } catch (error) {
       typing.remove();
-      addMessage('Could not connect to the AI assistant. Please try again.', 'bot', 'error');
+      const msg = error && error.name === 'AbortError'
+        ? 'The AI took too long to respond. Please try again.'
+        : 'Could not connect to the AI assistant. Please try again.';
+      addMessage(msg, 'bot', 'error');
     } finally {
       sendBtn.disabled = false;
       input.focus();

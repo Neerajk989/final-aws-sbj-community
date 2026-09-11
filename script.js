@@ -1125,7 +1125,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </header>
       <div class="aws-ai-messages" aria-live="polite">
         <div class="aws-ai-message bot">
-          Hi! I’m the SB Jain AWS AI assistant. Ask me about this website or almost any general question—AWS, coding, study topics, writing, current facts, and more.
+          Hi! Ask me anything. I use this website first for community questions, web search for outside/current facts, and AI for coding, study, writing, math, and explanations.
         </div>
       </div>
       <form class="aws-ai-form">
@@ -1339,7 +1339,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      addMessage(data.reply, 'bot');
+      const sourceLabel =
+        data.answerSource === 'website' ? 'From this website' :
+        data.answerSource === 'web' ? 'Checked on the web' :
+        'AI answer';
+      addMessage(sourceLabel + '\n\n' + data.reply, 'bot');
       if (Array.isArray(data.sources) && data.sources.length) {
         const sourceBox = document.createElement('div');
         sourceBox.className = 'aws-ai-sources';

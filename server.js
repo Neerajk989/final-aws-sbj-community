@@ -165,7 +165,7 @@ function geminiChatRequest(apiKey, payload) {
 
     const req = https.request({
       hostname: 'generativelanguage.googleapis.com',
-      path: '/v1beta/models/gemini-3.8-flash:generateContent',
+      path: '/v1beta/models/gemini-2.5-flash:generateContent',
       method: 'POST',
       headers: {
         'x-goog-api-key': apiKey,
@@ -298,9 +298,13 @@ const server = http.createServer(async (req, res) => {
 
       if (!upstream.ok) {
         console.error('[Gemini API] Upstream error:', data);
+        const upstreamMessage =
+          data?.error?.message ||
+          data?.error?.status ||
+          ('Gemini API error ' + upstream.status);
         return sendJson(res, upstream.status, {
           success: false,
-          error: 'The AI service could not answer right now.'
+          error: 'Gemini error: ' + String(upstreamMessage).slice(0, 240)
         });
       }
 

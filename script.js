@@ -1102,7 +1102,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* =========================================================
-   GOOGLE GEMINI AI CHATBOT
+   OPENAI CHATBOT
 ========================================================= */
 document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('awsAiChat')) return;
@@ -1119,7 +1119,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <header class="aws-ai-header">
         <div>
           <strong>SB Jain AWS AI</strong>
-          <span>Powered by Google Gemini</span>
+          <span>Powered by OpenAI</span>
         </div>
         <button class="aws-ai-close" type="button" aria-label="Close AI assistant">×</button>
       </header>
@@ -1331,8 +1331,8 @@ document.addEventListener('DOMContentLoaded', () => {
       typing.remove();
 
       if (!response.ok || !data.success) {
-        if (data.error && /denied access/i.test(data.error)) {
-          addMessage('Gemini is blocked for the current Google project/API key. Website questions can still be answered from this page, but general AI questions need a Gemini key from a project with API access.', 'bot', 'error');
+        if (data.error && /(quota|billing|insufficient_quota|credits)/i.test(data.error)) {
+          addMessage('OpenAI API billing or credits are not available for this key. Add API credits/billing, then redeploy.', 'bot', 'error');
         } else {
           addMessage(data.error || 'AI assistant is unavailable right now.', 'bot', 'error');
         }

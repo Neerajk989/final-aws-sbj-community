@@ -159,21 +159,21 @@ function parseBody(req) {
 }
 
 
-function nvidiaChatRequest(apiKey, payload) {
+function geminiChatRequest(apiKey, payload) {
   return new Promise((resolve, reject) => {
     const body = JSON.stringify(payload);
 
     const req = https.request({
-      hostname: 'integrate.api.nvidia.com',
-      path: '/v1/chat/completions',
+      hostname: 'generativelanguage.googleapis.com',
+      path: '/v1beta/models/gemini-3.8-flash:generateContent',
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer ' + apiKey,
+        'x-goog-api-key': apiKey,
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Content-Length': Buffer.byteLength(body)
       },
-      timeout: 30000
+      timeout: 25000
     }, (upstream) => {
       let raw = '';
 
@@ -186,7 +186,7 @@ function nvidiaChatRequest(apiKey, payload) {
         try {
           data = raw ? JSON.parse(raw) : {};
         } catch (err) {
-          return reject(new Error('Invalid JSON from NVIDIA API'));
+          return reject(new Error('Invalid JSON from Gemini API'));
         }
 
         resolve({
@@ -198,7 +198,7 @@ function nvidiaChatRequest(apiKey, payload) {
     });
 
     req.on('timeout', () => {
-      req.destroy(new Error('NVIDIA request timed out'));
+      req.destroy(new Error('Gemini request timed out'));
     });
 
     req.on('error', reject);
@@ -246,14 +246,14 @@ const server = http.createServer(async (req, res) => {
   }
 
 
-  // NVIDIA Nemotron chatbot API
+  // Google Gemini chatbot API
   if (pathname === '/api/chat' && req.method === 'POST') {
     try {
-      const apiKey = process.env.NVIDIA_API_KEY;
+      const apiKey = process.env.GEMINI_API_KEY;
       if (!apiKey) {
         return sendJson(res, 503, {
           success: false,
-          error: 'Chatbot is not configured yet. NVIDIA_API_KEY is missing.'
+          error: 'Chatbot is not configured yet. GEMINI_API_KEY is missing.'
         });
       }
 
@@ -274,37 +274,40 @@ const server = http.createServer(async (req, res) => {
         .filter(item => item && (item.role === 'user' || item.role === 'assistant') && typeof item.content === 'string')
         .map(item => ({ role: item.role, content: item.content.slice(0, 3000) }));
 
-      const result = await nvidiaChatRequest(apiKey, {
-        model: 'nvidia/nemotron-3.5-lightning-30b-a3b',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are the AI assistant for the SB Jain AWS Student Community in Nagpur. Answer normal general questions like a helpful chatbot. For questions about this website, use the WEBSITE CONTENT below and prefer exact facts from it. Be concise by default, but give detailed steps or code when asked. If a community-specific fact is not present, say so clearly.\n\nWEBSITE CONTENT:\n' + pageContext
-          },
-          ...safeHistory,
-          { role: 'user', content: message }
-        ],
-        temperature: 0.3,
-        max_tokens: 260,
-        stream: false,
-        chat_template_kwargs: { enable_thinking: false }
+      const geminiContents = safeHistory.map(item => ({
+        role: item.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: item.content }]
+      }));
+      geminiContents.push({ role: 'user', parts: [{ text: message }] });
+
+      const result = await geminiChatRequest(apiKey, {
+        systemInstruction: {
+          parts: [{
+            text: 'You are the AI assistant for the SB Jain AWS Student Community in Nagpur. Answer general questions like a helpful chatbot. For questions about this website, use the WEBSITE CONTENT below and prefer exact facts from it. Be concise by default, but give detailed steps or code when asked. If a community-specific fact is not present, say so clearly.\n\nWEBSITE CONTENT:\n' + pageContext
+          }]
+        },
+        contents: geminiContents,
+        generationConfig: {
+          temperature: 0.4,
+          maxOutputTokens: 500
+        }
       });
 
       const upstream = { ok: result.ok, status: result.status };
       const data = result.data;
 
       if (!upstream.ok) {
-        console.error('[Nemotron API] Upstream error:', data);
+        console.error('[Gemini API] Upstream error:', data);
         return sendJson(res, upstream.status, {
           success: false,
           error: 'The AI service could not answer right now.'
         });
       }
 
-      const reply = data?.choices?.[0]?.message?.content || 'Sorry, I could not generate a response.';
+      const reply = data?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('').trim() || 'Sorry, I could not generate a response.';
       return sendJson(res, 200, { success: true, reply });
     } catch (err) {
-      console.error('[Nemotron API] Chat error:', err);
+      console.error('[Gemini API] Chat error:', err);
       if (err && /timed out/i.test(err.message || '')) {
         return sendJson(res, 504, { success: false, error: 'AI is taking too long. Please send the question again.' });
       }

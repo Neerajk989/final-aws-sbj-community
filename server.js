@@ -165,7 +165,7 @@ function geminiChatRequest(apiKey, payload) {
 
     const req = https.request({
       hostname: 'generativelanguage.googleapis.com',
-      path: '/v1beta/models/gemini-2.5-flash:generateContent',
+      path: '/v1beta/models/gemini-3.6-flash:generateContent',
       method: 'POST',
       headers: {
         'x-goog-api-key': apiKey,

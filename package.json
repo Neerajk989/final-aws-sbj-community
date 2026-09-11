@@ -17,6 +17,6 @@
   "author": "SB Jain AWS Community",
   "license": "MIT",
   "dependencies": {
-    "@vercel/blob": "2.8.0"
+    "@netlify/blobs": "11.0.3"
   }
 }

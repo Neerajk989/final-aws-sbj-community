@@ -1145,53 +1145,103 @@ document.addEventListener('DOMContentLoaded', () => {
   const messages = wrap.querySelector('.aws-ai-messages');
   const sendBtn = wrap.querySelector('.aws-ai-send');
 
-  function getWebsiteContext() {
-    try {
-      const clone = document.body.cloneNode(true);
-      const chat = clone.querySelector('#awsAiChat');
-      if (chat) chat.remove();
-      clone.querySelectorAll('script, style, noscript').forEach(el => el.remove());
-      return (clone.innerText || '')
-        .replace(/\s+/g, ' ')
-        .trim()
-        .slice(0, 7000);
-    } catch (error) {
-      return '';
-    }
+  function normalizeQuestion(text) {
+    return text.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
   }
 
-  function answerFromPage(message) {
-    const q = message.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
-
-    // Build team facts directly from the page so answers stay correct when the page changes.
-    const teamFacts = [];
+  function getTeamFacts() {
+    const facts = [];
     document.querySelectorAll('[data-member-name][data-member-role]').forEach(el => {
       const name = (el.dataset.memberName || '').trim();
       const role = (el.dataset.memberRole || '').trim();
-      if (name && role) teamFacts.push({ name, role });
+      if (name && role) facts.push({ name, role });
     });
     document.querySelectorAll('#tmMemberSelect option').forEach(opt => {
       const m = opt.textContent.trim().match(/^(.+?)\s*\((.+)\)$/);
-      if (m) teamFacts.push({ name: m[1].trim(), role: m[2].trim() });
+      if (m) facts.push({ name: m[1].trim(), role: m[2].trim() });
     });
 
-    const dedup = [];
     const seen = new Set();
-    for (const item of teamFacts) {
+    return facts.filter(item => {
       const key = (item.name + '|' + item.role).toLowerCase();
-      if (!seen.has(key)) {
-        seen.add(key);
-        dedup.push(item);
-      }
-    }
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
 
-    const nameMatch = dedup.find(item => q.includes(item.name.toLowerCase()));
+  function isWebsiteQuestion(message) {
+    const q = normalizeQuestion(message);
+    const siteWords = [
+      'website','page','community','sb jain','sbjit','team','leader','head','co head',
+      'member','volunteer','event','events','gallery','join','faq','workshop','hackathon',
+      'speaker','organizer','technical','design','marketing','operations'
+    ];
+    if (siteWords.some(w => q.includes(w))) return true;
+
+    const teamFacts = getTeamFacts();
+    return teamFacts.some(item => q.includes(item.name.toLowerCase()));
+  }
+
+  function getRelevantWebsiteContext(message) {
+    if (!isWebsiteQuestion(message)) return '';
+
+    const q = normalizeQuestion(message);
+    const stop = new Set(['what','who','is','are','the','a','an','in','on','of','to','for','and','this','website','page','tell','me','about','do','does','how','where','when','our','your']);
+    const terms = q.split(' ').filter(w => w.length > 2 && !stop.has(w));
+
+    const teamFacts = getTeamFacts();
+    const teamLines = teamFacts.map(item => item.name + ' — ' + item.role);
+
+    const blocks = [];
+    const selectors = [
+      'h1','h2','h3','h4','p','li',
+      '.faq-item','.event-card','.gallery-card','.team-dept',
+      '[data-member-name][data-member-role]'
+    ];
+
+    document.querySelectorAll(selectors.join(',')).forEach(el => {
+      if (el.closest('#awsAiChat')) return;
+      const text = (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
+      if (text.length >= 15 && text.length <= 900) blocks.push(text);
+    });
+
+    const unique = [...new Set(blocks)];
+    const scored = unique.map(text => {
+      const lower = text.toLowerCase();
+      let score = terms.reduce((n,t) => n + (lower.includes(t) ? 2 : 0), 0);
+      if (/team|leader|head|member|technical|design|marketing|operations/.test(q) &&
+          /leader|head|co-head|volunteer|technical|design|marketing|operations/.test(lower)) score += 3;
+      if (/event|workshop|hackathon|gallery/.test(q) &&
+          /event|workshop|hackathon|gallery/.test(lower)) score += 3;
+      return { text, score };
+    }).sort((a,b) => b.score - a.score || a.text.length - b.text.length);
+
+    const top = scored.filter(x => x.score > 0).slice(0, 12).map(x => x.text);
+    if (!top.length) top.push(...unique.slice(0, 8));
+
+    return [
+      'SITE: SB Jain AWS Student Community, Nagpur',
+      'TEAM DIRECTORY:',
+      ...teamLines,
+      'RELEVANT PAGE CONTENT:',
+      ...top
+    ].join('\n').slice(0, 12000);
+  }
+
+  function answerFromPage(message) {
+    if (!isWebsiteQuestion(message)) return '';
+
+    const q = normalizeQuestion(message);
+    const teamFacts = getTeamFacts();
+
+    const nameMatch = teamFacts.find(item => q.includes(item.name.toLowerCase()));
     if (nameMatch) {
       return nameMatch.name + ' is listed on this website as ' + nameMatch.role + '.';
     }
 
     const roleQueries = [
-      { terms: ['group leader', 'leader'], roles: ['group leader'] },
+      { terms: ['group leader', 'community leader', 'leader'], roles: ['group leader'] },
       { terms: ['technical head', 'tech head'], roles: ['head · technical', 'head technical'] },
       { terms: ['technical co head', 'tech co head', 'co head technical'], roles: ['co-head · technical', 'co head · technical', 'co-head technical'] },
       { terms: ['design head'], roles: ['head · design', 'head design'] },
@@ -1202,29 +1252,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     for (const rq of roleQueries) {
       if (rq.terms.some(t => q.includes(t))) {
-        const matches = dedup.filter(item => rq.roles.some(r => item.role.toLowerCase().includes(r)));
-        if (matches.length) {
-          return matches.map(item => item.name + ' — ' + item.role).join('\n');
-        }
+        const matches = teamFacts.filter(item => rq.roles.some(r => item.role.toLowerCase().includes(r)));
+        if (matches.length) return matches.map(item => item.name + ' — ' + item.role).join('\n');
       }
-    }
-
-    // Generic website Q&A: retrieve the most relevant visible sentences from the page.
-    const stop = new Set(['what','who','is','are','the','a','an','in','on','of','to','for','and','this','website','page','tell','me','about','do','does','how','where','when']);
-    const terms = q.split(' ').filter(w => w.length > 2 && !stop.has(w));
-    if (!terms.length) return '';
-
-    const text = getWebsiteContext();
-    const sentences = text.split(/(?<=[.!?])\s+|\s{2,}/).map(s => s.trim()).filter(s => s.length > 20);
-    const scored = sentences.map(s => {
-      const lower = s.toLowerCase();
-      const score = terms.reduce((n,t) => n + (lower.includes(t) ? 1 : 0), 0);
-      return { s, score };
-    }).filter(x => x.score > 0)
-      .sort((a,b) => b.score - a.score || a.s.length - b.s.length);
-
-    if (scored.length && scored[0].score >= Math.min(2, terms.length)) {
-      return scored.slice(0, 2).map(x => x.s).join(' ');
     }
 
     return '';
@@ -1258,11 +1288,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const instantReplies = {
       'hi': 'Hi! How can I help you with AWS, cloud, coding, or the SB Jain AWS community?',
-      'hello': 'Hello! Ask me anything about AWS, cloud, coding, projects, or the community.',
-      'who is tech co head': 'Neeraj Khapre is listed as Co-Head · Technical in the SB Jain AWS Student Builder Group.',
-      'who is technical co head': 'Neeraj Khapre is listed as Co-Head · Technical in the SB Jain AWS Student Builder Group.',
-      'who is tech head': 'Sarang Chakole is listed as Head · Technical, and Neeraj Khapre is listed as Co-Head · Technical.',
-      'who is technical head': 'Sarang Chakole is listed as Head · Technical, and Neeraj Khapre is listed as Co-Head · Technical.'
+      'hello': 'Hello! Ask me anything about AWS, cloud, coding, projects, or the community.'
     };
     const pageAnswer = answerFromPage(message);
     if (pageAnswer) {
@@ -1297,7 +1323,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, history, pageContext: getWebsiteContext() }),
+        body: JSON.stringify({ message, history, pageContext: getRelevantWebsiteContext(message) }),
         signal: controller.signal
       });
       clearTimeout(timeoutId);
@@ -1316,7 +1342,7 @@ document.addEventListener('DOMContentLoaded', () => {
       addMessage(data.reply, 'bot');
       history.push({ role: 'user', content: message });
       history.push({ role: 'assistant', content: data.reply });
-      if (history.length > 8) history.splice(0, history.length - 8);
+      if (history.length > 12) history.splice(0, history.length - 12);
     } catch (error) {
       typing.remove();
       const msg = error && error.name === 'AbortError'

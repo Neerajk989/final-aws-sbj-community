@@ -31,7 +31,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=36">
+  <link rel="stylesheet" href="style.css?v=37">
 
   <script>
     (function() {
@@ -67,6 +67,19 @@
     </div>
     <button class="community-intro-skip" id="communityIntroSkip" type="button">Skip intro <span aria-hidden="true">↗</span></button>
   </div>
+
+  <script id="github-pages-intro-failsafe">
+    // Safety net: never let the intro overlay trap the website if the main JS fails to load.
+    window.setTimeout(function () {
+      var intro = document.getElementById('communityIntro');
+      if (!intro) return;
+      intro.classList.add('is-complete');
+      intro.setAttribute('aria-hidden', 'true');
+      window.setTimeout(function () {
+        if (intro && intro.parentNode) intro.parentNode.removeChild(intro);
+      }, 750);
+    }, 4200);
+  </script>
 
   <!-- AMBIENT ANIMATED AURA BACKGROUND (Full Page) -->
   <div class="site-aura" aria-hidden="true">
@@ -638,7 +651,7 @@
     </div>
   </footer>
 
-  <script src="script.js?v=36"></script>
+  <script src="script.js?v=37"></script>
 
   <!-- TEAM MEMBER PROFILE EDIT MODAL -->
   <div class="tm-modal" id="teamModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="tmModalTitle">

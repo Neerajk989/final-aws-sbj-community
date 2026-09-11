@@ -1100,3 +1100,120 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 });
+
+/* =========================================================
+   NVIDIA NEMOTRON AI CHATBOT
+========================================================= */
+document.addEventListener('DOMContentLoaded', () => {
+  if (document.getElementById('awsAiChat')) return;
+
+  const wrap = document.createElement('div');
+  wrap.id = 'awsAiChat';
+  wrap.className = 'aws-ai-chat';
+  wrap.innerHTML = `
+    <button class="aws-ai-launcher" type="button" aria-label="Open AI assistant" aria-expanded="false">
+      <span class="aws-ai-launcher-dot"></span>
+      <span class="aws-ai-launcher-label">Ask AI</span>
+    </button>
+    <section class="aws-ai-panel" aria-hidden="true" aria-label="SB Jain AWS AI Assistant">
+      <header class="aws-ai-header">
+        <div>
+          <strong>SB Jain AWS AI</strong>
+          <span>Powered by NVIDIA Nemotron</span>
+        </div>
+        <button class="aws-ai-close" type="button" aria-label="Close AI assistant">×</button>
+      </header>
+      <div class="aws-ai-messages" aria-live="polite">
+        <div class="aws-ai-message bot">
+          Hi! I’m the SB Jain AWS AI assistant. Ask me about AWS, cloud, coding, projects, or community learning.
+        </div>
+      </div>
+      <form class="aws-ai-form">
+        <textarea class="aws-ai-input" rows="1" maxlength="3000" placeholder="Ask about AWS, coding, cloud..."></textarea>
+        <button class="aws-ai-send" type="submit" aria-label="Send message">➤</button>
+      </form>
+      <div class="aws-ai-note">AI can make mistakes. Verify important technical details.</div>
+    </section>
+  `;
+  document.body.appendChild(wrap);
+
+  const launcher = wrap.querySelector('.aws-ai-launcher');
+  const panel = wrap.querySelector('.aws-ai-panel');
+  const closeBtn = wrap.querySelector('.aws-ai-close');
+  const form = wrap.querySelector('.aws-ai-form');
+  const input = wrap.querySelector('.aws-ai-input');
+  const messages = wrap.querySelector('.aws-ai-messages');
+  const sendBtn = wrap.querySelector('.aws-ai-send');
+
+  const history = [];
+
+  const setOpen = (open) => {
+    wrap.classList.toggle('is-open', open);
+    launcher.setAttribute('aria-expanded', String(open));
+    panel.setAttribute('aria-hidden', String(!open));
+    if (open) window.setTimeout(() => input.focus(), 80);
+  };
+
+  launcher.addEventListener('click', () => setOpen(!wrap.classList.contains('is-open')));
+  closeBtn.addEventListener('click', () => setOpen(false));
+
+  const addMessage = (text, role, extraClass = '') => {
+    const el = document.createElement('div');
+    el.className = 'aws-ai-message ' + role + (extraClass ? ' ' + extraClass : '');
+    el.textContent = text;
+    messages.appendChild(el);
+    messages.scrollTop = messages.scrollHeight;
+    return el;
+  };
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const message = input.value.trim();
+    if (!message) return;
+
+    addMessage(message, 'user');
+    input.value = '';
+    input.style.height = 'auto';
+    sendBtn.disabled = true;
+
+    const typing = addMessage('Thinking…', 'bot', 'typing');
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, history })
+      });
+      const data = await response.json();
+      typing.remove();
+
+      if (!response.ok || !data.success) {
+        addMessage(data.error || 'AI assistant is unavailable right now.', 'bot', 'error');
+        return;
+      }
+
+      addMessage(data.reply, 'bot');
+      history.push({ role: 'user', content: message });
+      history.push({ role: 'assistant', content: data.reply });
+      if (history.length > 8) history.splice(0, history.length - 8);
+    } catch (error) {
+      typing.remove();
+      addMessage('Could not connect to the AI assistant. Please try again.', 'bot', 'error');
+    } finally {
+      sendBtn.disabled = false;
+      input.focus();
+    }
+  });
+
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 110) + 'px';
+  });
+
+  input.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      form.requestSubmit();
+    }
+  });
+});

@@ -341,23 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let tempPhotoData = '';
   let teamPhotosCache = {};
 
-  function getTeamPhotoAdminKey() {
-    let key = '';
-    try { key = sessionStorage.getItem('aws_sbj_team_photo_admin_key') || ''; } catch (e) {}
-    if (!key) {
-      key = window.prompt('Enter the team photo admin key to save this photo permanently:') || '';
-      key = key.trim();
-      if (key) {
-        try { sessionStorage.setItem('aws_sbj_team_photo_admin_key', key); } catch (e) {}
-      }
-    }
-    return key;
-  }
-
-  function clearTeamPhotoAdminKey() {
-    try { sessionStorage.removeItem('aws_sbj_team_photo_admin_key'); } catch (e) {}
-  }
-
   function getStoredPhotos() {
     try {
       const current = JSON.parse(localStorage.getItem(TEAM_PHOTO_STORAGE_KEY) || '{}');
@@ -593,9 +576,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const adminKey = getTeamPhotoAdminKey();
-    if (!adminKey) return;
-
     const originalLabel = saveBtn.innerHTML;
     saveBtn.disabled = true;
     saveBtn.innerHTML = '<span>Saving permanently...</span>';
@@ -604,8 +584,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch(getTeamApiUrl(), {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'X-Team-Admin-Key': adminKey
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           memberId: currentMemberId,
@@ -616,7 +595,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok || !data.success || !data.photoUrl) {
-        if (res.status === 401) clearTeamPhotoAdminKey();
         throw new Error(data.error || 'Could not save photo permanently.');
       }
 
@@ -634,17 +612,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   resetBtn?.addEventListener('click', async () => {
-    const adminKey = getTeamPhotoAdminKey();
-    if (!adminKey) return;
-
     try {
       const res = await fetch(getTeamApiUrl() + '/' + encodeURIComponent(currentMemberId), {
-        method: 'DELETE',
-        headers: { 'X-Team-Admin-Key': adminKey }
+        method: 'DELETE'
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.success) {
-        if (res.status === 401) clearTeamPhotoAdminKey();
         throw new Error(data.error || 'Could not remove the permanent photo.');
       }
 

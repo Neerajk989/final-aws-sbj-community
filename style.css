@@ -7214,3 +7214,45 @@ select {
   .aws-ai-launcher { padding: 13px; }
   .aws-ai-launcher-dot { width: 12px; height: 12px; }
 }
+
+/* Team Member Photo Click & Hover Affordance */
+.tm-ref-avatar, .tm-ref-photo, .tm-avatar-cam-badge {
+  cursor: pointer !important;
+}
+.tm-ref-avatar:hover {
+  box-shadow: 0 0 24px rgba(255, 153, 0, 0.45) !important;
+  transform: scale(1.06);
+}
+.tm-ref-avatar:hover .tm-avatar-cam-badge {
+  transform: scale(1.2);
+  background: #ffb84d;
+}
+
+/* Team Member Photo Hover Overlay */
+.tm-ref-avatar::after {
+  content: "📷 Add Photo";
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: rgba(13, 19, 28, 0.95);
+  color: #ff9900;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 153, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+}
+.tm-ref-card:hover .tm-ref-avatar::after,
+.tm-ref-avatar:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}

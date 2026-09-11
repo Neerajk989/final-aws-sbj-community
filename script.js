@@ -287,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   /* =========================================================
-     9. TEAM MEMBER PROFILE PHOTO EDITOR & LOCALSTORAGE
+     9. TEAM MEMBER PROFILE PHOTO EDITOR & PERSISTENT STORAGE
   ========================================================= */
   const teamModal = document.getElementById('teamModal');
   const modalClose = document.getElementById('tmModalClose');
@@ -329,6 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let currentMemberId = 'sarang-chakole';
   let tempPhotoData = '';
+  let teamPhotosCache = {};
 
   function getStoredPhotos() {
     try {
@@ -346,9 +347,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Fetch photos from server and apply to page
+  async function fetchTeamPhotos() {
+    // 1. First apply any locally cached photos for instantaneous render
+    teamPhotosCache = getStoredPhotos();
+    applyStoredPhotos();
+
+    // 2. Fetch latest persistent photos from backend server
+    try {
+      const res = await fetch('/api/team-photos');
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.success && data.photos) {
+          teamPhotosCache = Object.assign({}, teamPhotosCache, data.photos);
+          setStoredPhotos(teamPhotosCache);
+          applyStoredPhotos();
+        }
+      }
+    } catch (err) {
+      console.warn('[Team Photos] Could not reach backend server, using cached photos:', err);
+    }
+  }
+
   // Render all stored photos on page cards
   function applyStoredPhotos() {
-    const photos = getStoredPhotos();
+    const photos = teamPhotosCache || getStoredPhotos();
     Object.keys(photos).forEach(id => {
       const avatarEl = document.getElementById('avatar-' + id);
       if (avatarEl && photos[id]) {
@@ -363,16 +386,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  applyStoredPhotos();
+  // Call on initialization
+  fetchTeamPhotos();
 
   function openModalForMember(memberId, memberName) {
-    currentMemberId = memberId;
-    if (memberSelect) memberSelect.value = memberId;
-    if (modalTitle) modalTitle.textContent = memberName || (memberSelect ? memberSelect.options[memberSelect.selectedIndex].text : 'Member');
+    currentMemberId = memberId || 'sarang-chakole';
+    if (memberSelect) memberSelect.value = currentMemberId;
+    if (modalTitle) {
+      modalTitle.textContent = memberName || (memberSelect ? memberSelect.options[memberSelect.selectedIndex].text : 'Member');
+    }
     
     // Check existing photo
-    const photos = getStoredPhotos();
-    const existing = photos[memberId];
+    const photos = teamPhotosCache || getStoredPhotos();
+    const existing = photos[currentMemberId];
     tempPhotoData = existing || '';
 
     if (existing) {
@@ -383,7 +409,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       previewImg.style.display = 'none';
       previewInitials.style.display = 'block';
-      previewInitials.textContent = memberInitialsMap[memberId] || 'SB';
+      previewInitials.textContent = memberInitialsMap[currentMemberId] || 'SB';
       if (urlInput) urlInput.value = '';
     }
 
@@ -397,18 +423,53 @@ document.addEventListener('DOMContentLoaded', () => {
     teamModal?.setAttribute('aria-hidden', 'true');
   }
 
-  // Click listener on all member cards / avatars
-  document.querySelectorAll('[data-member-id]').forEach(card => {
-    const avatar = card.querySelector('.tm-leader-avatar, .tm-member-avatar');
-    if (avatar) {
-      avatar.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const id = card.dataset.memberId;
-        const name = card.dataset.memberName;
-        openModalForMember(id, name);
-      });
-    }
-  });
+  // Click listener on all member cards / avatars / cam-badges
+  function initTeamCardClickListeners() {
+    document.querySelectorAll('[data-member-id]').forEach(card => {
+      const id = card.dataset.memberId;
+      const name = card.dataset.memberName;
+
+      // Click on avatar
+      const avatar = card.querySelector('.tm-ref-avatar, .tm-leader-avatar, .tm-member-avatar');
+      if (avatar) {
+        avatar.style.cursor = 'pointer';
+        avatar.setAttribute('role', 'button');
+        avatar.setAttribute('tabindex', '0');
+        avatar.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openModalForMember(id, name);
+        });
+        avatar.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openModalForMember(id, name);
+          }
+        });
+      }
+
+      // Click on cam-badge
+      const camBadge = card.querySelector('.tm-avatar-cam-badge');
+      if (camBadge) {
+        camBadge.style.cursor = 'pointer';
+        camBadge.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openModalForMember(id, name);
+        });
+      }
+
+      // Click on photo wrapper
+      const photoWrap = card.querySelector('.tm-ref-photo');
+      if (photoWrap) {
+        photoWrap.style.cursor = 'pointer';
+        photoWrap.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openModalForMember(id, name);
+        });
+      }
+    });
+  }
+
+  initTeamCardClickListeners();
 
   openEditorBtn?.addEventListener('click', () => {
     openModalForMember(memberSelect ? memberSelect.value : 'sarang-chakole');
@@ -426,8 +487,8 @@ document.addEventListener('DOMContentLoaded', () => {
   fileInput?.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Image size exceeds 5MB. Please choose a smaller image.');
+      if (file.size > 8 * 1024 * 1024) {
+        alert('Image size exceeds 8MB. Please choose a smaller image.');
         return;
       }
       const reader = new FileReader();
@@ -453,37 +514,90 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Save button
-  saveBtn?.addEventListener('click', () => {
+  // Save button with server synchronization
+  saveBtn?.addEventListener('click', async () => {
     if (!tempPhotoData) {
-      alert('Please select a photo or enter an image URL first.');
+      alert('Please choose a photo from your device or enter an image URL first.');
       return;
     }
 
-    const photos = getStoredPhotos();
-    photos[currentMemberId] = tempPhotoData;
-    setStoredPhotos(photos);
+    const originalBtnContent = saveBtn.innerHTML;
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<span>Saving photo...</span>';
 
-    // Update avatar on page immediately
-    const avatarEl = document.getElementById('avatar-' + currentMemberId);
-    if (avatarEl) {
-      const img = avatarEl.querySelector('.tm-avatar-img');
-      const text = avatarEl.querySelector('.tm-avatar-text');
-      if (img) {
-        img.src = tempPhotoData;
-        img.style.display = 'block';
+    try {
+      // 1. Send to server for persistent storage
+      const res = await fetch('/api/team-photos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          memberId: currentMemberId,
+          photoData: tempPhotoData
+        })
+      });
+
+      let finalUrl = tempPhotoData;
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.photoUrl) {
+          finalUrl = data.photoUrl;
+        }
+      } else {
+        console.warn('[Team Photos] Server returned error, saving to local cache fallback');
       }
-      if (text) text.style.display = 'none';
-    }
 
-    closeModal();
+      // 2. Update local state and localStorage
+      teamPhotosCache[currentMemberId] = finalUrl;
+      setStoredPhotos(teamPhotosCache);
+
+      // 3. Update DOM immediately
+      const avatarEl = document.getElementById('avatar-' + currentMemberId);
+      if (avatarEl) {
+        const img = avatarEl.querySelector('.tm-avatar-img');
+        const text = avatarEl.querySelector('.tm-avatar-text');
+        if (img) {
+          img.src = finalUrl;
+          img.style.display = 'block';
+        }
+        if (text) text.style.display = 'none';
+      }
+
+      closeModal();
+    } catch (err) {
+      console.error('[Team Photos] Error saving photo to server:', err);
+      // Fallback: save locally
+      teamPhotosCache[currentMemberId] = tempPhotoData;
+      setStoredPhotos(teamPhotosCache);
+      applyStoredPhotos();
+      closeModal();
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = originalBtnContent;
+    }
   });
 
-  // Reset button
-  resetBtn?.addEventListener('click', () => {
-    const photos = getStoredPhotos();
-    delete photos[currentMemberId];
-    setStoredPhotos(photos);
+  // Reset / Remove photo button
+  resetBtn?.addEventListener('click', async () => {
+    const originalBtnContent = resetBtn.innerHTML;
+    resetBtn.disabled = true;
+    resetBtn.innerHTML = '<span>Removing...</span>';
+
+    try {
+      // Send delete to server
+      await fetch('/api/team-photos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          memberId: currentMemberId,
+          action: 'delete'
+        })
+      });
+    } catch (err) {
+      console.warn('[Team Photos] Could not delete from server:', err);
+    }
+
+    delete teamPhotosCache[currentMemberId];
+    setStoredPhotos(teamPhotosCache);
 
     const avatarEl = document.getElementById('avatar-' + currentMemberId);
     if (avatarEl) {
@@ -503,9 +617,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (urlInput) urlInput.value = '';
     if (fileInput) fileInput.value = '';
 
+    resetBtn.disabled = false;
+    resetBtn.innerHTML = originalBtnContent;
     closeModal();
   });
-
 
   /* =========================================================
      10. THEME SWITCHER (Light & Dark Mode)

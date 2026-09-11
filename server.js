@@ -8,6 +8,30 @@ const PORT = process.env.PORT || 8080;
 const ROOT_DIR = __dirname;
 const DATA_DIR = process.env.VERCEL ? path.join('/tmp', 'data') : path.join(ROOT_DIR, 'data');
 const DB_FILE = path.join(DATA_DIR, 'gallery.json');
+const TEAM_DB_FILE = path.join(DATA_DIR, 'team-photos.json');
+const TEAM_UPLOADS_DIR = process.env.VERCEL ? path.join('/tmp', 'uploads', 'team') : path.join(ROOT_DIR, 'uploads', 'team');
+if (!fs.existsSync(TEAM_UPLOADS_DIR)) fs.mkdirSync(TEAM_UPLOADS_DIR, { recursive: true });
+
+function readTeamPhotosData() {
+  try {
+    if (!fs.existsSync(TEAM_DB_FILE)) return {};
+    const raw = fs.readFileSync(TEAM_DB_FILE, 'utf8');
+    return JSON.parse(raw);
+  } catch (err) {
+    console.error('[Database] Failed to read team photos:', err);
+    return {};
+  }
+}
+
+function writeTeamPhotosData(data) {
+  try {
+    fs.writeFileSync(TEAM_DB_FILE, JSON.stringify(data, null, 2), 'utf8');
+    return true;
+  } catch (err) {
+    console.error('[Database] Failed to write team photos:', err);
+    return false;
+  }
+}
 const UPLOADS_DIR = process.env.VERCEL ? path.join('/tmp', 'uploads', 'gallery') : path.join(ROOT_DIR, 'uploads', 'gallery');
 
 // Ensure data & upload directories exist
@@ -305,6 +329,104 @@ const server = http.createServer(async (req, res) => {
       }
       return sendJson(res, 500, { success: false, error: 'Chatbot request failed: ' + (err.message || 'unknown error') });
     }
+  }
+
+  /* ----------------------------------------------------
+     TEAM PHOTOS REST API (Persistent Storage)
+  ---------------------------------------------------- */
+  // GET /api/team-photos
+  if (pathname === '/api/team-photos' && req.method === 'GET') {
+    const photos = readTeamPhotosData();
+    return sendJson(res, 200, { success: true, count: Object.keys(photos).length, photos });
+  }
+
+  // POST /api/team-photos (Upload / Update / Delete member photo)
+  if (pathname === '/api/team-photos' && req.method === 'POST') {
+    try {
+      const payload = await parseBody(req);
+      const { memberId, photoData, action } = payload;
+
+      if (!memberId) {
+        return sendJson(res, 400, { success: false, error: 'Member ID is required.' });
+      }
+
+      const photos = readTeamPhotosData();
+
+      // Handle Delete action
+      if (action === 'delete' || !photoData) {
+        const oldPhoto = photos[memberId];
+        delete photos[memberId];
+        writeTeamPhotosData(photos);
+
+        if (oldPhoto && oldPhoto.startsWith('/uploads/team/')) {
+          const oldFile = path.join(ROOT_DIR, oldPhoto.replace(/^\//, ''));
+          if (fs.existsSync(oldFile)) {
+            try { fs.unlinkSync(oldFile); } catch(e) {}
+          }
+        }
+
+        console.log(`[Team API] Removed photo for member: ${memberId}`);
+        return sendJson(res, 200, { success: true, action: 'deleted', memberId });
+      }
+
+      // Handle Save / Upload action
+      let finalPhotoUrl = photoData;
+
+      // If Base64 image, save as physical image file on disk
+      if (typeof photoData === 'string' && photoData.startsWith('data:image/')) {
+        const matches = photoData.match(/^data:image\/([a-zA-Z0-9+]+);base64,(.+)$/);
+        if (matches) {
+          const rawExt = matches[1].toLowerCase();
+          const ext = rawExt === 'jpeg' ? 'jpg' : rawExt;
+          const fileName = `${memberId}-${Date.now()}.${ext}`;
+          const filePath = path.join(TEAM_UPLOADS_DIR, fileName);
+          const buffer = Buffer.from(matches[2], 'base64');
+          fs.writeFileSync(filePath, buffer);
+          finalPhotoUrl = `/uploads/team/${fileName}`;
+        }
+      }
+
+      // Clean up previous image file if it was a local upload
+      const previousPhoto = photos[memberId];
+      if (previousPhoto && previousPhoto.startsWith('/uploads/team/') && previousPhoto !== finalPhotoUrl) {
+        const oldFile = path.join(ROOT_DIR, previousPhoto.replace(/^\//, ''));
+        if (fs.existsSync(oldFile)) {
+          try { fs.unlinkSync(oldFile); } catch(e) {}
+        }
+      }
+
+      photos[memberId] = finalPhotoUrl;
+      writeTeamPhotosData(photos);
+
+      console.log(`[Team API] Successfully saved photo for member ${memberId} -> ${finalPhotoUrl}`);
+      return sendJson(res, 200, { success: true, memberId, photoUrl: finalPhotoUrl });
+    } catch (err) {
+      console.error('[Team API] Error saving member photo:', err);
+      return sendJson(res, 500, { success: false, error: 'Failed to process team photo: ' + err.message });
+    }
+  }
+
+  // DELETE /api/team-photos/:id
+  if (pathname.startsWith('/api/team-photos/') && req.method === 'DELETE') {
+    const memberId = pathname.replace('/api/team-photos/', '').trim();
+    if (!memberId) {
+      return sendJson(res, 400, { success: false, error: 'Member ID is required.' });
+    }
+
+    const photos = readTeamPhotosData();
+    const oldPhoto = photos[memberId];
+    delete photos[memberId];
+    writeTeamPhotosData(photos);
+
+    if (oldPhoto && oldPhoto.startsWith('/uploads/team/')) {
+      const oldFile = path.join(ROOT_DIR, oldPhoto.replace(/^\//, ''));
+      if (fs.existsSync(oldFile)) {
+        try { fs.unlinkSync(oldFile); } catch(e) {}
+      }
+    }
+
+    console.log(`[Team API] Deleted photo for member: ${memberId}`);
+    return sendJson(res, 200, { success: true, memberId });
   }
 
   // 2. GET /api/gallery

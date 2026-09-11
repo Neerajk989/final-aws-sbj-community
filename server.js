@@ -165,7 +165,7 @@ function geminiChatRequest(apiKey, payload) {
 
     const req = https.request({
       hostname: 'generativelanguage.googleapis.com',
-      path: '/v1beta/models/gemini-3.6-flash:generateContent',
+      path: '/v1beta/models/gemini-3.8-flash:generateContent',
       method: 'POST',
       headers: {
         'x-goog-api-key': apiKey,
@@ -283,13 +283,16 @@ const server = http.createServer(async (req, res) => {
       const result = await geminiChatRequest(apiKey, {
         systemInstruction: {
           parts: [{
-            text: 'You are SB Jain AWS AI, a helpful assistant for the SB Jain AWS Student Community in Nagpur. Answer general questions accurately and naturally. When the user asks about this website, its team, events, roles, FAQ, gallery, or community details, use WEBSITE CONTENT as the primary source of truth. Never invent a website-specific fact. If the user corrects a fact, acknowledge the correction and use the website context to verify it. For general questions, do not force website information into the answer. Be concise by default, but provide clear step-by-step detail or code when requested.\n\nWEBSITE CONTENT:\n' + (pageContext || '[No website context needed for this question]')
+            text: 'You are SB Jain AWS AI, a general-purpose assistant. Answer the user\'s actual question directly. For questions about this website, its team, events, roles, FAQ, gallery, or community details, treat WEBSITE CONTENT as the primary source of truth and never invent a website-specific fact. For current or externally verifiable facts, use Google Search grounding when the model decides it is useful. If facts are uncertain or sources conflict, say so instead of guessing. For coding, math, study, writing, and general knowledge, answer normally and accurately. Keep answers concise by default, but provide detailed steps or code when requested. Do not claim certainty when you are not certain.\n\nWEBSITE CONTENT:\n' + (pageContext || '[No website context needed for this question]')
           }]
         },
         contents: geminiContents,
+        tools: [
+          { google_search: {} }
+        ],
         generationConfig: {
-          temperature: 0.25,
-          maxOutputTokens: 900
+          temperature: 0.15,
+          maxOutputTokens: 1400
         }
       });
 
@@ -308,8 +311,16 @@ const server = http.createServer(async (req, res) => {
         });
       }
 
-      const reply = data?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('').trim() || 'Sorry, I could not generate a response.';
-      return sendJson(res, 200, { success: true, reply });
+      const candidate = data?.candidates?.[0];
+      const reply = candidate?.content?.parts?.map(p => p.text || '').join('').trim() || 'Sorry, I could not generate a response.';
+      const chunks = candidate?.groundingMetadata?.groundingChunks || [];
+      const sources = chunks
+        .map(chunk => chunk?.web)
+        .filter(Boolean)
+        .map(web => ({ title: web.title || web.uri, url: web.uri }))
+        .filter((item, index, arr) => item.url && arr.findIndex(x => x.url === item.url) === index)
+        .slice(0, 5);
+      return sendJson(res, 200, { success: true, reply, sources });
     } catch (err) {
       console.error('[Gemini API] Chat error:', err);
       if (err && /timed out/i.test(err.message || '')) {

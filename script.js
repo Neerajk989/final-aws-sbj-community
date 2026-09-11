@@ -343,7 +343,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function getStoredPhotos() {
     try {
-      return JSON.parse(localStorage.getItem(TEAM_PHOTO_STORAGE_KEY) || '{}');
+      const current = JSON.parse(localStorage.getItem(TEAM_PHOTO_STORAGE_KEY) || '{}');
+      const legacy = JSON.parse(localStorage.getItem('aws_sbj_team_photos') || '{}');
+      return { ...legacy, ...current };
     } catch (e) {
       return {};
     }
@@ -479,6 +481,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       if (previewInitials) previewInitials.style.display = 'none';
       if (urlInput) urlInput.value = '';
+      updateMemberPhotoEverywhere(currentMemberId, tempPhotoData);
     } catch (err) {
       alert('Could not prepare this photo. Please try another image.');
     }
@@ -529,18 +532,23 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-member-id]').forEach(card => {
       const memberId = card.dataset.memberId;
       const memberName = card.dataset.memberName;
-      if (!memberId) return;
+      if (!memberId || card.dataset.photoEditorBound === '1') return;
 
-      const clickable = card.querySelectorAll('.tm-ref-avatar, .tm-leader-avatar, .tm-member-avatar, .team-dp-circle, .tm-avatar-cam-badge, .tm-ref-photo');
-      clickable.forEach(el => {
-        if (el.dataset.photoEditorBound === '1') return;
-        el.dataset.photoEditorBound = '1';
+      card.dataset.photoEditorBound = '1';
+      card.style.cursor = 'pointer';
+
+      card.addEventListener('click', e => {
+        // Do not hijack unrelated links/buttons inside a member card.
+        if (e.target.closest('a, button, input, select, textarea')) return;
+        e.preventDefault();
+        e.stopPropagation();
+        openModalForMember(memberId, memberName);
+      });
+    });
+
+    document.querySelectorAll('.team-dp-item[data-member-id], .tm-ref-card[data-member-id], .tm-member-card[data-member-id]').forEach(card => {
+      card.querySelectorAll('.tm-ref-avatar, .tm-leader-avatar, .tm-member-avatar, .team-dp-circle, .tm-avatar-cam-badge, .tm-ref-photo').forEach(el => {
         el.style.cursor = 'pointer';
-        el.addEventListener('click', e => {
-          e.preventDefault();
-          e.stopPropagation();
-          openModalForMember(memberId, memberName);
-        });
       });
     });
   }
@@ -567,6 +575,7 @@ document.addEventListener('DOMContentLoaded', () => {
       previewImg.style.display = 'block';
     }
     if (previewInitials) previewInitials.style.display = 'none';
+    updateMemberPhotoEverywhere(currentMemberId, tempPhotoData);
   });
 
   saveBtn?.addEventListener('click', async () => {
@@ -592,12 +601,9 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify({ memberId: currentMemberId, photoData: tempPhotoData })
       });
       if (res.ok) {
-        const data = await res.json();
-        if (data && data.photoUrl) {
-          teamPhotosCache[currentMemberId] = data.photoUrl;
-          setStoredPhotos(teamPhotosCache);
-          updateMemberPhotoEverywhere(currentMemberId, data.photoUrl);
-        }
+        // Keep the browser-saved data URL as the visible source.
+        // Vercel's serverless /tmp upload path is temporary and must not replace it.
+        await res.json().catch(() => null);
       }
     } catch (err) {
       console.info('[Team Photos] Server sync unavailable; browser copy remains saved.');
@@ -606,6 +612,10 @@ document.addEventListener('DOMContentLoaded', () => {
     saveBtn.disabled = false;
     saveBtn.innerHTML = originalLabel;
     closeModal();
+
+    if (stored) {
+      console.info('[Team Photos] Photo saved in this browser and applied to the deployed site view.');
+    }
 
     if (!stored) {
       alert('The photo was applied, but your browser could not save it permanently. Try a smaller image.');

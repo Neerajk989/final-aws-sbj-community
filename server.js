@@ -173,7 +173,7 @@ function nvidiaChatRequest(apiKey, payload) {
         'Accept': 'application/json',
         'Content-Length': Buffer.byteLength(body)
       },
-      timeout: 45000
+      timeout: 12000
     }, (upstream) => {
       let raw = '';
 
@@ -278,13 +278,13 @@ const server = http.createServer(async (req, res) => {
         messages: [
           {
             role: 'system',
-            content: 'You are the AI assistant for the SB Jain AWS Student Community in Nagpur. Be helpful, concise, student-friendly, and especially useful for AWS, cloud computing, programming, projects, events, and learning questions. If asked about information not provided by the website or conversation, say you may not have the latest community-specific details.'
+            content: 'You are the AI assistant for the SB Jain AWS Student Community in Nagpur. Be very fast and concise. Answer in 1 to 4 short sentences unless the user asks for code or detailed steps. Be student-friendly and especially useful for AWS, cloud computing, programming, projects, events, and learning questions. If asked about information not provided by the website or conversation, say you may not have the latest community-specific details.'
           },
           ...safeHistory,
           { role: 'user', content: message }
         ],
-        temperature: 0.7,
-        max_tokens: 350,
+        temperature: 0.3,
+        max_tokens: 120,
         stream: false,
         chat_template_kwargs: { enable_thinking: false }
       });
@@ -305,7 +305,7 @@ const server = http.createServer(async (req, res) => {
     } catch (err) {
       console.error('[Nemotron API] Chat error:', err);
       if (err && /timed out/i.test(err.message || '')) {
-        return sendJson(res, 504, { success: false, error: 'The AI took too long to respond. Please try again.' });
+        return sendJson(res, 504, { success: false, error: 'AI is taking too long. Please send the question again.' });
       }
       return sendJson(res, 500, { success: false, error: 'Chatbot request failed: ' + (err.message || 'unknown error') });
     }

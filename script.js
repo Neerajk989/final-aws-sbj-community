@@ -42,8 +42,18 @@ document.addEventListener('DOMContentLoaded', () => {
       if (event.key === 'Escape') finishCommunityIntro();
     }, { once: true });
 
-    const introDuration = reduceMotion ? 120 : (introSeen ? 850 : 3200);
+    const introDuration = reduceMotion ? 80 : (introSeen ? 450 : 2600);
     window.setTimeout(finishCommunityIntro, introDuration);
+
+    // Hard failsafe for GitHub Pages / slow or partially cached loads.
+    window.setTimeout(() => {
+      if (document.body.contains(communityIntro)) {
+        communityIntro.style.opacity = '0';
+        communityIntro.style.visibility = 'hidden';
+        communityIntro.style.pointerEvents = 'none';
+        window.setTimeout(() => communityIntro.remove(), 350);
+      }
+    }, 4200);
   }
 
   /* =========================================================

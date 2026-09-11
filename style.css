@@ -5668,7 +5668,16 @@ select {
   isolation: isolate;
   color: var(--intro-white);
   background: var(--intro-bg);
-  transition: opacity 850ms cubic-bezier(.22, .61, .36, 1), visibility 850ms cubic-bezier(.22, .61, .36, 1), transform 850ms cubic-bezier(.22, .61, .36, 1);
+  transition: opacity 650ms cubic-bezier(.22, .61, .36, 1), visibility 650ms cubic-bezier(.22, .61, .36, 1), transform 650ms cubic-bezier(.22, .61, .36, 1);
+  animation: communityIntroFailsafe .65s 4.2s forwards;
+}
+@keyframes communityIntroFailsafe {
+  to {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: scale(1.02);
+  }
 }
 .community-intro.is-complete {
   opacity: 0;

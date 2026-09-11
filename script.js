@@ -1125,7 +1125,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </header>
       <div class="aws-ai-messages" aria-live="polite">
         <div class="aws-ai-message bot">
-          Hi! I’m the SB Jain AWS AI assistant. Ask me about AWS, cloud, coding, projects, or community learning.
+          Hi! I’m the SB Jain AWS AI assistant. Ask me about this website or almost any general question—AWS, coding, study topics, writing, current facts, and more.
         </div>
       </div>
       <form class="aws-ai-form">
@@ -1340,6 +1340,22 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       addMessage(data.reply, 'bot');
+      if (Array.isArray(data.sources) && data.sources.length) {
+        const sourceBox = document.createElement('div');
+        sourceBox.className = 'aws-ai-sources';
+        sourceBox.textContent = 'Sources: ';
+        data.sources.forEach((source, index) => {
+          const a = document.createElement('a');
+          a.href = source.url;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.textContent = source.title || ('Source ' + (index + 1));
+          sourceBox.appendChild(a);
+          if (index < data.sources.length - 1) sourceBox.appendChild(document.createTextNode(' · '));
+        });
+        messages.appendChild(sourceBox);
+        messages.scrollTop = messages.scrollHeight;
+      }
       history.push({ role: 'user', content: message });
       history.push({ role: 'assistant', content: data.reply });
       if (history.length > 12) history.splice(0, history.length - 12);

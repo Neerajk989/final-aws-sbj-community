@@ -159,21 +159,21 @@ function parseBody(req) {
 }
 
 
-function geminiChatRequest(apiKey, payload) {
+function openaiResponseRequest(apiKey, payload) {
   return new Promise((resolve, reject) => {
     const body = JSON.stringify(payload);
 
     const req = https.request({
-      hostname: 'generativelanguage.googleapis.com',
-      path: '/v1beta/models/gemini-3.8-flash:generateContent',
+      hostname: 'api.openai.com',
+      path: '/v1/responses',
       method: 'POST',
       headers: {
-        'x-goog-api-key': apiKey,
+        'Authorization': 'Bearer ' + apiKey,
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Content-Length': Buffer.byteLength(body)
       },
-      timeout: 25000
+      timeout: 30000
     }, (upstream) => {
       let raw = '';
 
@@ -186,7 +186,7 @@ function geminiChatRequest(apiKey, payload) {
         try {
           data = raw ? JSON.parse(raw) : {};
         } catch (err) {
-          return reject(new Error('Invalid JSON from Gemini API'));
+          return reject(new Error('Invalid JSON from OpenAI API'));
         }
 
         resolve({
@@ -198,7 +198,7 @@ function geminiChatRequest(apiKey, payload) {
     });
 
     req.on('timeout', () => {
-      req.destroy(new Error('Gemini request timed out'));
+      req.destroy(new Error('OpenAI request timed out'));
     });
 
     req.on('error', reject);
@@ -246,14 +246,14 @@ const server = http.createServer(async (req, res) => {
   }
 
 
-  // Google Gemini chatbot API
+  // OpenAI chatbot API
   if (pathname === '/api/chat' && req.method === 'POST') {
     try {
-      const apiKey = process.env.GEMINI_API_KEY;
+      const apiKey = process.env.OPENAI_API_KEY;
       if (!apiKey) {
         return sendJson(res, 503, {
           success: false,
-          error: 'Chatbot is not configured yet. GEMINI_API_KEY is missing.'
+          error: 'Chatbot is not configured yet. OPENAI_API_KEY is missing.'
         });
       }
 
@@ -272,59 +272,83 @@ const server = http.createServer(async (req, res) => {
 
       const safeHistory = history
         .filter(item => item && (item.role === 'user' || item.role === 'assistant') && typeof item.content === 'string')
-        .map(item => ({ role: item.role, content: item.content.slice(0, 3000) }));
+        .map(item => ({
+          role: item.role,
+          content: [{ type: 'input_text', text: item.content.slice(0, 3000) }]
+        }));
 
-      const geminiContents = safeHistory.map(item => ({
-        role: item.role === 'assistant' ? 'model' : 'user',
-        parts: [{ text: item.content }]
-      }));
-      geminiContents.push({ role: 'user', parts: [{ text: message }] });
+      const needsWeb = /\b(latest|today|current|currently|news|live|now|recent|price|weather|score|result|release|2026)\b/i.test(message);
 
-      const result = await geminiChatRequest(apiKey, {
-        systemInstruction: {
-          parts: [{
-            text: 'You are SB Jain AWS AI, a general-purpose assistant. Answer the user\'s actual question directly. For questions about this website, its team, events, roles, FAQ, gallery, or community details, treat WEBSITE CONTENT as the primary source of truth and never invent a website-specific fact. For current or externally verifiable facts, use Google Search grounding when the model decides it is useful. If facts are uncertain or sources conflict, say so instead of guessing. For coding, math, study, writing, and general knowledge, answer normally and accurately. Keep answers concise by default, but provide detailed steps or code when requested. Do not claim certainty when you are not certain.\n\nWEBSITE CONTENT:\n' + (pageContext || '[No website context needed for this question]')
-          }]
-        },
-        contents: geminiContents,
-        tools: [
-          { google_search: {} }
+      const requestBody = {
+        model: 'gpt-5.6-luna',
+        instructions:
+          'You are SB Jain AWS AI, a general-purpose assistant. Answer the user\'s actual question directly and accurately. ' +
+          'For questions about this website, its team, events, roles, FAQ, gallery, or community details, use WEBSITE CONTENT as the primary source of truth and never invent a website-specific fact. ' +
+          'For general questions, answer normally. If a fact is uncertain, say so instead of guessing. Keep answers concise by default, but give clear step-by-step detail or code when requested.\n\n' +
+          'WEBSITE CONTENT:\n' + (pageContext || '[No website context supplied for this question]'),
+        input: [
+          ...safeHistory,
+          {
+            role: 'user',
+            content: [{ type: 'input_text', text: message }]
+          }
         ],
-        generationConfig: {
-          temperature: 0.15,
-          maxOutputTokens: 1400
-        }
-      });
+        max_output_tokens: 1200
+      };
 
-      const upstream = { ok: result.ok, status: result.status };
+      if (needsWeb) {
+        requestBody.tools = [{ type: 'web_search_preview' }];
+      }
+
+      const result = await openaiResponseRequest(apiKey, requestBody);
       const data = result.data;
 
-      if (!upstream.ok) {
-        console.error('[Gemini API] Upstream error:', data);
+      if (!result.ok) {
+        console.error('[OpenAI API] Upstream error:', data);
         const upstreamMessage =
           data?.error?.message ||
-          data?.error?.status ||
-          ('Gemini API error ' + upstream.status);
-        return sendJson(res, upstream.status, {
+          data?.error?.code ||
+          ('OpenAI API error ' + result.status);
+        return sendJson(res, result.status, {
           success: false,
-          error: 'Gemini error: ' + String(upstreamMessage).slice(0, 240)
+          error: 'OpenAI error: ' + String(upstreamMessage).slice(0, 260)
         });
       }
 
-      const candidate = data?.candidates?.[0];
-      const reply = candidate?.content?.parts?.map(p => p.text || '').join('').trim() || 'Sorry, I could not generate a response.';
-      const chunks = candidate?.groundingMetadata?.groundingChunks || [];
-      const sources = chunks
-        .map(chunk => chunk?.web)
-        .filter(Boolean)
-        .map(web => ({ title: web.title || web.uri, url: web.uri }))
-        .filter((item, index, arr) => item.url && arr.findIndex(x => x.url === item.url) === index)
-        .slice(0, 5);
-      return sendJson(res, 200, { success: true, reply, sources });
+      const outputItems = Array.isArray(data?.output) ? data.output : [];
+      const textParts = [];
+      const sources = [];
+
+      for (const item of outputItems) {
+        if (item?.type === 'message' && Array.isArray(item.content)) {
+          for (const part of item.content) {
+            if (part?.type === 'output_text' && part.text) {
+              textParts.push(part.text);
+              if (Array.isArray(part.annotations)) {
+                for (const ann of part.annotations) {
+                  if (ann?.type === 'url_citation' && ann.url) {
+                    sources.push({
+                      title: ann.title || ann.url,
+                      url: ann.url
+                    });
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      const reply = textParts.join('\n').trim() || 'Sorry, I could not generate a response.';
+      const uniqueSources = sources.filter((src, index, arr) =>
+        src.url && arr.findIndex(x => x.url === src.url) === index
+      ).slice(0, 5);
+
+      return sendJson(res, 200, { success: true, reply, sources: uniqueSources });
     } catch (err) {
-      console.error('[Gemini API] Chat error:', err);
+      console.error('[OpenAI API] Chat error:', err);
       if (err && /timed out/i.test(err.message || '')) {
-        return sendJson(res, 504, { success: false, error: 'AI is taking too long. Please send the question again.' });
+        return sendJson(res, 504, { success: false, error: 'The AI took too long to respond. Please try again.' });
       }
       return sendJson(res, 500, { success: false, error: 'Chatbot request failed: ' + (err.message || 'unknown error') });
     }

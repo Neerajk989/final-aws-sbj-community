@@ -297,7 +297,7 @@ const server = http.createServer(async (req, res) => {
       };
 
       if (needsWeb) {
-        requestBody.tools = [{ type: 'web_search_preview' }];
+        requestBody.tools = [{ type: 'web_search' }];
       }
 
       const result = await openaiResponseRequest(apiKey, requestBody);

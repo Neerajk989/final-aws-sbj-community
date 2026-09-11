@@ -173,7 +173,7 @@ function nvidiaChatRequest(apiKey, payload) {
         'Accept': 'application/json',
         'Content-Length': Buffer.byteLength(body)
       },
-      timeout: 20000
+      timeout: 30000
     }, (upstream) => {
       let raw = '';
 
@@ -260,7 +260,7 @@ const server = http.createServer(async (req, res) => {
       const payload = await parseBody(req);
       const message = typeof payload.message === 'string' ? payload.message.trim() : '';
       const history = Array.isArray(payload.history) ? payload.history.slice(-8) : [];
-      const pageContext = typeof payload.pageContext === 'string' ? payload.pageContext.slice(0, 18000) : '';
+      const pageContext = typeof payload.pageContext === 'string' ? payload.pageContext.slice(0, 7000) : '';
 
       if (!message) {
         return sendJson(res, 400, { success: false, error: 'Message is required.' });
@@ -275,17 +275,17 @@ const server = http.createServer(async (req, res) => {
         .map(item => ({ role: item.role, content: item.content.slice(0, 3000) }));
 
       const result = await nvidiaChatRequest(apiKey, {
-        model: 'nvidia/nvidia-nemotron-nano-9b-v2',
+        model: 'nvidia/nemotron-3.5-lightning-30b-a3b',
         messages: [
           {
             role: 'system',
-            content: 'You are the AI assistant for the SB Jain AWS Student Community in Nagpur. You can answer normal general questions like a helpful chatbot, and you can also answer questions about this website using the WEBSITE CONTENT supplied below. Prefer exact website facts when the question is about people, roles, events, sections, or community information. Be fast and concise, usually 1 to 4 short sentences unless the user asks for code or detailed steps. If the website content does not contain a requested community-specific fact, say that clearly.\n\nWEBSITE CONTENT:\n + pageContext'
+            content: 'You are the AI assistant for the SB Jain AWS Student Community in Nagpur. Answer normal general questions like a helpful chatbot. For questions about this website, use the WEBSITE CONTENT below and prefer exact facts from it. Be concise by default, but give detailed steps or code when asked. If a community-specific fact is not present, say so clearly.\n\nWEBSITE CONTENT:\n' + pageContext
           },
           ...safeHistory,
           { role: 'user', content: message }
         ],
         temperature: 0.3,
-        max_tokens: 120,
+        max_tokens: 260,
         stream: false,
         chat_template_kwargs: { enable_thinking: false }
       });

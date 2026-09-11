@@ -1162,35 +1162,71 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function answerFromPage(message) {
     const q = message.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
-    const page = getWebsiteContext();
 
-    const rolePatterns = [
-      { keys: ['technical head', 'tech head'], answer: 'Sarang Chakole is listed as Head · Technical. Neeraj Khapre is listed as Co-Head · Technical.' },
-      { keys: ['technical co head', 'tech co head', 'co head technical'], answer: 'Neeraj Khapre is listed as Co-Head · Technical in the SB Jain AWS Student Builder Group.' },
-      { keys: ['design head'], answer: 'Tanushree Saundarkar is listed as Head · Design & Content.' },
-      { keys: ['operations head', 'operational head'], answer: 'Pranav Vispute is listed as Head · Operations.' },
-      { keys: ['marketing head', 'pr head'], answer: 'Jiya Sathawane is listed as Head · Marketing & PR.' },
-      { keys: ['event head', 'events head'], answer: 'Areeba Qureshi is listed as Head · Events.' }
-    ];
+    // Build team facts directly from the page so answers stay correct when the page changes.
+    const teamFacts = [];
+    document.querySelectorAll('[data-member-name][data-member-role]').forEach(el => {
+      const name = (el.dataset.memberName || '').trim();
+      const role = (el.dataset.memberRole || '').trim();
+      if (name && role) teamFacts.push({ name, role });
+    });
+    document.querySelectorAll('#tmMemberSelect option').forEach(opt => {
+      const m = opt.textContent.trim().match(/^(.+?)\s*\((.+)\)$/);
+      if (m) teamFacts.push({ name: m[1].trim(), role: m[2].trim() });
+    });
 
-    for (const item of rolePatterns) {
-      if (item.keys.some(k => q.includes(k))) return item.answer;
+    const dedup = [];
+    const seen = new Set();
+    for (const item of teamFacts) {
+      const key = (item.name + '|' + item.role).toLowerCase();
+      if (!seen.has(key)) {
+        seen.add(key);
+        dedup.push(item);
+      }
     }
 
-    // Simple exact-name lookup against visible page text.
-    const names = [
-      'Neeraj Khapre','Sarang Chakole','Faiz Shaikh','Devanshu Kindarlaey',
-      'Nivedita Nandurkar','Tanushree Saundarkar','Sankalp Kadse','Anshul Motghare',
-      'Pranav Vispute','Isha Dhok','Nutan Bhoyar','Krutika Dhavde',
-      'Jiya Sathawane','Anmol Chaubey','Vaishnavi Sathone','Gauri Sangewar',
-      'Areeba Qureshi','Vansh Lute','Pushkar Meshram','Shagun Harinkhede'
-    ];
-    const found = names.find(n => q.includes(n.toLowerCase()));
-    if (found && page.includes(found)) {
-      const pos = page.indexOf(found);
-      const snippet = page.slice(Math.max(0, pos - 100), Math.min(page.length, pos + 180));
-      return 'From this website: ' + snippet.replace(/\s+/g, ' ').trim();
+    const nameMatch = dedup.find(item => q.includes(item.name.toLowerCase()));
+    if (nameMatch) {
+      return nameMatch.name + ' is listed on this website as ' + nameMatch.role + '.';
     }
+
+    const roleQueries = [
+      { terms: ['group leader', 'leader'], roles: ['group leader'] },
+      { terms: ['technical head', 'tech head'], roles: ['head · technical', 'head technical'] },
+      { terms: ['technical co head', 'tech co head', 'co head technical'], roles: ['co-head · technical', 'co head · technical', 'co-head technical'] },
+      { terms: ['design head'], roles: ['head · design', 'head design'] },
+      { terms: ['operations head', 'operational head'], roles: ['head · operations', 'head operations'] },
+      { terms: ['marketing head', 'pr head'], roles: ['head · marketing', 'head marketing'] },
+      { terms: ['event head', 'events head'], roles: ['head · events', 'head events'] }
+    ];
+
+    for (const rq of roleQueries) {
+      if (rq.terms.some(t => q.includes(t))) {
+        const matches = dedup.filter(item => rq.roles.some(r => item.role.toLowerCase().includes(r)));
+        if (matches.length) {
+          return matches.map(item => item.name + ' — ' + item.role).join('\n');
+        }
+      }
+    }
+
+    // Generic website Q&A: retrieve the most relevant visible sentences from the page.
+    const stop = new Set(['what','who','is','are','the','a','an','in','on','of','to','for','and','this','website','page','tell','me','about','do','does','how','where','when']);
+    const terms = q.split(' ').filter(w => w.length > 2 && !stop.has(w));
+    if (!terms.length) return '';
+
+    const text = getWebsiteContext();
+    const sentences = text.split(/(?<=[.!?])\s+|\s{2,}/).map(s => s.trim()).filter(s => s.length > 20);
+    const scored = sentences.map(s => {
+      const lower = s.toLowerCase();
+      const score = terms.reduce((n,t) => n + (lower.includes(t) ? 1 : 0), 0);
+      return { s, score };
+    }).filter(x => x.score > 0)
+      .sort((a,b) => b.score - a.score || a.s.length - b.s.length);
+
+    if (scored.length && scored[0].score >= Math.min(2, terms.length)) {
+      return scored.slice(0, 2).map(x => x.s).join(' ');
+    }
+
     return '';
   }
 
@@ -1269,7 +1305,11 @@ document.addEventListener('DOMContentLoaded', () => {
       typing.remove();
 
       if (!response.ok || !data.success) {
-        addMessage(data.error || 'AI assistant is unavailable right now.', 'bot', 'error');
+        if (data.error && /denied access/i.test(data.error)) {
+          addMessage('Gemini is blocked for the current Google project/API key. Website questions can still be answered from this page, but general AI questions need a Gemini key from a project with API access.', 'bot', 'error');
+        } else {
+          addMessage(data.error || 'AI assistant is unavailable right now.', 'bot', 'error');
+        }
         return;
       }
 

@@ -223,27 +223,38 @@ const server = http.createServer(async (req, res) => {
         .filter(item => item && (item.role === 'user' || item.role === 'assistant') && typeof item.content === 'string')
         .map(item => ({ role: item.role, content: item.content.slice(0, 3000) }));
 
-      const upstream = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + apiKey,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model: 'nvidia/nemotron-3.5-lightning-30b-a3b',
-          messages: [
-            {
-              role: 'system',
-              content: 'You are the AI assistant for the SB Jain AWS Student Community in Nagpur. Be helpful, concise, student-friendly, and especially useful for AWS, cloud computing, programming, projects, events, and learning questions. If asked about information not provided by the website or conversation, say you may not have the latest community-specific details.'
-            },
-            ...safeHistory,
-            { role: 'user', content: message }
-          ],
-          temperature: 0.6,
-          top_p: 0.9,
-          max_tokens: 700
-        })
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 45000);
+
+      let upstream;
+      try {
+        upstream = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + apiKey,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'nvidia/nemotron-3.5-lightning-30b-a3b',
+            messages: [
+              {
+                role: 'system',
+                content: 'You are the AI assistant for the SB Jain AWS Student Community in Nagpur. Be helpful, concise, student-friendly, and especially useful for AWS, cloud computing, programming, projects, events, and learning questions. If asked about information not provided by the website or conversation, say you may not have the latest community-specific details.'
+              },
+              ...safeHistory,
+              { role: 'user', content: message }
+            ],
+            temperature: 0.7,
+            max_tokens: 500,
+            stream: false,
+            chat_template_kwargs: { enable_thinking: false }
+          }),
+          signal: controller.signal
+        });
+      } finally {
+        clearTimeout(timeoutId);
+      }
 
       const data = await upstream.json();
 
@@ -259,6 +270,9 @@ const server = http.createServer(async (req, res) => {
       return sendJson(res, 200, { success: true, reply });
     } catch (err) {
       console.error('[Nemotron API] Chat error:', err);
+      if (err && err.name === 'AbortError') {
+        return sendJson(res, 504, { success: false, error: 'The AI took too long to respond. Please try again.' });
+      }
       return sendJson(res, 500, { success: false, error: 'Chatbot request failed.' });
     }
   }

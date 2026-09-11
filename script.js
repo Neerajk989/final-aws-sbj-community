@@ -1171,6 +1171,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const message = input.value.trim();
     if (!message) return;
 
+    const instantReplies = {
+      'hi': 'Hi! How can I help you with AWS, cloud, coding, or the SB Jain AWS community?',
+      'hello': 'Hello! Ask me anything about AWS, cloud, coding, projects, or the community.',
+      'who is tech co head': 'Neeraj Khapre is listed as Co-Head · Technical in the SB Jain AWS Student Builder Group.',
+      'who is technical co head': 'Neeraj Khapre is listed as Co-Head · Technical in the SB Jain AWS Student Builder Group.'
+    };
+    const quickKey = message.toLowerCase().replace(/[?!.]/g, '').trim();
+    if (instantReplies[quickKey]) {
+      addMessage(message, 'user');
+      input.value = '';
+      addMessage(instantReplies[quickKey], 'bot');
+      history.push({ role: 'user', content: message });
+      history.push({ role: 'assistant', content: instantReplies[quickKey] });
+      return;
+    }
+
     addMessage(message, 'user');
     input.value = '';
     input.style.height = 'auto';
@@ -1180,7 +1196,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 50000);
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1203,7 +1219,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (error) {
       typing.remove();
       const msg = error && error.name === 'AbortError'
-        ? 'The AI took too long to respond. Please try again.'
+        ? 'The AI took too long. Please send the question again.'
         : 'Could not connect to the AI assistant. Please try again.';
       addMessage(msg, 'bot', 'error');
     } finally {

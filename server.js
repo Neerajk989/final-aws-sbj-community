@@ -277,14 +277,18 @@ const server = http.createServer(async (req, res) => {
           content: [{ type: 'input_text', text: item.content.slice(0, 3000) }]
         }));
 
-      const needsWeb = /\b(latest|today|current|currently|news|live|now|recent|price|weather|score|result|release|2026)\b/i.test(message);
+      const hasWebsiteContext = Boolean(pageContext && pageContext.trim());
+      const explicitlyCurrent = /\b(latest|today|current|currently|news|live|now|recent|price|weather|score|result|release|update|updated|2026)\b/i.test(message);
+      const externalFactQuestion = /\b(who|what|where|when|which|how many|how much|president|prime minister|company|country|city|college|university|product|service|version|date|time)\b/i.test(message);
+      const modelOnlyTask = /\b(write|rewrite|summarize|translate|code|program|debug|solve|calculate|equation|essay|poem|story|email|caption|explain concept|algorithm)\b/i.test(message);
+      const needsWeb = !hasWebsiteContext && (explicitlyCurrent || (externalFactQuestion && !modelOnlyTask));
 
       const requestBody = {
         model: 'gpt-5.6-luna',
         instructions:
           'You are SB Jain AWS AI, a general-purpose assistant. Answer the user\'s actual question directly and accurately. ' +
-          'For questions about this website, its team, events, roles, FAQ, gallery, or community details, use WEBSITE CONTENT as the primary source of truth and never invent a website-specific fact. ' +
-          'For general questions, answer normally. If a fact is uncertain, say so instead of guessing. Keep answers concise by default, but give clear step-by-step detail or code when requested.\n\n' +
+          'Follow this routing rule: (1) if WEBSITE CONTENT is supplied and answers the question, use it as the primary source of truth; (2) otherwise, for externally verifiable or current facts, use web search when available; (3) for coding, writing, math, explanations, and other non-current tasks, answer directly from the model. ' +
+          'Never invent a website-specific fact. Never present an uncertain factual claim as certain. If sources disagree or a fact cannot be verified, say that clearly. When web search is used, ground the answer in the search results and keep citations/sources. Keep answers concise by default, but give clear step-by-step detail or code when requested.\n\n' +
           'WEBSITE CONTENT:\n' + (pageContext || '[No website context supplied for this question]'),
         input: [
           ...safeHistory,
@@ -298,6 +302,7 @@ const server = http.createServer(async (req, res) => {
 
       if (needsWeb) {
         requestBody.tools = [{ type: 'web_search' }];
+        requestBody.tool_choice = 'auto';
       }
 
       const result = await openaiResponseRequest(apiKey, requestBody);
@@ -344,7 +349,12 @@ const server = http.createServer(async (req, res) => {
         src.url && arr.findIndex(x => x.url === src.url) === index
       ).slice(0, 5);
 
-      return sendJson(res, 200, { success: true, reply, sources: uniqueSources });
+      return sendJson(res, 200, {
+        success: true,
+        reply,
+        sources: uniqueSources,
+        answerSource: hasWebsiteContext ? 'website' : (needsWeb ? 'web' : 'ai')
+      });
     } catch (err) {
       console.error('[OpenAI API] Chat error:', err);
       if (err && /timed out/i.test(err.message || '')) {

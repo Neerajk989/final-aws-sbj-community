@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const TEAM_PHOTO_STORAGE_KEY = 'aws_sbj_team_photos_v2';
-  const VERCEL_SITE_ORIGIN = 'https://aws-sbjit-community.vercel.app';
+  const NETLIFY_SITE_ORIGIN = window.location.origin;
 
   let currentMemberId = 'sarang-chakole';
   let tempPhotoData = '';
@@ -381,7 +381,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function resolvePhotoUrl(url) {
     if (!url || typeof url !== 'string') return '';
-    if (url.startsWith('/uploads/')) return VERCEL_SITE_ORIGIN + url;
     return url;
   }
 
@@ -433,8 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function getTeamApiUrl() {
-    const isGitHubPages = location.hostname.endsWith('github.io');
-    return isGitHubPages ? VERCEL_SITE_ORIGIN + '/api/team-photos' : '/api/team-photos';
+    return '/api/team-photos';
   }
 
   async function syncPhotosFromServer() {
@@ -444,8 +442,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
       if (!data || !data.success || !data.photos) return;
 
-      const local = getStoredPhotos();
-      const merged = { ...local, ...data.photos };
+      const merged = { ...data.photos };
       setStoredPhotos(merged);
       applyStoredPhotos();
     } catch (err) {

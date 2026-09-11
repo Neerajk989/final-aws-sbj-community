@@ -848,8 +848,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch('/api/gallery');
       if (!res.ok) throw new Error('API request failed');
       const data = await res.json();
-      galleryItems = data.items || [];
-      // Cache in localStorage for offline resilience
+      const remoteItems = Array.isArray(data.items) ? data.items : [];
+      const remoteIds = new Set(remoteItems.map(item => item.id));
+      galleryItems = [
+        ...remoteItems,
+        ...fallbackGallerySeed.filter(item => !remoteIds.has(item.id))
+      ];
       localStorage.setItem('sbj_aws_gallery', JSON.stringify(galleryItems));
     } catch (err) {
       console.warn('[Gallery] Offline / API unavailable, falling back to local storage or seed data:', err);
@@ -1085,15 +1089,47 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  function processImageFile(file) {
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      uploadedBase64 = ev.target.result;
+  async function processImageFile(file) {
+    if (!file || !file.type.startsWith('image/')) {
+      alert('Please choose an image file.');
+      return;
+    }
+    if (file.size > 12 * 1024 * 1024) {
+      alert('Image is too large. Please choose an image under 12 MB.');
+      return;
+    }
+
+    try {
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error('Could not read image.'));
+        reader.onload = () => {
+          const image = new Image();
+          image.onerror = () => reject(new Error('Unsupported image.'));
+          image.onload = () => {
+            const maxSide = 1400;
+            const scale = Math.min(1, maxSide / Math.max(image.width, image.height));
+            const width = Math.max(1, Math.round(image.width * scale));
+            const height = Math.max(1, Math.round(image.height * scale));
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(image, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', 0.82));
+          };
+          image.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      });
+
+      uploadedBase64 = dataUrl;
       if (gumPreviewImg) gumPreviewImg.src = uploadedBase64;
       if (gumPreview) gumPreview.style.display = 'inline-block';
       if (gumDropzoneInner) gumDropzoneInner.style.display = 'none';
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+      alert('Could not prepare this image. Please try another photo.');
+    }
   }
 
   gumRemoveImgBtn?.addEventListener('click', (e) => {
@@ -1121,6 +1157,11 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    if (!uploadedBase64 && !urlInput) {
+      alert('Please choose an event photo or paste an image URL.');
+      return;
+    }
+
     const submitBtn = document.getElementById('gumSubmitBtn');
     const originalText = submitBtn ? submitBtn.innerHTML : '';
     if (submitBtn) {
@@ -1139,6 +1180,8 @@ document.addEventListener('DOMContentLoaded', () => {
       imageUrl: urlInput || (!uploadedBase64 ? 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&auto=format&fit=crop&q=80' : '')
     };
 
+    let gallerySaved = false;
+
     try {
       const res = await fetch('/api/gallery', {
         method: 'POST',
@@ -1149,29 +1192,17 @@ document.addEventListener('DOMContentLoaded', () => {
       if (res.ok) {
         const result = await res.json();
         if (result.success && result.item) {
+          galleryItems = galleryItems.filter(item => item.id !== result.item.id);
           galleryItems.unshift(result.item);
           localStorage.setItem('sbj_aws_gallery', JSON.stringify(galleryItems));
+          gallerySaved = true;
         }
       } else {
         throw new Error('Server responded with error');
       }
     } catch (err) {
-      console.warn('[Gallery] Offline / server error, saving to local state:', err);
-      // Offline fallback item
-      const newItem = {
-        id: 'gal-local-' + Date.now(),
-        title,
-        category,
-        categoryLabel,
-        date: date || new Date().toISOString().slice(0, 10),
-        dateFormatted: date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-        location: location || 'SB Jain Institute of Technology, Nagpur',
-        caption,
-        imageUrl: uploadedBase64 || urlInput || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&auto=format&fit=crop&q=80',
-        createdAt: new Date().toISOString()
-      };
-      galleryItems.unshift(newItem);
-      localStorage.setItem('sbj_aws_gallery', JSON.stringify(galleryItems));
+      console.error('[Gallery] Permanent upload failed:', err);
+      alert('Event photo could not be saved permanently. Please redeploy the latest Netlify ZIP and try again.');
     }
 
     if (submitBtn) {
@@ -1179,27 +1210,37 @@ document.addEventListener('DOMContentLoaded', () => {
       submitBtn.innerHTML = originalText;
     }
 
-    closeUploadModal();
-    updateFilterCounts();
-    renderGallery();
+    if (gallerySaved) {
+      closeUploadModal();
+      updateFilterCounts();
+      renderGallery();
+      alert('Event photo saved permanently. All visitors can see it.');
+    }
   });
 
   // Delete photo
   async function handleDeletePhoto(id) {
-    if (!confirm('Are you sure you want to delete this event photo from the gallery?')) {
+    if (String(id).startsWith('gal-') && /^gal-[1-6]$/.test(String(id))) {
+      alert('Built-in gallery photos are part of the website template and cannot be deleted here.');
       return;
     }
 
-    try {
-      await fetch(`/api/gallery/${id}`, { method: 'DELETE' });
-    } catch (err) {
-      console.warn('[Gallery] Offline delete fallback:', err);
-    }
+    if (!confirm('Are you sure you want to permanently delete this event photo?')) return;
 
-    galleryItems = galleryItems.filter(it => it.id !== id);
-    localStorage.setItem('sbj_aws_gallery', JSON.stringify(galleryItems));
-    updateFilterCounts();
-    renderGallery();
+    try {
+      const res = await fetch('/api/gallery/' + encodeURIComponent(id), { method: 'DELETE' });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Delete failed.');
+      }
+
+      galleryItems = galleryItems.filter(it => it.id !== id);
+      localStorage.setItem('sbj_aws_gallery', JSON.stringify(galleryItems));
+      updateFilterCounts();
+      renderGallery();
+    } catch (err) {
+      alert(err.message || 'Could not delete this event photo.');
+    }
   }
 
   // Load gallery immediately

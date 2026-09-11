@@ -173,7 +173,7 @@ function nvidiaChatRequest(apiKey, payload) {
         'Accept': 'application/json',
         'Content-Length': Buffer.byteLength(body)
       },
-      timeout: 12000
+      timeout: 20000
     }, (upstream) => {
       let raw = '';
 
@@ -260,6 +260,7 @@ const server = http.createServer(async (req, res) => {
       const payload = await parseBody(req);
       const message = typeof payload.message === 'string' ? payload.message.trim() : '';
       const history = Array.isArray(payload.history) ? payload.history.slice(-8) : [];
+      const pageContext = typeof payload.pageContext === 'string' ? payload.pageContext.slice(0, 18000) : '';
 
       if (!message) {
         return sendJson(res, 400, { success: false, error: 'Message is required.' });
@@ -274,11 +275,11 @@ const server = http.createServer(async (req, res) => {
         .map(item => ({ role: item.role, content: item.content.slice(0, 3000) }));
 
       const result = await nvidiaChatRequest(apiKey, {
-        model: 'nvidia/nemotron-3.5-lightning-30b-a3b',
+        model: 'nvidia/nvidia-nemotron-nano-9b-v2',
         messages: [
           {
             role: 'system',
-            content: 'You are the AI assistant for the SB Jain AWS Student Community in Nagpur. Be very fast and concise. Answer in 1 to 4 short sentences unless the user asks for code or detailed steps. Be student-friendly and especially useful for AWS, cloud computing, programming, projects, events, and learning questions. If asked about information not provided by the website or conversation, say you may not have the latest community-specific details.'
+            content: 'You are the AI assistant for the SB Jain AWS Student Community in Nagpur. You can answer normal general questions like a helpful chatbot, and you can also answer questions about this website using the WEBSITE CONTENT supplied below. Prefer exact website facts when the question is about people, roles, events, sections, or community information. Be fast and concise, usually 1 to 4 short sentences unless the user asks for code or detailed steps. If the website content does not contain a requested community-specific fact, say that clearly.\n\nWEBSITE CONTENT:\n + pageContext'
           },
           ...safeHistory,
           { role: 'user', content: message }

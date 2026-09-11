@@ -1,0 +1,15 @@
+[build]
+  publish = "."
+
+[functions]
+  directory = "netlify/functions"
+
+[[redirects]]
+  from = "/api/team-photos"
+  to = "/.netlify/functions/team-photos"
+  status = 200
+
+[[redirects]]
+  from = "/api/team-photos/*"
+  to = "/.netlify/functions/team-photos/:splat"
+  status = 200

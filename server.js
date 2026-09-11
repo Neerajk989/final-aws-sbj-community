@@ -339,13 +339,13 @@ const server = http.createServer(async (req, res) => {
   };
 
   const teamPhotoAdminAllowed = () => {
-    const configured = process.env.TEAM_PHOTO_ADMIN_KEY;
-    if (!configured) return false;
+    const configured = String(process.env.TEAM_PHOTO_ADMIN_KEY || '');
     const supplied = String(req.headers['x-team-admin-key'] || '');
-    return supplied && crypto.timingSafeEqual(
-      Buffer.from(supplied),
-      Buffer.from(configured)
-    );
+    if (!configured || !supplied) return false;
+    const a = Buffer.from(supplied);
+    const b = Buffer.from(configured);
+    if (a.length !== b.length) return false;
+    return crypto.timingSafeEqual(a, b);
   };
 
   // GET /api/team-photos - public read for all visitors/devices

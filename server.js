@@ -1,4 +1,5 @@
 const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
@@ -157,6 +158,55 @@ function parseBody(req) {
   });
 }
 
+
+function nvidiaChatRequest(apiKey, payload) {
+  return new Promise((resolve, reject) => {
+    const body = JSON.stringify(payload);
+
+    const req = https.request({
+      hostname: 'integrate.api.nvidia.com',
+      path: '/v1/chat/completions',
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + apiKey,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Content-Length': Buffer.byteLength(body)
+      },
+      timeout: 45000
+    }, (upstream) => {
+      let raw = '';
+
+      upstream.on('data', (chunk) => {
+        raw += chunk;
+      });
+
+      upstream.on('end', () => {
+        let data;
+        try {
+          data = raw ? JSON.parse(raw) : {};
+        } catch (err) {
+          return reject(new Error('Invalid JSON from NVIDIA API'));
+        }
+
+        resolve({
+          ok: upstream.statusCode >= 200 && upstream.statusCode < 300,
+          status: upstream.statusCode || 500,
+          data
+        });
+      });
+    });
+
+    req.on('timeout', () => {
+      req.destroy(new Error('NVIDIA request timed out'));
+    });
+
+    req.on('error', reject);
+    req.write(body);
+    req.end();
+  });
+}
+
 function sendJson(res, statusCode, data) {
   res.writeHead(statusCode, {
     'Content-Type': 'application/json',
@@ -223,40 +273,24 @@ const server = http.createServer(async (req, res) => {
         .filter(item => item && (item.role === 'user' || item.role === 'assistant') && typeof item.content === 'string')
         .map(item => ({ role: item.role, content: item.content.slice(0, 3000) }));
 
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 45000);
-
-      let upstream;
-      try {
-        upstream = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': 'Bearer ' + apiKey,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
+      const result = await nvidiaChatRequest(apiKey, {
+        model: 'nvidia/nemotron-3.5-lightning-30b-a3b',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are the AI assistant for the SB Jain AWS Student Community in Nagpur. Be helpful, concise, student-friendly, and especially useful for AWS, cloud computing, programming, projects, events, and learning questions. If asked about information not provided by the website or conversation, say you may not have the latest community-specific details.'
           },
-          body: JSON.stringify({
-            model: 'nvidia/nemotron-3.5-lightning-30b-a3b',
-            messages: [
-              {
-                role: 'system',
-                content: 'You are the AI assistant for the SB Jain AWS Student Community in Nagpur. Be helpful, concise, student-friendly, and especially useful for AWS, cloud computing, programming, projects, events, and learning questions. If asked about information not provided by the website or conversation, say you may not have the latest community-specific details.'
-              },
-              ...safeHistory,
-              { role: 'user', content: message }
-            ],
-            temperature: 0.7,
-            max_tokens: 500,
-            stream: false,
-            chat_template_kwargs: { enable_thinking: false }
-          }),
-          signal: controller.signal
-        });
-      } finally {
-        clearTimeout(timeoutId);
-      }
+          ...safeHistory,
+          { role: 'user', content: message }
+        ],
+        temperature: 0.7,
+        max_tokens: 350,
+        stream: false,
+        chat_template_kwargs: { enable_thinking: false }
+      });
 
-      const data = await upstream.json();
+      const upstream = { ok: result.ok, status: result.status };
+      const data = result.data;
 
       if (!upstream.ok) {
         console.error('[Nemotron API] Upstream error:', data);
@@ -270,10 +304,10 @@ const server = http.createServer(async (req, res) => {
       return sendJson(res, 200, { success: true, reply });
     } catch (err) {
       console.error('[Nemotron API] Chat error:', err);
-      if (err && err.name === 'AbortError') {
+      if (err && /timed out/i.test(err.message || '')) {
         return sendJson(res, 504, { success: false, error: 'The AI took too long to respond. Please try again.' });
       }
-      return sendJson(res, 500, { success: false, error: 'Chatbot request failed.' });
+      return sendJson(res, 500, { success: false, error: 'Chatbot request failed: ' + (err.message || 'unknown error') });
     }
   }
 

@@ -259,8 +259,8 @@ const server = http.createServer(async (req, res) => {
 
       const payload = await parseBody(req);
       const message = typeof payload.message === 'string' ? payload.message.trim() : '';
-      const history = Array.isArray(payload.history) ? payload.history.slice(-8) : [];
-      const pageContext = typeof payload.pageContext === 'string' ? payload.pageContext.slice(0, 7000) : '';
+      const history = Array.isArray(payload.history) ? payload.history.slice(-12) : [];
+      const pageContext = typeof payload.pageContext === 'string' ? payload.pageContext.slice(0, 12000) : '';
 
       if (!message) {
         return sendJson(res, 400, { success: false, error: 'Message is required.' });
@@ -283,13 +283,13 @@ const server = http.createServer(async (req, res) => {
       const result = await geminiChatRequest(apiKey, {
         systemInstruction: {
           parts: [{
-            text: 'You are the AI assistant for the SB Jain AWS Student Community in Nagpur. Answer general questions like a helpful chatbot. For questions about this website, use the WEBSITE CONTENT below and prefer exact facts from it. Be concise by default, but give detailed steps or code when asked. If a community-specific fact is not present, say so clearly.\n\nWEBSITE CONTENT:\n' + pageContext
+            text: 'You are SB Jain AWS AI, a helpful assistant for the SB Jain AWS Student Community in Nagpur. Answer general questions accurately and naturally. When the user asks about this website, its team, events, roles, FAQ, gallery, or community details, use WEBSITE CONTENT as the primary source of truth. Never invent a website-specific fact. If the user corrects a fact, acknowledge the correction and use the website context to verify it. For general questions, do not force website information into the answer. Be concise by default, but provide clear step-by-step detail or code when requested.\n\nWEBSITE CONTENT:\n' + (pageContext || '[No website context needed for this question]')
           }]
         },
         contents: geminiContents,
         generationConfig: {
-          temperature: 0.4,
-          maxOutputTokens: 500
+          temperature: 0.25,
+          maxOutputTokens: 900
         }
       });
 

@@ -15,5 +15,8 @@
     "gallery"
   ],
   "author": "SB Jain AWS Community",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@vercel/blob": "^2.6.1"
+  }
 }

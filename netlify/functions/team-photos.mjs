@@ -24,7 +24,7 @@ function adminAllowed(request) {
 
 export default async (request) => {
   const url = new URL(request.url);
-  const store = getStore({ name: STORE_NAME, consistency: "strong" });
+  const store = getStore(STORE_NAME);
 
   if (request.method === "GET") {
     try {
@@ -33,10 +33,7 @@ export default async (request) => {
 
       for (const item of blobs || []) {
         if (!validMemberId(item.key)) continue;
-        const value = await store.get(item.key, {
-          type: "text",
-          consistency: "strong"
-        });
+        const value = await store.get(item.key, { type: "text" });
         if (value) photos[item.key] = value;
       }
 

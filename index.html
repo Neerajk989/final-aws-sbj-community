@@ -651,7 +651,7 @@
     </div>
   </footer>
 
-  <script src="script.js?v=39"></script>
+  <script src="script.js?v=40"></script>
 
   <!-- TEAM MEMBER PROFILE EDIT MODAL -->
   <div class="tm-modal" id="teamModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="tmModalTitle">
@@ -712,17 +712,17 @@
 
         <!-- Or paste URL -->
         <div style="margin: 16px 0; text-align: center; position: relative;">
-          <span style="background: #0f1624; padding: 0 12px; color: var(--txt-dim); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;">or paste photo url</span>
+          <span style="background: #0f1624; padding: 0 12px; color: var(--txt-dim); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;">permanent cloud storage</span>
         </div>
 
         <div class="badge-input-group" style="margin-bottom: 22px;">
-          <input type="url" id="tmUrlInput" placeholder="https://example.com/profile.jpg" style="font-size: 13px; padding: 10px 14px; width: 100%;">
+          <input type="text" id="tmUrlInput" value="Upload from device above — saved for all visitors" readonly style="font-size: 13px; padding: 10px 14px; width: 100%; opacity:.7; cursor:not-allowed;">
         </div>
 
         <!-- Action buttons -->
         <div class="tm-modal-actions">
           <button class="btn-primary" id="tmSaveBtn" type="button" style="flex: 1; justify-content: center; padding: 12px; font-size: 12px;">
-            <span>Apply &amp; Save Photo</span>
+            <span>Save Permanently</span>
           </button>
           <button class="btn-ghost" id="tmResetBtn" type="button" style="padding: 12px 18px; font-size: 12px; border-color: rgba(255, 100, 100, 0.4); color: #ff8080;">
             <span>Remove</span>

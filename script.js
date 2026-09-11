@@ -1102,7 +1102,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* =========================================================
-   NVIDIA NEMOTRON AI CHATBOT
+   GOOGLE GEMINI AI CHATBOT
 ========================================================= */
 document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('awsAiChat')) return;
@@ -1119,7 +1119,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <header class="aws-ai-header">
         <div>
           <strong>SB Jain AWS AI</strong>
-          <span>Powered by NVIDIA Nemotron</span>
+          <span>Powered by Google Gemini</span>
         </div>
         <button class="aws-ai-close" type="button" aria-label="Close AI assistant">×</button>
       </header>

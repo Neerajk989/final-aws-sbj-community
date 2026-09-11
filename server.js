@@ -274,7 +274,10 @@ const server = http.createServer(async (req, res) => {
         .filter(item => item && (item.role === 'user' || item.role === 'assistant') && typeof item.content === 'string')
         .map(item => ({
           role: item.role,
-          content: [{ type: 'input_text', text: item.content.slice(0, 3000) }]
+          content: [{
+            type: item.role === 'assistant' ? 'output_text' : 'input_text',
+            text: item.content.slice(0, 3000)
+          }]
         }));
 
       const hasWebsiteContext = Boolean(pageContext && pageContext.trim());

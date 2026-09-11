@@ -13,3 +13,13 @@
   from = "/api/team-photos/*"
   to = "/.netlify/functions/team-photos/:splat"
   status = 200
+
+[[redirects]]
+  from = "/api/gallery"
+  to = "/.netlify/functions/gallery"
+  status = 200
+
+[[redirects]]
+  from = "/api/gallery/*"
+  to = "/.netlify/functions/gallery/:splat"
+  status = 200

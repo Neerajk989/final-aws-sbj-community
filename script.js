@@ -294,7 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   /* =========================================================
-     9. TEAM MEMBER PROFILE PHOTO EDITOR & LOCALSTORAGE
+     9. TEAM MEMBER PROFILE PHOTO EDITOR & DEPLOYED-SITE STORAGE
   ========================================================= */
   const teamModal = document.getElementById('teamModal');
   const modalClose = document.getElementById('tmModalClose');
@@ -307,9 +307,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const urlInput = document.getElementById('tmUrlInput');
   const saveBtn = document.getElementById('tmSaveBtn');
   const resetBtn = document.getElementById('tmResetBtn');
+  const dropzone = document.getElementById('tmDropzone');
   const openEditorBtn = document.getElementById('openTeamPhotoEditorBtn');
 
-  // Member initials lookup
   const memberInitialsMap = {
     'hod-faculty': 'AT',
     'sarang-chakole': 'SC',
@@ -334,63 +334,184 @@ document.addEventListener('DOMContentLoaded', () => {
     'shagun-harinkhede': 'SH'
   };
 
+  const TEAM_PHOTO_STORAGE_KEY = 'aws_sbj_team_photos_v2';
+  const VERCEL_SITE_ORIGIN = 'https://aws-sbjit-community.vercel.app';
+
   let currentMemberId = 'sarang-chakole';
   let tempPhotoData = '';
+  let teamPhotosCache = {};
 
   function getStoredPhotos() {
     try {
-      return JSON.parse(localStorage.getItem('aws_sbj_team_photos') || '{}');
+      return JSON.parse(localStorage.getItem(TEAM_PHOTO_STORAGE_KEY) || '{}');
     } catch (e) {
       return {};
     }
   }
 
   function setStoredPhotos(data) {
+    teamPhotosCache = { ...data };
     try {
-      localStorage.setItem('aws_sbj_team_photos', JSON.stringify(data));
+      localStorage.setItem(TEAM_PHOTO_STORAGE_KEY, JSON.stringify(teamPhotosCache));
+      return true;
     } catch (e) {
-      console.warn('Could not save to localStorage', e);
+      console.warn('[Team Photos] Browser storage failed:', e);
+      return false;
     }
   }
 
-  // Render all stored photos on page cards
-  function applyStoredPhotos() {
-    const photos = getStoredPhotos();
-    Object.keys(photos).forEach(id => {
-      const avatarEl = document.getElementById('avatar-' + id);
-      if (avatarEl && photos[id]) {
-        const img = avatarEl.querySelector('.tm-avatar-img');
-        const text = avatarEl.querySelector('.tm-avatar-text');
-        if (img) {
-          img.src = photos[id];
+  function resolvePhotoUrl(url) {
+    if (!url || typeof url !== 'string') return '';
+    if (url.startsWith('/uploads/')) return VERCEL_SITE_ORIGIN + url;
+    return url;
+  }
+
+  function updateMemberPhotoEverywhere(memberId, photoUrl) {
+    const finalUrl = resolvePhotoUrl(photoUrl);
+    const memberBlocks = document.querySelectorAll('[data-member-id="' + memberId + '"]');
+
+    memberBlocks.forEach(block => {
+      const imgs = block.querySelectorAll('.tm-avatar-img, .team-dp-img');
+      const texts = block.querySelectorAll('.tm-avatar-text, .team-dp-text');
+
+      imgs.forEach(img => {
+        if (finalUrl) {
+          img.src = finalUrl;
           img.style.display = 'block';
+        } else {
+          img.removeAttribute('src');
+          img.style.display = 'none';
         }
-        if (text) text.style.display = 'none';
+      });
+
+      texts.forEach(text => {
+        text.style.display = finalUrl ? 'none' : '';
+      });
+    });
+
+    // Backward compatibility for duplicate avatar IDs already present in markup.
+    document.querySelectorAll('[id="avatar-' + memberId + '"]').forEach(avatarEl => {
+      const img = avatarEl.querySelector('.tm-avatar-img');
+      const text = avatarEl.querySelector('.tm-avatar-text');
+      if (img) {
+        if (finalUrl) {
+          img.src = finalUrl;
+          img.style.display = 'block';
+        } else {
+          img.removeAttribute('src');
+          img.style.display = 'none';
+        }
       }
+      if (text) text.style.display = finalUrl ? 'none' : '';
     });
   }
 
-  applyStoredPhotos();
+  function applyStoredPhotos() {
+    const photos = teamPhotosCache || {};
+    Object.entries(photos).forEach(([id, photoUrl]) => {
+      if (photoUrl) updateMemberPhotoEverywhere(id, photoUrl);
+    });
+  }
+
+  function getTeamApiUrl() {
+    const isGitHubPages = location.hostname.endsWith('github.io');
+    return isGitHubPages ? VERCEL_SITE_ORIGIN + '/api/team-photos' : '/api/team-photos';
+  }
+
+  async function syncPhotosFromServer() {
+    try {
+      const res = await fetch(getTeamApiUrl(), { cache: 'no-store' });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (!data || !data.success || !data.photos) return;
+
+      const local = getStoredPhotos();
+      const merged = { ...data.photos, ...local };
+      setStoredPhotos(merged);
+      applyStoredPhotos();
+    } catch (err) {
+      // GitHub Pages or an offline deployment can still use browser storage.
+      console.info('[Team Photos] Using browser-saved photos.');
+    }
+  }
+
+  function compressProfileImage(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error('Could not read image.'));
+      reader.onload = () => {
+        const image = new Image();
+        image.onerror = () => reject(new Error('Unsupported image.'));
+        image.onload = () => {
+          const maxSide = 720;
+          const scale = Math.min(1, maxSide / Math.max(image.width, image.height));
+          const width = Math.max(1, Math.round(image.width * scale));
+          const height = Math.max(1, Math.round(image.height * scale));
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(image, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', 0.84));
+        };
+        image.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function choosePhotoFile(file) {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Please choose an image file.');
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      alert('Image is too large. Please choose an image under 8 MB.');
+      return;
+    }
+
+    try {
+      tempPhotoData = await compressProfileImage(file);
+      if (previewImg) {
+        previewImg.src = tempPhotoData;
+        previewImg.style.display = 'block';
+      }
+      if (previewInitials) previewInitials.style.display = 'none';
+      if (urlInput) urlInput.value = '';
+    } catch (err) {
+      alert('Could not prepare this photo. Please try another image.');
+    }
+  }
 
   function openModalForMember(memberId, memberName) {
     currentMemberId = memberId;
     if (memberSelect) memberSelect.value = memberId;
-    if (modalTitle) modalTitle.textContent = memberName || (memberSelect ? memberSelect.options[memberSelect.selectedIndex].text : 'Member');
-    
-    // Check existing photo
-    const photos = getStoredPhotos();
-    const existing = photos[memberId];
-    tempPhotoData = existing || '';
+
+    const selectedLabel = memberSelect && memberSelect.options[memberSelect.selectedIndex]
+      ? memberSelect.options[memberSelect.selectedIndex].text
+      : 'Member';
+    if (modalTitle) modalTitle.textContent = memberName || selectedLabel;
+
+    const existing = teamPhotosCache[memberId] || '';
+    tempPhotoData = existing;
 
     if (existing) {
-      previewImg.src = existing;
-      previewImg.style.display = 'block';
-      previewInitials.style.display = 'none';
-      if (urlInput && existing.startsWith('http')) urlInput.value = existing;
+      if (previewImg) {
+        previewImg.src = resolvePhotoUrl(existing);
+        previewImg.style.display = 'block';
+      }
+      if (previewInitials) previewInitials.style.display = 'none';
+      if (urlInput) urlInput.value = existing.startsWith('http') ? existing : '';
     } else {
-      previewImg.style.display = 'none';
-      previewInitials.style.display = 'block';
-      previewInitials.textContent = memberInitialsMap[memberId] || 'SB';
+      if (previewImg) {
+        previewImg.removeAttribute('src');
+        previewImg.style.display = 'none';
+      }
+      if (previewInitials) {
+        previewInitials.style.display = 'block';
+        previewInitials.textContent = memberInitialsMap[memberId] || 'SB';
+      }
       if (urlInput) urlInput.value = '';
     }
 
@@ -404,115 +525,137 @@ document.addEventListener('DOMContentLoaded', () => {
     teamModal?.setAttribute('aria-hidden', 'true');
   }
 
-  // Click listener on all member cards / avatars
-  document.querySelectorAll('[data-member-id]').forEach(card => {
-    const avatar = card.querySelector('.tm-leader-avatar, .tm-member-avatar');
-    if (avatar) {
-      avatar.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const id = card.dataset.memberId;
-        const name = card.dataset.memberName;
-        openModalForMember(id, name);
+  function bindMemberPhotoEditors() {
+    document.querySelectorAll('[data-member-id]').forEach(card => {
+      const memberId = card.dataset.memberId;
+      const memberName = card.dataset.memberName;
+      if (!memberId) return;
+
+      const clickable = card.querySelectorAll('.tm-ref-avatar, .tm-leader-avatar, .tm-member-avatar, .team-dp-circle, .tm-avatar-cam-badge, .tm-ref-photo');
+      clickable.forEach(el => {
+        if (el.dataset.photoEditorBound === '1') return;
+        el.dataset.photoEditorBound = '1';
+        el.style.cursor = 'pointer';
+        el.addEventListener('click', e => {
+          e.preventDefault();
+          e.stopPropagation();
+          openModalForMember(memberId, memberName);
+        });
       });
+    });
+  }
+
+  fileInput?.addEventListener('change', e => choosePhotoFile(e.target.files?.[0]));
+
+  dropzone?.addEventListener('dragover', e => {
+    e.preventDefault();
+    dropzone.classList.add('drag-over');
+  });
+  dropzone?.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
+  dropzone?.addEventListener('drop', e => {
+    e.preventDefault();
+    dropzone.classList.remove('drag-over');
+    choosePhotoFile(e.dataTransfer?.files?.[0]);
+  });
+
+  urlInput?.addEventListener('input', e => {
+    const url = e.target.value.trim();
+    if (!url) return;
+    tempPhotoData = url;
+    if (previewImg) {
+      previewImg.src = url;
+      previewImg.style.display = 'block';
+    }
+    if (previewInitials) previewInitials.style.display = 'none';
+  });
+
+  saveBtn?.addEventListener('click', async () => {
+    if (!tempPhotoData) {
+      alert('Please choose a photo or enter an image URL first.');
+      return;
+    }
+
+    const originalLabel = saveBtn.innerHTML;
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<span>Saving...</span>';
+
+    // Save locally first so the deployed site keeps the photo after refresh on this device.
+    teamPhotosCache[currentMemberId] = tempPhotoData;
+    const stored = setStoredPhotos(teamPhotosCache);
+    updateMemberPhotoEverywhere(currentMemberId, tempPhotoData);
+
+    // Best-effort sync to the website API when it is available.
+    try {
+      const res = await fetch(getTeamApiUrl(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ memberId: currentMemberId, photoData: tempPhotoData })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.photoUrl) {
+          teamPhotosCache[currentMemberId] = data.photoUrl;
+          setStoredPhotos(teamPhotosCache);
+          updateMemberPhotoEverywhere(currentMemberId, data.photoUrl);
+        }
+      }
+    } catch (err) {
+      console.info('[Team Photos] Server sync unavailable; browser copy remains saved.');
+    }
+
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = originalLabel;
+    closeModal();
+
+    if (!stored) {
+      alert('The photo was applied, but your browser could not save it permanently. Try a smaller image.');
     }
   });
 
+  resetBtn?.addEventListener('click', async () => {
+    delete teamPhotosCache[currentMemberId];
+    setStoredPhotos(teamPhotosCache);
+    updateMemberPhotoEverywhere(currentMemberId, '');
+
+    try {
+      await fetch(getTeamApiUrl() + '/' + encodeURIComponent(currentMemberId), { method: 'DELETE' });
+    } catch (err) {
+      // Local removal still works.
+    }
+
+    if (previewImg) {
+      previewImg.removeAttribute('src');
+      previewImg.style.display = 'none';
+    }
+    if (previewInitials) {
+      previewInitials.style.display = 'block';
+      previewInitials.textContent = memberInitialsMap[currentMemberId] || 'SB';
+    }
+    tempPhotoData = '';
+    if (urlInput) urlInput.value = '';
+    if (fileInput) fileInput.value = '';
+    closeModal();
+  });
+
   openEditorBtn?.addEventListener('click', () => {
-    openModalForMember(memberSelect ? memberSelect.value : 'sarang-chakole');
+    const selected = memberSelect?.value || 'sarang-chakole';
+    const label = memberSelect?.options[memberSelect.selectedIndex]?.text || 'Member';
+    openModalForMember(selected, label);
   });
 
   memberSelect?.addEventListener('change', () => {
     const selectedOption = memberSelect.options[memberSelect.selectedIndex];
-    openModalForMember(memberSelect.value, selectedOption.text);
+    openModalForMember(memberSelect.value, selectedOption?.text || 'Member');
   });
 
   modalClose?.addEventListener('click', closeModal);
   modalBackdrop?.addEventListener('click', closeModal);
 
-  // File input change -> read as base64 DataURL
-  fileInput?.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Image size exceeds 5MB. Please choose a smaller image.');
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        tempPhotoData = event.target.result;
-        previewImg.src = tempPhotoData;
-        previewImg.style.display = 'block';
-        previewInitials.style.display = 'none';
-        if (urlInput) urlInput.value = '';
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-
-  // URL input change
-  urlInput?.addEventListener('input', (e) => {
-    const url = e.target.value.trim();
-    if (url) {
-      tempPhotoData = url;
-      previewImg.src = url;
-      previewImg.style.display = 'block';
-      previewInitials.style.display = 'none';
-    }
-  });
-
-  // Save button
-  saveBtn?.addEventListener('click', () => {
-    if (!tempPhotoData) {
-      alert('Please select a photo or enter an image URL first.');
-      return;
-    }
-
-    const photos = getStoredPhotos();
-    photos[currentMemberId] = tempPhotoData;
-    setStoredPhotos(photos);
-
-    // Update avatar on page immediately
-    const avatarEl = document.getElementById('avatar-' + currentMemberId);
-    if (avatarEl) {
-      const img = avatarEl.querySelector('.tm-avatar-img');
-      const text = avatarEl.querySelector('.tm-avatar-text');
-      if (img) {
-        img.src = tempPhotoData;
-        img.style.display = 'block';
-      }
-      if (text) text.style.display = 'none';
-    }
-
-    closeModal();
-  });
-
-  // Reset button
-  resetBtn?.addEventListener('click', () => {
-    const photos = getStoredPhotos();
-    delete photos[currentMemberId];
-    setStoredPhotos(photos);
-
-    const avatarEl = document.getElementById('avatar-' + currentMemberId);
-    if (avatarEl) {
-      const img = avatarEl.querySelector('.tm-avatar-img');
-      const text = avatarEl.querySelector('.tm-avatar-text');
-      if (img) {
-        img.src = '';
-        img.style.display = 'none';
-      }
-      if (text) text.style.display = 'block';
-    }
-
-    previewImg.style.display = 'none';
-    previewInitials.style.display = 'block';
-    previewInitials.textContent = memberInitialsMap[currentMemberId] || 'SB';
-    tempPhotoData = '';
-    if (urlInput) urlInput.value = '';
-    if (fileInput) fileInput.value = '';
-
-    closeModal();
-  });
-
+  // Load browser-saved photos immediately, then merge any photos available from the website API.
+  teamPhotosCache = getStoredPhotos();
+  applyStoredPhotos();
+  bindMemberPhotoEditors();
+  syncPhotosFromServer();
 
   /* =========================================================
      10. THEME SWITCHER (Light & Dark Mode)

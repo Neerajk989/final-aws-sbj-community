@@ -280,3 +280,23 @@
   .team-fullpage .lead-spotlight-wrap > .tm-advisor-card { order: 1 !important; }
   .team-fullpage .lead-spotlight-wrap > .tm-lead-spotlight:not(.tm-advisor-card) { order: 2 !important; }
 }
+
+/* Final responsive breakpoint: desktop stays two-column; mobile/tablet stacks cleanly. */
+@media screen and (max-width: 900px) {
+  .team-fullpage .lead-spotlight-wrap {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    gap: 28px !important;
+  }
+  .team-fullpage .lead-spotlight-wrap > .tm-lead-spotlight {
+    display: block !important;
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+  .team-fullpage .lead-spotlight-wrap > .tm-advisor-card { order: 1 !important; }
+  .team-fullpage .lead-spotlight-wrap > .tm-lead-spotlight:not(.tm-advisor-card) { order: 2 !important; }
+}

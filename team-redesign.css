@@ -259,3 +259,24 @@
     max-width: none !important;
   }
 }
+
+/* Narrow mobile safeguard: never allow the two leadership cards to touch or share a row. */
+@media screen and (max-width: 600px) {
+  .team-fullpage .lead-spotlight-wrap {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    row-gap: 28px !important;
+    gap: 28px !important;
+  }
+  .team-fullpage .lead-spotlight-wrap > .tm-lead-spotlight {
+    display: block !important;
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+  .team-fullpage .lead-spotlight-wrap > .tm-advisor-card { order: 1 !important; }
+  .team-fullpage .lead-spotlight-wrap > .tm-lead-spotlight:not(.tm-advisor-card) { order: 2 !important; }
+}

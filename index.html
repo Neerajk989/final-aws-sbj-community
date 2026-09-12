@@ -32,6 +32,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css?v=52">
+  <link rel="stylesheet" href="team-redesign.css?v=1">
 
   <script>
     (function() {
@@ -812,6 +813,11 @@
     <header class="team-fp-header">
       <div class="team-fp-container">
         <div class="team-fp-brand">
+          <a class="team-fp-logo" href="#hero" aria-label="SB Jain AWS Community Home">
+            <img src="images/aws-logo.svg?v=2" alt="AWS" width="68" height="40">
+            <span>SB JAIN<br><em>AWS COMMUNITY</em></span>
+          </a>
+          <span class="team-fp-brand-divider team-fp-logo-divider" aria-hidden="true"></span>
           <button class="team-fp-back-btn" id="teamFpCloseBtn" type="button" aria-label="Back to home page">
             <span class="team-fp-iconbox" aria-hidden="true">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -827,7 +833,16 @@
           </div>
         </div>
 
+        <nav class="team-fp-links" aria-label="Community navigation">
+          <a href="#about">ABOUT</a>
+          <a href="#events">EVENTS</a>
+          <a href="#gallery">GALLERY</a>
+          <a class="is-current" href="#team">TEAM</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+
         <div class="team-fp-actions">
+          <a class="team-fp-join" href="https://www.meetup.com/aws-sbg-at-sb-jain-inst-of-tech-management-and-research/?eventOrigin=home_groups_you_are_in" target="_blank" rel="noopener noreferrer">JOIN COMMUNITY ↗</a>
           <button class="team-fp-photo-btn" id="openPhotoEditorFromFp" type="button">
             <span class="team-fp-photo-icon" aria-hidden="true">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
@@ -914,6 +929,25 @@
                 <h3 class="tm-ref-name" style="font-size: 24px;">Sarang Chakole</h3>
                 <p class="tm-ref-role">AWS Student Builder Group Leader</p>
                 <span class="tm-ref-sub">SB Jain Institute of Technology, Management &amp; Research</span>
+              </div>
+            </article>
+
+            <article class="tm-ref-card tm-lead-spotlight tm-advisor-card" data-member-id="technical-advisor" data-member-name="Technical Advisor" data-member-role="Technical Advisor">
+              <div class="tm-ref-photo">
+                <div class="tm-photo-glow tm-glow-lead"></div>
+                <div class="tm-ref-avatar tm-av-lead tm-av-advisor" id="avatar-technical-advisor" title="Click to change photo for Technical Advisor">
+                  <span class="tm-avatar-text" style="display:none;">TA</span>
+                  <img class="tm-avatar-img" src="images/team/technical-advisor.jpg" alt="Technical Advisor" style="display:block;">
+                  <div class="tm-avatar-cam-badge" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-ref-body">
+                <span class="tm-ref-tag">TECHNICAL ADVISOR</span>
+                <h3 class="tm-ref-name" style="font-size: 24px;">Technical Advisor</h3>
+                <p class="tm-ref-role">Technical Advisor</p>
+                <span class="tm-ref-sub">SB Jain AWS Student Community</span>
               </div>
             </article>
           </div>
@@ -1495,6 +1529,25 @@
                 <h4 class="tm-member-name" style="font-size: 22px;">Sarang Chakole</h4>
                 <p class="tm-member-role">AWS Student Builder Group Leader</p>
                 <span class="tm-member-team">SB Jain Institute of Technology, Management &amp; Research</span>
+              </div>
+            </article>
+
+            <!-- 3. TECHNICAL ADVISOR CARD -->
+            <article class="tm-member-card tm-advisor-card" data-member-id="technical-advisor" data-member-name="Technical Advisor" data-member-role="Technical Advisor">
+              <div class="tm-avatar-wrap">
+                <div class="tm-member-avatar tm-av-advisor" id="avatar-technical-advisor" title="Click to change photo for Technical Advisor">
+                  <span class="tm-avatar-text" style="display:none;">TA</span>
+                  <img class="tm-avatar-img" src="images/team/technical-advisor.jpg" alt="Technical Advisor" style="display:block;">
+                  <div class="tm-avatar-cam-badge" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-card-info">
+                <span class="tm-tag tm-tag-advisor">TECHNICAL ADVISOR</span>
+                <h4 class="tm-member-name" style="font-size: 22px;">Technical Advisor</h4>
+                <p class="tm-member-role">Technical Advisor</p>
+                <span class="tm-member-team">SB Jain AWS Student Community</span>
               </div>
             </article>
 

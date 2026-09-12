@@ -10,5 +10,9 @@
   "hod-faculty": {
     "path": "images/team/hod-faculty.jpg",
     "version": "1789198247035"
+  },
+  "technical-advisor": {
+    "path": "images/team/technical-advisor.jpg",
+    "version": "1789224885808"
   }
 }

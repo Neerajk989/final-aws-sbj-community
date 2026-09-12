@@ -88,20 +88,26 @@ export default async (request) => {
 
     const hasWebsiteContext = Boolean(pageContext && pageContext.trim());
     const explicitlyCurrent = /\b(latest|today|current|currently|news|live|now|recent|price|weather|score|result|release|update|updated|2026)\b/i.test(message);
-    const externalFactQuestion = /\b(who|what|where|when|which|how many|how much|president|prime minister|company|country|city|college|university|product|service|version|date|time)\b/i.test(message);
-    const modelOnlyTask = /\b(write|rewrite|summarize|translate|code|program|debug|solve|calculate|equation|essay|poem|story|email|caption|explain concept|algorithm)\b/i.test(message);
+    const externalFactQuestion = /\b(who|what|where|when|which|how many|how much|president|prime minister|company|country|city|college|university|product|service|version|date|time|meaning|definition|history|founder|ceo|owner)\b/i.test(message);
+    const modelOnlyTask = /\b(write|rewrite|summarize|translate|code|program|debug|solve|calculate|equation|essay|poem|story|email|caption|algorithm)\b/i.test(message);
+
+    // Website questions: use website context exactly when it contains the answer.
+    // Outside factual/current questions: verify on the web.
+    // Coding/writing/math: answer directly for speed.
     const needsWeb = !hasWebsiteContext && (explicitlyCurrent || (externalFactQuestion && !modelOnlyTask));
 
     const requestBody = {
       model: "gpt-5.6-luna",
       instructions:
-        "You are SB Jain AWS AI, a general-purpose assistant. Answer the user's actual question directly and accurately. " +
-        "If WEBSITE CONTENT is supplied and directly supports the answer, treat it as the primary source of truth for website-specific facts. " +
-        "Otherwise, for externally verifiable or current factual questions, use web search when available and base the answer only on supported information. " +
-        "For coding, writing, math, explanations, brainstorming, and other non-current tasks, answer directly. " +
-        "Do not invent names, roles, dates, events, statistics, prices, locations, quotes, URLs, or factual claims. " +
-        "If uncertain, say so clearly.\n\n" +
-        "WEBSITE CONTENT:\n" + (pageContext || "[No website context supplied for this question]"),
+        "You are SB Jain AWS AI. Be fast, concise, and factual. " +
+        "ROUTING RULES: " +
+        "(1) If WEBSITE CONTENT is provided and it contains the answer, answer from that website content only. Preserve names, roles, dates, labels, numbers, and wording exactly when possible. Do not replace a website fact with model memory. " +
+        "(2) If the answer is not present in WEBSITE CONTENT and the user asks an external factual, current, real-world, or verifiable question, use web search and answer from the search results. " +
+        "(3) For coding, writing, math, debugging, and general explanations that do not need fresh facts, answer directly without web search for speed. " +
+        "(4) Never invent facts. If website content is insufficient and search is unavailable or inconclusive, say you could not verify it. " +
+        "(5) When web search is used, give a short answer first and include source links. " +
+        "(6) For website questions, do not say you searched the web unless you actually did. " +
+        "WEBSITE CONTENT:\n" + (pageContext || "[No relevant website content found]"),
       input: [
         ...safeHistory,
         {
@@ -109,7 +115,7 @@ export default async (request) => {
           content: [{ type: "input_text", text: message }]
         }
       ],
-      max_output_tokens: 1200,
+      max_output_tokens: 700,
       metadata: {
         mode: needsWeb ? "verified_web" : (hasWebsiteContext ? "website_grounded" : "general")
       }

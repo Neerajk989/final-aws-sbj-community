@@ -23,3 +23,8 @@
   from = "/api/gallery/*"
   to = "/.netlify/functions/gallery/:splat"
   status = 200
+
+[[redirects]]
+  from = "/api/chat"
+  to = "/.netlify/functions/chat"
+  status = 200

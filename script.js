@@ -335,6 +335,8 @@ document.addEventListener('DOMContentLoaded', () => {
     'shagun-harinkhede': 'SH'
   };
 
+  const DEFAULT_TEAM_PHOTOS = {};
+
   let currentMemberId = 'sarang-chakole';
   let tempPhotoData = '';
   let teamPhotosCache = {};

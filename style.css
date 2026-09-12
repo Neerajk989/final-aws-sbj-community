@@ -2209,7 +2209,9 @@ img {
   width: 100vw;
   height: 100vh;
   z-index: 100000;
-  background: radial-gradient(circle at 50% 15%, #2a352a 0%, #222a22 55%, #181f18 100%) !important;
+  background:
+    radial-gradient(circle at 50% 8%, rgba(66, 86, 69, 0.46) 0%, rgba(34, 44, 36, 0.88) 34%, rgba(20, 27, 22, 0.97) 72%),
+    linear-gradient(180deg, #233027 0%, #172019 48%, #111712 100%) !important;
   color: var(--txt);
   overflow-y: auto;
   overflow-x: hidden;
@@ -2245,7 +2247,7 @@ img {
 .tfb1 {
   width: 650px;
   height: 650px;
-  background: radial-gradient(circle, rgba(0, 200, 255, 0.35), transparent 70%);
+  background: radial-gradient(circle, rgba(103, 180, 142, 0.22), transparent 70%);
   top: -120px;
   left: -120px;
 }
@@ -2253,7 +2255,7 @@ img {
 .tfb2 {
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(255, 153, 0, 0.25), transparent 70%);
+  background: radial-gradient(circle, rgba(255, 153, 0, 0.18), transparent 70%);
   bottom: 80px;
   right: -120px;
 }
@@ -2261,35 +2263,53 @@ img {
 /* Top Sticky Header */
 .team-fp-header {
   position: sticky;
-  top: 0;
+  top: 14px;
   z-index: 100;
-  padding: 12px 0;
-  background: linear-gradient(180deg, rgba(18,27,22,.97), rgba(18,27,22,.91)) !important;
-  -webkit-backdrop-filter: blur(22px) saturate(140%);
-  backdrop-filter: blur(22px) saturate(140%);
-  border-bottom: 1px solid rgba(255,255,255,.08) !important;
-  box-shadow: 0 14px 38px rgba(0,0,0,.22);
-}
-.team-fp-header::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -1px;
-  width: min(1180px, calc(100% - 48px));
-  height: 1px;
-  transform: translateX(-50%);
-  background: linear-gradient(90deg, transparent, rgba(255,153,0,.5), rgba(56,189,248,.22), transparent);
+  padding: 0 18px;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none;
   pointer-events: none;
 }
+
+.team-fp-header::after {
+  content: none;
+}
+
 .team-fp-container {
   max-width: 1240px;
   margin: 0 auto;
-  padding: 0 24px;
-  min-height: 58px;
+  padding: 10px 12px;
+  min-height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  gap: 22px;
+  pointer-events: auto;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  background:
+    linear-gradient(180deg, rgba(42, 55, 45, 0.68), rgba(25, 34, 28, 0.58)),
+    rgba(22, 30, 25, 0.62);
+  -webkit-backdrop-filter: blur(28px) saturate(155%);
+  backdrop-filter: blur(28px) saturate(155%);
+  box-shadow:
+    0 18px 55px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255,255,255,.12),
+    inset 0 -1px 0 rgba(255,255,255,.03);
+  overflow: hidden;
+  position: relative;
+}
+
+.team-fp-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(255,255,255,.10), transparent 34%),
+    radial-gradient(circle at 82% 100%, rgba(255,153,0,.06), transparent 30%);
 }
 .team-fp-brand { display:flex; align-items:center; gap:16px; min-width:0; }
 .team-fp-brand-divider {
@@ -2301,7 +2321,7 @@ img {
   border:1px solid rgba(255,255,255,.10);
   background:rgba(255,255,255,.045);
   color:rgba(255,255,255,.92);
-  border-radius:13px;
+  border-radius:14px;
   padding:6px 12px 6px 7px;
   min-height:42px;
   font:700 12px/1 inherit;
@@ -2364,8 +2384,8 @@ img {
 }
 .team-fp-close-icon {
   width:42px; height:42px; flex:0 0 42px;
-  border-radius:13px;
-  background:rgba(255,255,255,.045);
+  border-radius:50%;
+  background:rgba(255,255,255,.055);
   border:1px solid rgba(255,255,255,.10);
   color:rgba(255,255,255,.88);
   display:grid; place-items:center;
@@ -7354,4 +7374,67 @@ select {
 .team-dp-item:hover .team-dp-circle {
   transform: translateY(-4px) scale(1.15);
   border-color: #ff9900;
+}
+
+
+/* ===== Team Panel Mac Glass Polish ===== */
+.team-fp-brand,
+.team-fp-actions {
+  position: relative;
+  z-index: 2;
+}
+
+.team-fp-back-btn,
+.team-fp-photo-btn,
+.team-fp-close-icon {
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+.team-fp-back-btn {
+  background: rgba(255,255,255,.055);
+  border-color: rgba(255,255,255,.10);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+.team-fp-iconbox,
+.team-fp-photo-icon {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.team-fp-photo-btn {
+  border-color: rgba(255,177,74,.38);
+  background: linear-gradient(180deg, rgba(255,174,68,.96), rgba(255,132,28,.94));
+  box-shadow:
+    0 8px 24px rgba(255,132,20,.18),
+    inset 0 1px 0 rgba(255,255,255,.36);
+}
+
+.team-fp-close-icon {
+  border-radius: 50%;
+  background: rgba(255,255,255,.055);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07);
+}
+
+.team-fp-heading {
+  text-shadow: 0 1px 10px rgba(0,0,0,.28);
+}
+
+@media (max-width: 820px) {
+  .team-fp-header {
+    top: 8px;
+    padding: 0 8px;
+  }
+
+  .team-fp-container {
+    min-height: 56px;
+    padding: 8px;
+    border-radius: 18px;
+  }
+}
+
+@media (max-width: 520px) {
+  .team-fp-container {
+    border-radius: 16px;
+  }
 }

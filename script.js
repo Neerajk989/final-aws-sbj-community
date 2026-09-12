@@ -1385,51 +1385,39 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function getRelevantWebsiteContext(message) {
-    if (!isWebsiteQuestion(message)) return '';
-
     const q = normalizeQuestion(message);
-    const stop = new Set(['what','who','is','are','the','a','an','in','on','of','to','for','and','this','website','page','tell','me','about','do','does','how','where','when','our','your']);
-    const terms = q.split(' ').filter(w => w.length > 2 && !stop.has(w));
+    const chunks = [];
 
-    const teamFacts = getTeamFacts();
-    const teamLines = teamFacts.map(item => item.name + ' — ' + item.role);
-
-    const blocks = [];
-    const selectors = [
-      'h1','h2','h3','h4','p','li',
-      '.faq-item','.event-card','.gallery-card','.team-dept',
-      '[data-member-name][data-member-role]'
-    ];
-
-    document.querySelectorAll(selectors.join(',')).forEach(el => {
-      if (el.closest('#awsAiChat')) return;
-      const text = (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
-      if (text.length >= 15 && text.length <= 900) blocks.push(text);
+    // Team facts are structured and should be trusted exactly.
+    getTeamFacts().forEach(item => {
+      chunks.push(item.name + ' — ' + item.role);
     });
 
-    const unique = [...new Set(blocks)];
-    const scored = unique.map(text => {
-      const lower = text.toLowerCase();
-      let score = terms.reduce((n,t) => n + (lower.includes(t) ? 2 : 0), 0);
-      if (/team|leader|head|member|technical|design|marketing|operations/.test(q) &&
-          /leader|head|co-head|volunteer|technical|design|marketing|operations/.test(lower)) score += 3;
-      if (/event|workshop|hackathon|gallery/.test(q) &&
-          /event|workshop|hackathon|gallery/.test(lower)) score += 3;
-      return { text, score };
-    }).sort((a,b) => b.score - a.score || a.text.length - b.text.length);
+    // Pull concise visible text from the main website sections.
+    const selectors = [
+      '#home', '#about', '#team', '#faq', '#gallery',
+      '.hero', '.team-fullpage', '.faq-list', '.gallery-fullpage'
+    ];
 
-    const top = scored.filter(x => x.score > 0).slice(0, 12).map(x => x.text);
-    if (!top.length) top.push(...unique.slice(0, 8));
+    selectors.forEach(selector => {
+      document.querySelectorAll(selector).forEach(el => {
+        const text = (el.innerText || '').replace(/\s+/g, ' ').trim();
+        if (text) chunks.push(text.slice(0, 5000));
+      });
+    });
 
-    return [
-      'SITE: SB Jain AWS Student Community, Nagpur',
-      'TEAM DIRECTORY:',
-      ...teamLines,
-      'RELEVANT PAGE CONTENT:',
-      ...top
-    ].join('\n').slice(0, 12000);
+    const joined = chunks.join('\n');
+    if (!joined) return '';
+
+    // If the question looks site-related, send relevant website context.
+    if (isWebsiteQuestion(message)) {
+      return joined.slice(0, 12000);
+    }
+
+    // For non-site questions, avoid sending full page context so external factual
+    // questions can route to web search and normal tasks stay fast.
+    return '';
   }
-
   function answerFromPage(message) {
     if (!isWebsiteQuestion(message)) return '';
 

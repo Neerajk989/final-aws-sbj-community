@@ -239,3 +239,23 @@
   .team-fullpage .team-fp-back-btn { display: none; }
   .team-fullpage .team-fp-join { min-height: 32px; padding-inline: 9px; font-size: 8px; }
 }
+
+/* Mobile leadership order: Technical Advisor first, Sarang immediately below. */
+@media (max-width: 850px) {
+  .team-fullpage .lead-spotlight-wrap {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 20px !important;
+  }
+  .team-fullpage .lead-spotlight-wrap .tm-advisor-card {
+    order: 1;
+    width: 100% !important;
+    max-width: none !important;
+  }
+  .team-fullpage .lead-spotlight-wrap .tm-lead-spotlight:not(.tm-advisor-card) {
+    order: 2;
+    width: 100% !important;
+    max-width: none !important;
+  }
+}

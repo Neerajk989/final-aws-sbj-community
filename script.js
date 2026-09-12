@@ -416,7 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error(data.error || 'Could not load permanent team photos.');
       }
 
-      const merged = { ...data.photos };
+      const merged = { ...DEFAULT_TEAM_PHOTOS, ...data.photos };
       setStoredPhotos(merged);
       applyStoredPhotos();
       setPhotoStatus('Permanent team photos loaded.', 'success');

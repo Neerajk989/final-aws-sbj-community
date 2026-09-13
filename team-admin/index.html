@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#062f29">
+  <title>Team Admin · SB Jain AWS Community</title>
+  <link rel="icon" type="image/svg+xml" href="../images/aws-logo.svg?v=2">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css?v=1">
+</head>
+<body>
+  <div class="admin-bg" aria-hidden="true"></div>
+
+  <main class="admin-shell">
+    <header class="admin-topbar">
+      <a class="brand" href="../" aria-label="Back to website">
+        <img src="../images/aws-logo.svg?v=2" alt="AWS">
+        <span>SB JAIN<br><b>AWS COMMUNITY</b></span>
+      </a>
+      <div class="topbar-right">
+        <span class="secure-pill">PRIVATE TEAM ADMIN</span>
+        <a class="site-link" href="../">View website ↗</a>
+      </div>
+    </header>
+
+    <section id="loginView" class="login-wrap">
+      <div class="login-card">
+        <div class="login-icon">✦</div>
+        <p class="eyebrow">AUTHORIZED ACCESS ONLY</p>
+        <h1>Team Photo Manager</h1>
+        <p class="login-copy">Only approved community editors can upload, replace, or remove Team profile photos.</p>
+
+        <form id="loginForm" class="login-form">
+          <label>
+            <span>Email</span>
+            <input id="loginEmail" type="email" autocomplete="username" placeholder="you@sbjit.edu.in" required>
+          </label>
+          <label>
+            <span>Password</span>
+            <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Admin password" required>
+          </label>
+          <button id="loginBtn" type="submit">Sign in securely</button>
+        </form>
+
+        <p id="loginStatus" class="status" aria-live="polite"></p>
+        <p class="login-note">Your password is checked only by the Netlify backend and is never stored in this page.</p>
+      </div>
+    </section>
+
+    <section id="dashboardView" class="dashboard" hidden>
+      <div class="dashboard-head">
+        <div>
+          <p class="eyebrow">TEAM MANAGEMENT</p>
+          <h1>Profile Photo Manager</h1>
+          <p>Choose any member, preview the new image, then save it permanently for all website visitors.</p>
+        </div>
+        <div class="session-box">
+          <span>Signed in as</span>
+          <strong id="adminEmail">—</strong>
+          <button id="logoutBtn" type="button">Sign out</button>
+        </div>
+      </div>
+
+      <div class="admin-grid">
+        <aside class="member-panel">
+          <div class="panel-title">
+            <div>
+              <span class="eyebrow">MEMBERS</span>
+              <h2>Select profile</h2>
+            </div>
+            <span id="memberCount" class="count-pill">0</span>
+          </div>
+
+          <input id="memberSearch" class="search" type="search" placeholder="Search member or role…">
+          <div id="memberList" class="member-list"></div>
+        </aside>
+
+        <section class="editor-panel">
+          <div class="editor-title">
+            <div>
+              <span class="eyebrow">EDIT PROFILE PHOTO</span>
+              <h2 id="editorName">Select a member</h2>
+              <p id="editorRole">Choose a member from the list.</p>
+            </div>
+            <span id="saveState" class="save-state">READY</span>
+          </div>
+
+          <div class="preview-stage">
+            <div class="preview-ring">
+              <img id="previewImg" alt="" hidden>
+              <span id="previewInitials">AWS</span>
+            </div>
+            <div class="preview-copy">
+              <strong id="previewName">No member selected</strong>
+              <span id="previewRole">—</span>
+              <small>Images are compressed to JPEG before upload.</small>
+            </div>
+          </div>
+
+          <div id="dropzone" class="dropzone" tabindex="0">
+            <input id="photoInput" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+            <div class="drop-icon">↑</div>
+            <strong>Choose a new photo</strong>
+            <span>Click here or drag & drop JPG, PNG or WebP</span>
+            <small>Recommended: square portrait, clear face, under 5 MB</small>
+          </div>
+
+          <div class="actions">
+            <button id="saveBtn" class="primary-btn" type="button" disabled>Save photo</button>
+            <button id="removeBtn" class="danger-btn" type="button" disabled>Remove current photo</button>
+          </div>
+
+          <p id="editorStatus" class="status" aria-live="polite"></p>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="admin.js?v=1"></script>
+</body>
+</html>

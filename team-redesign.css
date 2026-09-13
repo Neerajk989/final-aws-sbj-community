@@ -332,3 +332,23 @@
 }
 
 /* team geometric background marker */
+.team-fullpage {
+  background:
+    linear-gradient(145deg, rgba(5,49,40,.96), rgba(8,67,54,.94)),
+    #0b2824 !important;
+}
+
+.team-fullpage::before {
+  display:block !important;
+  content:"" !important;
+  position:absolute !important;
+  inset:0 !important;
+  pointer-events:none !important;
+  z-index:0 !important;
+  opacity:.28 !important;
+  background:
+    linear-gradient(135deg, transparent 0 18%, rgba(255,255,255,.03) 18% 31%, transparent 31% 50%, rgba(31,116,91,.16) 50% 64%, transparent 64% 100%),
+    linear-gradient(45deg, transparent 0 26%, rgba(255,153,0,.05) 26% 27%, transparent 27% 60%, rgba(69,168,139,.07) 60% 74%, transparent 74% 100%);
+  background-size:520px 360px, 680px 420px;
+  background-position:0 0, 170px 90px;
+}

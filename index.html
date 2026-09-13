@@ -32,7 +32,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css?v=54">
-  <link rel="stylesheet" href="team-redesign.css?v=3">
+  <link rel="stylesheet" href="team-redesign.css?v=2">
 
   <script>
     (function() {
@@ -627,7 +627,7 @@
     </div>
   </footer>
 
-  <script src="script.js?v=52"></script>
+  <script src="script.js?v=51"></script>
 
   <!-- TEAM MEMBER PROFILE EDIT MODAL -->
   <div class="tm-modal" id="teamModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="tmModalTitle">
@@ -1949,42 +1949,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Team opener fallback: keeps Team page usable even if another script errors -->
-  <script>
-    (function () {
-      const panel = document.getElementById('teamFullpage');
-      if (!panel) return;
-
-      function openTeamPage(event) {
-        if (event) event.preventDefault();
-        panel.classList.add('is-open');
-        panel.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
-      }
-
-      function closeTeamPage(event) {
-        if (event) event.preventDefault();
-        panel.classList.remove('is-open');
-        panel.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
-      }
-
-      document.querySelectorAll('a[href="#team"], .open-team-link, .open-team-btn').forEach(function (link) {
-        link.addEventListener('click', openTeamPage);
-      });
-
-      const openBtn = document.getElementById('openTeamModalBtn');
-      if (openBtn) openBtn.addEventListener('click', openTeamPage);
-
-      const closeBtn = document.getElementById('teamFpCloseBtn');
-      const closeIcon = document.getElementById('teamFpCloseIcon');
-      if (closeBtn) closeBtn.addEventListener('click', closeTeamPage);
-      if (closeIcon) closeIcon.addEventListener('click', closeTeamPage);
-
-      if (window.location.hash === '#team') openTeamPage();
-    })();
-  </script>
 
 </body>
 </html>

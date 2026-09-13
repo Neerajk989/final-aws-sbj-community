@@ -1,3 +1,5 @@
+import { verifyAdminRequest } from "./lib/team-admin-session.mjs";
+
 const OWNER = "Neerajk989";
 const REPO = "final-aws-sbj-community";
 const BRANCH = "main";
@@ -123,6 +125,9 @@ export default async (request) => {
   }
 
   if (request.method === "POST") {
+    const admin = verifyAdminRequest(request);
+    if (!admin) return json({ success: false, error: "Admin authentication required." }, 401);
+
     try {
       const body = await request.json();
       const memberId = String(body.memberId || "").trim().toLowerCase();
@@ -168,6 +173,9 @@ export default async (request) => {
   }
 
   if (request.method === "DELETE") {
+    const admin = verifyAdminRequest(request);
+    if (!admin) return json({ success: false, error: "Admin authentication required." }, 401);
+
     try {
       const memberId = decodeURIComponent(url.pathname.split("/").filter(Boolean).pop() || "").trim().toLowerCase();
       if (!validMemberId(memberId)) return json({ success: false, error: "Invalid member ID." }, 400);

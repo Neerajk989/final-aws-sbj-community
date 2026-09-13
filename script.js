@@ -1312,9 +1312,16 @@ document.addEventListener('DOMContentLoaded', () => {
   wrap.id = 'awsAiChat';
   wrap.className = 'aws-ai-chat';
   wrap.innerHTML = `
-    <button class="aws-ai-launcher" type="button" aria-label="Open AI assistant" aria-expanded="false">
-      <span class="aws-ai-launcher-dot"></span>
-      <span class="aws-ai-launcher-label">Ask AI</span>
+    <button class="aws-ai-launcher aws-ai-launcher-premium" type="button" aria-label="Open AI assistant" aria-expanded="false">
+      <span class="aws-ai-launcher-cloud" aria-hidden="true">
+        <img src="images/aws-logo.svg?v=2" alt="">
+      </span>
+      <span class="aws-ai-launcher-divider" aria-hidden="true"></span>
+      <span class="aws-ai-launcher-copy">
+        <span class="aws-ai-launcher-main"><span class="aws-ai-ask">Ask</span> <span class="aws-ai-word">AI</span></span>
+        <span class="aws-ai-launcher-sub">LEARN · BUILD · INNOVATE</span>
+      </span>
+      <span class="aws-ai-launcher-arrow" aria-hidden="true">›</span>
     </button>
     <section class="aws-ai-panel" aria-hidden="true" aria-label="SB Jain AWS AI Assistant">
       <header class="aws-ai-header">

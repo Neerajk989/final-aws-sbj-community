@@ -296,6 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /* =========================================================
      9. TEAM MEMBER PROFILE PHOTO EDITOR & DEPLOYED-SITE STORAGE
   ========================================================= */
+  const PUBLIC_TEAM_PHOTO_EDITOR = false;
   const teamModal = document.getElementById('teamModal');
   const modalClose = document.getElementById('tmModalClose');
   const modalBackdrop = document.getElementById('tmModalBackdrop');
@@ -479,6 +480,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function openModalForMember(memberId, memberName) {
+    if (!PUBLIC_TEAM_PHOTO_EDITOR) return;
     currentMemberId = memberId;
     if (memberSelect) memberSelect.value = memberId;
 
@@ -547,6 +549,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Direct avatar binding: every visible DP opens the editor, including duplicate
   // avatars rendered in different sections of the page.
   document.addEventListener('click', e => {
+    if (!PUBLIC_TEAM_PHOTO_EDITOR) return;
     const avatar = e.target.closest('.tm-ref-avatar, .tm-leader-avatar, .tm-member-avatar, .team-dp-circle');
     if (!avatar) return;
     const card = avatar.closest('[data-member-id]');
@@ -664,7 +667,7 @@ document.addEventListener('DOMContentLoaded', () => {
   modalBackdrop?.addEventListener('click', closeModal);
 
   // Netlify Blobs is authoritative; never use browser storage for team photos.
-  bindMemberPhotoEditors();
+  if (PUBLIC_TEAM_PHOTO_EDITOR) bindMemberPhotoEditors();
   syncPhotosFromServer();
 
   /* =========================================================

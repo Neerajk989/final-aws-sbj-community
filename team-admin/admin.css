@@ -1,3 +1,8 @@
+[hidden]{display:none !important;}
+
+/* Team Admin view switching */
+#loginView[hidden],#dashboardView[hidden]{display:none !important;}
+
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,system-ui,sans-serif;background:#041d19;color:#eef7f5}body{min-height:100vh}.admin-bg{position:fixed;inset:0;z-index:-1;background:
 linear-gradient(135deg,transparent 0 22%,rgba(0,255,213,.11) 22.1% 22.25%,transparent 22.4% 100%),
 linear-gradient(135deg,transparent 0 12%,rgba(8,93,76,.44) 12% 29%,transparent 29% 53%,rgba(7,68,58,.35) 53% 69%,transparent 69% 100%),

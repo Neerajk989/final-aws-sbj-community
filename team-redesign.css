@@ -126,8 +126,36 @@
 @media (max-width: 760px) {
   .team-fp-container { padding-inline: 16px !important; }
   .team-fp-content > .container { padding-top: 34px !important; padding-inline: 16px !important; }
-  .team-tabs { top: auto !important; width: 100% !important; margin-bottom: 40px !important; border-radius: 16px !important; overflow: visible !important; }
-  .team-tab-btn { flex: 0 0 auto; }
+
+  .team-tabs {
+    top: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-bottom: 40px !important;
+    border-radius: 16px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding: 8px !important;
+    scroll-padding-inline: 8px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .team-tabs::-webkit-scrollbar { display: none; }
+
+  .team-tab-btn {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+    min-width: max-content;
+    padding: 10px 14px !important;
+    font-size: 11px !important;
+  }
+
   .team-fp-actions .team-fp-photo-btn span:last-child { display:none; }
   .team-fp-photo-btn { width: 40px; padding: 0 !important; justify-content: center; }
   .team-fp-heading { font-size: 14px !important; }

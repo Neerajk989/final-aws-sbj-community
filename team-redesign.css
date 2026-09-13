@@ -131,29 +131,31 @@
     top: auto !important;
     width: 100% !important;
     max-width: 100% !important;
+    min-width: 0 !important;
     margin-bottom: 40px !important;
     border-radius: 16px !important;
     box-sizing: border-box !important;
     display: flex !important;
-    flex-wrap: nowrap !important;
-    justify-content: flex-start !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-items: stretch !important;
     gap: 8px !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    padding: 8px !important;
-    scroll-padding-inline: 8px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
+    overflow: hidden !important;
+    padding: 10px !important;
   }
 
-  .team-tabs::-webkit-scrollbar { display: none; }
-
   .team-tab-btn {
-    flex: 0 0 auto !important;
-    white-space: nowrap !important;
-    min-width: max-content;
-    padding: 10px 14px !important;
-    font-size: 11px !important;
+    flex: 1 1 calc(50% - 8px) !important;
+    max-width: calc(50% - 4px) !important;
+    min-width: 0 !important;
+    width: auto !important;
+    white-space: normal !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+    padding: 10px 7px !important;
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+    letter-spacing: .45px !important;
   }
 
   .team-fp-actions .team-fp-photo-btn span:last-child { display:none; }

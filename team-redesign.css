@@ -330,3 +330,25 @@
   .team-fullpage .lead-spotlight-wrap > .tm-advisor-card { order: 1 !important; }
   .team-fullpage .lead-spotlight-wrap > .tm-lead-spotlight:not(.tm-advisor-card) { order: 2 !important; }
 }
+
+
+/* Geometric emerald background — visual only, does not affect Team opening */
+.team-fullpage,
+[data-theme="light"] .team-fullpage {
+  background-color: #062f29 !important;
+  background-image:
+    linear-gradient(135deg, transparent 0 23.7%, rgba(0, 238, 201, .24) 23.8% 23.95%, transparent 24.05% 100%),
+    linear-gradient(135deg, transparent 0 10%, rgba(8, 88, 72, .58) 10% 24%, transparent 24% 43%, rgba(8, 73, 62, .38) 43% 59%, transparent 59% 100%),
+    linear-gradient(45deg, transparent 0 18%, rgba(3, 43, 37, .72) 18% 36%, transparent 36% 55%, rgba(7, 78, 65, .34) 55% 72%, transparent 72% 100%),
+    linear-gradient(180deg, #063b32 0%, #052f29 52%, #042822 100%) !important;
+  background-size:
+    1120px 780px,
+    980px 680px,
+    1180px 820px,
+    100% 100% !important;
+  background-position:
+    -180px -100px,
+    260px 120px,
+    -80px 280px,
+    0 0 !important;
+}

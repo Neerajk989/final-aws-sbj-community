@@ -414,3 +414,10 @@
 .team-dp-circle {
   cursor: default !important;
 }
+
+
+/* Global public camera badge lock */
+.tm-avatar-cam-badge,
+#openPhotoEditorFromFp {
+  display: none !important;
+}

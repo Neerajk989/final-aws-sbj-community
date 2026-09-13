@@ -395,3 +395,22 @@
     animation: none !important;
   }
 }
+
+
+/* Public Team page: hide photo editing controls */
+.team-fullpage .tm-avatar-cam-badge,
+.team-fullpage .team-fp-photo-btn,
+.team-fullpage #openTeamPhotoEditorBtn,
+.team-fullpage [data-photo-edit],
+.team-dp-item .tm-avatar-cam-badge {
+  display: none !important;
+}
+
+.team-fullpage [data-member-id],
+.team-fullpage .tm-ref-avatar,
+.team-fullpage .tm-leader-avatar,
+.team-fullpage .tm-member-avatar,
+.team-dp-item[data-member-id],
+.team-dp-circle {
+  cursor: default !important;
+}

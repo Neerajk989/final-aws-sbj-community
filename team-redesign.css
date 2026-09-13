@@ -330,3 +330,5 @@
   .team-fullpage .lead-spotlight-wrap > .tm-advisor-card { order: 1 !important; }
   .team-fullpage .lead-spotlight-wrap > .tm-lead-spotlight:not(.tm-advisor-card) { order: 2 !important; }
 }
+
+/* team geometric background marker */

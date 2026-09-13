@@ -815,7 +815,7 @@ img {
   backdrop-filter: blur(14px);
   background: linear-gradient(rgba(20, 28, 44, 0.8), rgba(12, 18, 32, 0.9));
   border: 1px solid rgba(255, 153, 0, 0.25);
-  border-radius: 18px;
+  border-radius: 13px;
   align-items: center;
   justify-content: center;
   gap: 14px;
@@ -1496,7 +1496,7 @@ img {
 }
 
 .agt-body h4 {
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 700;
   color: #fff;
   margin-bottom: 4px;
@@ -1653,7 +1653,7 @@ img {
 
 .pt-head-icon {
   width: 34px;
-  height: 34px;
+  height: 25px;
   color: var(--primary);
   background: rgba(255, 153, 0, 0.12);
   border: 1px solid rgba(255, 153, 0, 0.3);
@@ -7443,10 +7443,10 @@ select {
 /* Premium AWS Ask AI launcher */
 .aws-ai-launcher-premium {
   position: relative;
-  min-width: 220px;
-  min-height: 58px;
-  padding: 8px 14px 8px 10px;
-  gap: 10px;
+  min-width: 164px;
+  min-height: 46px;
+  padding: 6px 11px 6px 7px;
+  gap: 8px;
   border-radius: 999px;
   border: 1px solid rgba(84, 220, 255, .52);
   background:
@@ -7484,9 +7484,9 @@ select {
 
 .aws-ai-launcher-cloud {
   position: relative;
-  width: 48px;
-  height: 40px;
-  flex: 0 0 48px;
+  width: 34px;
+  height: 30px;
+  flex: 0 0 34px;
   display: grid;
   place-items: center;
   border-radius: 18px;
@@ -7497,16 +7497,16 @@ select {
 .aws-ai-launcher-cloud::after {
   content: "✦";
   position: absolute;
-  right: 1px;
-  top: -5px;
+  right: -1px;
+  top: -4px;
   color: #7de7ff;
-  font-size: 11px;
+  font-size: 8px;
   text-shadow: 0 0 10px rgba(125,231,255,.9);
 }
 
 .aws-ai-launcher-cloud img {
-  width: 38px;
-  height: 24px;
+  width: 26px;
+  height: 17px;
   object-fit: contain;
   filter: drop-shadow(0 0 7px rgba(255,153,0,.30));
 }
@@ -7545,16 +7545,16 @@ select {
 }
 
 .aws-ai-launcher-sub {
-  font-size: 6.5px;
+  font-size: 5px;
   line-height: 1;
   color: #9caec4;
-  letter-spacing: 1.25px;
+  letter-spacing: .8px;
   white-space: nowrap;
 }
 
 .aws-ai-launcher-arrow {
   margin-left: auto;
-  font-size: 29px;
+  font-size: 22px;
   line-height: 1;
   color: #22d9ff;
   text-shadow: 0 0 12px rgba(34,217,255,.75);
@@ -7568,25 +7568,25 @@ select {
   }
 
   .aws-ai-launcher-premium {
-    min-width: 176px;
-    min-height: 50px;
-    padding: 7px 11px 7px 8px;
-    gap: 8px;
+    min-width: 148px;
+    min-height: 42px;
+    padding: 5px 9px 5px 6px;
+    gap: 7px;
   }
 
   .aws-ai-launcher-cloud {
-    width: 40px;
-    height: 34px;
-    flex-basis: 40px;
+    width: 30px;
+    height: 27px;
+    flex-basis: 30px;
   }
 
   .aws-ai-launcher-cloud img {
-    width: 32px;
-    height: 20px;
+    width: 23px;
+    height: 15px;
   }
 
-  .aws-ai-launcher-main { font-size: 15px; }
-  .aws-ai-launcher-sub { font-size: 5.5px; letter-spacing: .9px; }
-  .aws-ai-launcher-divider { height: 28px; }
-  .aws-ai-launcher-arrow { font-size: 24px; }
+  .aws-ai-launcher-main { font-size: 13px; }
+  .aws-ai-launcher-sub { font-size: 4.5px; letter-spacing: .7px; }
+  .aws-ai-launcher-divider { height: 23px; }
+  .aws-ai-launcher-arrow { font-size: 20px; }
 }

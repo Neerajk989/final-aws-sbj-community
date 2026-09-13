@@ -7310,33 +7310,10 @@ select {
   background: #ffb84d;
 }
 
-/* Team Member Photo Hover Overlay */
+/* Public Team avatars are view-only: no Add Photo hover overlay */
 .tm-ref-avatar::after {
-  content: "📷 Add Photo";
-  position: absolute;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%) translateY(4px);
-  background: rgba(13, 19, 28, 0.95);
-  color: #ff9900;
-  font-size: 9.5px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  padding: 3px 8px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 153, 0, 0.5);
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-  pointer-events: none;
-  z-index: 10;
-}
-.tm-ref-card:hover .tm-ref-avatar::after,
-.tm-ref-avatar:hover::after {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(0);
+  content: none !important;
+  display: none !important;
 }
 
 /* Team DP Stack (Homepage Live Preview) */

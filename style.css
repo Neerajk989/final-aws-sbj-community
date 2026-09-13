@@ -7438,3 +7438,155 @@ select {
     border-radius: 16px;
   }
 }
+
+
+/* Premium AWS Ask AI launcher */
+.aws-ai-launcher-premium {
+  position: relative;
+  min-width: 220px;
+  min-height: 58px;
+  padding: 8px 14px 8px 10px;
+  gap: 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(84, 220, 255, .52);
+  background:
+    radial-gradient(circle at 16% 50%, rgba(255, 153, 0, .17), transparent 30%),
+    radial-gradient(circle at 86% 50%, rgba(0, 210, 255, .16), transparent 34%),
+    linear-gradient(135deg, rgba(10, 18, 34, .98), rgba(4, 12, 25, .98));
+  box-shadow:
+    0 12px 34px rgba(0,0,0,.40),
+    0 0 0 1px rgba(255,153,0,.18) inset,
+    0 0 18px rgba(0,210,255,.10);
+  overflow: hidden;
+}
+
+.aws-ai-launcher-premium::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(90deg, #ff9900 0%, rgba(255,255,255,.75) 48%, #00d8ff 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: .9;
+}
+
+.aws-ai-launcher-premium:hover {
+  transform: translateY(-2px) scale(1.015);
+  box-shadow:
+    0 18px 44px rgba(0,0,0,.46),
+    0 0 20px rgba(255,153,0,.16),
+    0 0 26px rgba(0,216,255,.15);
+}
+
+.aws-ai-launcher-cloud {
+  position: relative;
+  width: 48px;
+  height: 40px;
+  flex: 0 0 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(255,153,0,.15), rgba(0,216,255,.10));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.07);
+}
+
+.aws-ai-launcher-cloud::after {
+  content: "✦";
+  position: absolute;
+  right: 1px;
+  top: -5px;
+  color: #7de7ff;
+  font-size: 11px;
+  text-shadow: 0 0 10px rgba(125,231,255,.9);
+}
+
+.aws-ai-launcher-cloud img {
+  width: 38px;
+  height: 24px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 7px rgba(255,153,0,.30));
+}
+
+.aws-ai-launcher-divider {
+  width: 1px;
+  height: 34px;
+  flex: 0 0 1px;
+  background: linear-gradient(180deg, transparent, rgba(71,191,255,.55), transparent);
+}
+
+.aws-ai-launcher-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+}
+
+.aws-ai-launcher-main {
+  display: block;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -.35px;
+  white-space: nowrap;
+}
+
+.aws-ai-ask { color: #fff; }
+.aws-ai-word {
+  background: linear-gradient(180deg, #a9f2ff 0%, #00cfff 65%, #5d8cff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 14px rgba(0,208,255,.18);
+}
+
+.aws-ai-launcher-sub {
+  font-size: 6.5px;
+  line-height: 1;
+  color: #9caec4;
+  letter-spacing: 1.25px;
+  white-space: nowrap;
+}
+
+.aws-ai-launcher-arrow {
+  margin-left: auto;
+  font-size: 29px;
+  line-height: 1;
+  color: #22d9ff;
+  text-shadow: 0 0 12px rgba(34,217,255,.75);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 560px) {
+  .aws-ai-chat {
+    right: 12px;
+    bottom: 14px;
+  }
+
+  .aws-ai-launcher-premium {
+    min-width: 176px;
+    min-height: 50px;
+    padding: 7px 11px 7px 8px;
+    gap: 8px;
+  }
+
+  .aws-ai-launcher-cloud {
+    width: 40px;
+    height: 34px;
+    flex-basis: 40px;
+  }
+
+  .aws-ai-launcher-cloud img {
+    width: 32px;
+    height: 20px;
+  }
+
+  .aws-ai-launcher-main { font-size: 15px; }
+  .aws-ai-launcher-sub { font-size: 5.5px; letter-spacing: .9px; }
+  .aws-ai-launcher-divider { height: 28px; }
+  .aws-ai-launcher-arrow { font-size: 24px; }
+}

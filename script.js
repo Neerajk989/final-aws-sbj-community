@@ -701,6 +701,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   themeToggle?.addEventListener('click', toggleTheme);
   themeToggleMobile?.addEventListener('click', toggleTheme);
+  document.getElementById('teamThemeToggle')?.addEventListener('click', toggleTheme);
+  document.getElementById('galleryThemeToggle')?.addEventListener('click', toggleTheme);
 
   // Initialize theme from storage or preference
   const savedTheme = localStorage.getItem('aws_sbj_theme') || 'dark';
@@ -733,6 +735,18 @@ document.addEventListener('DOMContentLoaded', () => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
       openTeamFullpage();
+    });
+  });
+
+  // Nav links inside the Team capsule header: navigate and close team view
+  document.querySelectorAll('.team-fp-links a, .team-fp-logo').forEach(link => {
+    link.addEventListener('click', (e) => {
+      const href = link.getAttribute('href');
+      if (href === '#team') {
+        e.preventDefault();
+        return;
+      }
+      closeTeamFullpage();
     });
   });
 
@@ -1287,6 +1301,18 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   galleryFullpageClose?.addEventListener('click', closeGalleryFullpage);
+
+  // Nav links inside the Gallery capsule header: navigate and close gallery view
+  document.querySelectorAll('.gallery-fp-links a, .gallery-fp-logo').forEach(link => {
+    link.addEventListener('click', (e) => {
+      const href = link.getAttribute('href');
+      if (href === '#gallery') {
+        e.preventDefault();
+        return;
+      }
+      closeGalleryFullpage();
+    });
+  });
 
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && galleryFullpage?.classList.contains('is-open')) {

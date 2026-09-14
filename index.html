@@ -31,8 +31,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=55">
-  <link rel="stylesheet" href="team-redesign.css?v=7">
+  <link rel="stylesheet" href="style.css?v=57">
+  <link rel="stylesheet" href="team-redesign.css?v=13">
 
   <script>
     (function() {
@@ -627,7 +627,7 @@
     </div>
   </footer>
 
-  <script src="script.js?v=53"></script>
+  <script src="script.js?v=55"></script>
 
   <!-- TEAM MEMBER PROFILE EDIT MODAL -->
   <div class="tm-modal" id="teamModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="tmModalTitle">
@@ -763,17 +763,43 @@
       <div class="cloud-grid-mesh"></div>
     </div>
 
-    <!-- Sticky Top Header Bar -->
-    <header class="gallery-fp-topbar">
-      <div class="gallery-fp-brand">
-        <img src="images/aws-logo.svg?v=2" alt="AWS Logo" width="54" height="32">
-        <span class="gallery-fp-divider"></span>
-        <span class="gallery-fp-brand-text">SB JAIN AWS COMMUNITY · <em>EVENT GALLERY</em></span>
+    <!-- Floating Capsule Header (.gallery-fp-header) -->
+    <header class="gallery-fp-header">
+      <div class="gallery-fp-bar">
+        <a class="gallery-fp-logo" href="#hero" id="galleryFpLogo" aria-label="SB Jain AWS Community Home">
+          <img class="snav-logo-img" src="images/aws-logo.svg?v=2" alt="AWS Logo" width="64" height="38">
+          <span class="snav-divider"></span>
+          <span class="snav-logo-text">SB JAIN<br><em>AWS COMMUNITY</em></span>
+        </a>
+
+        <nav class="gallery-fp-links" aria-label="Community navigation">
+          <a href="#about">ABOUT</a>
+          <a href="#events" class="open-events-link">EVENTS</a>
+          <a class="is-current" href="#gallery">GALLERY</a>
+          <a href="#team" class="open-team-link">TEAM</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+
+        <div class="gallery-fp-actions">
+          <!-- Theme Toggle inside Gallery Header -->
+          <button class="theme-toggle" id="galleryThemeToggle" type="button" aria-label="Toggle Light/Dark Theme" title="Toggle Light/Dark Theme">
+            <span class="theme-icon-sun" aria-hidden="true">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            </span>
+            <span class="theme-icon-moon" aria-hidden="true">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            </span>
+          </button>
+
+          <a class="gallery-fp-join" href="https://www.meetup.com/aws-sbg-at-sb-jain-inst-of-tech-management-and-research/?eventOrigin=home_groups_you_are_in" target="_blank" rel="noopener noreferrer">JOIN COMMUNITY ↗</a>
+
+          <button class="gallery-fp-close-icon" id="galleryFullpageClose" type="button" aria-label="Close gallery view" title="Close Gallery View">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+              <path d="M6 6l12 12M18 6L6 18"/>
+            </svg>
+          </button>
+        </div>
       </div>
-      <button class="gallery-fp-close" id="galleryFullpageClose" type="button" aria-label="Close gallery view">
-        <span>Close Gallery</span>
-        <span class="gallery-close-x">&times;</span>
-      </button>
     </header>
 
     <!-- Gallery Content Container (Clean Coming Soon - Zero Photos) -->
@@ -810,51 +836,38 @@
       <div class="tf-blob tfb2"></div>
     </div>
 
-    <!-- Top Sticky Bar -->
+    <!-- Floating Capsule Header (.team-fp-header) -->
     <header class="team-fp-header">
       <div class="team-fp-container">
-        <div class="team-fp-brand">
-          <a class="team-fp-logo" href="#hero" aria-label="SB Jain AWS Community Home">
-            <img src="images/aws-logo.svg?v=2" alt="AWS" width="68" height="40">
-            <span>SB JAIN<br><em>AWS COMMUNITY</em></span>
-          </a>
-          <span class="team-fp-brand-divider team-fp-logo-divider" aria-hidden="true"></span>
-          <button class="team-fp-back-btn" id="teamFpCloseBtn" type="button" aria-label="Back to home page">
-            <span class="team-fp-iconbox" aria-hidden="true">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
-              </svg>
-            </span>
-            <span class="team-fp-btn-text">Back to Home</span>
-          </button>
-          <div class="team-fp-brand-divider" aria-hidden="true"></div>
-          <div class="team-fp-title-wrap">
-            <div class="team-fp-kicker"><span class="team-fp-kicker-dot"></span><span>SB JAIN AWS COMMUNITY</span></div>
-            <h2 class="team-fp-heading" id="teamFpHeading">Core Team &amp; Leadership</h2>
-          </div>
-        </div>
+        <a class="team-fp-logo" href="#hero" id="teamFpLogo" aria-label="SB Jain AWS Community Home">
+          <img class="snav-logo-img" src="images/aws-logo.svg?v=2" alt="AWS Logo" width="64" height="38">
+          <span class="snav-divider"></span>
+          <span class="snav-logo-text">SB JAIN<br><em>AWS COMMUNITY</em></span>
+        </a>
 
         <nav class="team-fp-links" aria-label="Community navigation">
           <a href="#about">ABOUT</a>
-          <a href="#events">EVENTS</a>
-          <a href="#gallery">GALLERY</a>
+          <a href="#events" class="open-events-link">EVENTS</a>
+          <a href="#gallery" class="open-gallery-link">GALLERY</a>
           <a class="is-current" href="#team">TEAM</a>
           <a href="#faq">FAQ</a>
         </nav>
 
         <div class="team-fp-actions">
-          <a class="team-fp-join" href="https://www.meetup.com/aws-sbg-at-sb-jain-inst-of-tech-management-and-research/?eventOrigin=home_groups_you_are_in" target="_blank" rel="noopener noreferrer">JOIN COMMUNITY ↗</a>
-          <button class="team-fp-photo-btn" id="openPhotoEditorFromFp" type="button">
-            <span class="team-fp-photo-icon" aria-hidden="true">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14.5 4h-5L8 6H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-4L14.5 4z"/>
-                <circle cx="12" cy="13" r="3.5"/><path d="M18.5 10.5v4M16.5 12.5h4"/>
-              </svg>
+          <!-- Theme Toggle inside Team Header -->
+          <button class="theme-toggle" id="teamThemeToggle" type="button" aria-label="Toggle Light/Dark Theme" title="Toggle Light/Dark Theme">
+            <span class="theme-icon-sun" aria-hidden="true">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
             </span>
-            <span>Add Member Photo</span>
+            <span class="theme-icon-moon" aria-hidden="true">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            </span>
           </button>
-          <button class="team-fp-close-icon" id="teamFpCloseIcon" type="button" aria-label="Close team page">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+
+          <a class="team-fp-join" href="https://www.meetup.com/aws-sbg-at-sb-jain-inst-of-tech-management-and-research/?eventOrigin=home_groups_you_are_in" target="_blank" rel="noopener noreferrer">JOIN COMMUNITY ↗</a>
+
+          <button class="team-fp-close-icon" id="teamFpCloseIcon" type="button" aria-label="Close team page" title="Close Team View">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
               <path d="M6 6l12 12M18 6L6 18"/>
             </svg>
           </button>

@@ -2,3 +2,4 @@
 *-backup.*
 *.bak
 sb-jain-aws-community/
+node_modules/

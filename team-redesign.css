@@ -748,7 +748,7 @@
 .team-fullpage .team-dept-grid,
 .team-dept-grid {
   display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 310px)) !important;
+  grid-template-columns: repeat(4, minmax(0, 310px)) !important;
   justify-content: center !important;
   gap: 28px !important;
   width: 100% !important;
@@ -780,6 +780,16 @@
   min-height: 445px !important;
   flex: 0 1 315px !important;
   margin: 0 !important;
+}
+
+/* Swap Sarang (Group Leader) and Sweta (Technical Advisor) card positions */
+.lead-spotlight-wrap .tm-lead-spotlight:not(.tm-advisor-card),
+.team-leadership-grid .tm-lead-card {
+  order: 3 !important;
+}
+.lead-spotlight-wrap .tm-advisor-card,
+.team-leadership-grid .tm-advisor-card {
+  order: 2 !important;
 }
 
 /* Mobile responsive adjustments: cards stay vertical rectangles */

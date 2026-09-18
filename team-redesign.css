@@ -818,23 +818,26 @@
 }
 
 
-/* Small third line under Team header brand */
+/* Small third line under the main/site header brand */
+.snav-logo-text .team-logo-thirdline,
 .team-fullpage .team-logo-thirdline {
-  display: block;
-  margin-top: 2px;
-  font-size: 7px;
-  line-height: 1.15;
-  letter-spacing: .10em;
+  display: block !important;
+  margin-top: 3px;
+  font-size: 7px !important;
+  line-height: 1.1;
+  letter-spacing: .09em;
   font-weight: 700;
-  color: rgba(235, 243, 248, .68);
+  color: rgba(235, 243, 248, .72);
   white-space: nowrap;
 }
 
 @media (max-width: 760px) {
+  .snav-logo-text .team-logo-thirdline,
   .team-fullpage .team-logo-thirdline {
-    font-size: 6px;
-    letter-spacing: .08em;
+    margin-top: 2px;
+    font-size: 6px !important;
+    letter-spacing: .07em;
     white-space: normal;
-    max-width: 135px;
+    max-width: 145px;
   }
 }

@@ -31,7 +31,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=60">
+  <link rel="stylesheet" href="style.css?v=59">
   <link rel="stylesheet" href="team-redesign.css?v=7">
 
   <script>
@@ -195,6 +195,10 @@
           <span>SB JAIN INSTITUTE OF TECHNOLOGY · HOSTED BY AWS SBG · NAGPUR</span>
         </div>
 
+        <div class="hero-institute-mark" aria-label="SB Jain Institute of Technology, Management and Research">
+          <img src="images/sbjit-logo-transparent.png?v=1" alt="SB Jain Institute of Technology, Management and Research">
+        </div>
+
         <h1 class="hero-title">
           <span class="line"><span class="word">AWS</span></span>
           <span class="line"><span class="word ital grad">Cloud Builders</span></span>
@@ -218,17 +222,148 @@
         </div>
       </div>
 
-      <div class="hero-media reveal sbjit-hero-media">
-        <figure class="sbjit-hero-identity">
-          <p class="sbjit-hero-eyebrow">OUR CAMPUS · OUR BUILDERS</p>
-          <img class="sbjit-hero-logo" src="images/sbjit-logo-transparent.png?v=2"
-            alt="S.B. Jain Institute of Technology, Management and Research — An Autonomous Institute, affiliated to R. T. M. Nagpur University"
-            width="2048" height="683" decoding="async" fetchpriority="high">
-          <figcaption class="sbjit-hero-caption">Learn. Build. Innovate.</figcaption>
-          <div class="sbjit-hero-topics" aria-label="Our focus">
-            <span>AWS</span><span>Cloud</span><span>Generative AI</span>
+      <div class="hero-media reveal">
+        <div class="hero-cloud-seamless" id="heroCloudCard" role="region" aria-label="Interactive AWS Cloud Visualization">
+          <!-- Ambient Aura Background Glows (blooming seamlessly into page) -->
+          <div class="cloud-aura-wrap" aria-hidden="true">
+            <div class="cloud-aura ca-cyan"></div>
+            <div class="cloud-aura ca-amber"></div>
+            <div class="cloud-grid-mesh"></div>
+            <div class="cloud-shimmer"></div>
           </div>
-        </figure>
+
+          <!-- SVG Cloud Contour & Constellation Mesh -->
+          <div class="hero-cloud-canvas-wrap" aria-hidden="true">
+            <svg class="cloud-svg-contour" viewBox="0 0 540 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <!-- Bi-Color Gradient for Cloud Border (Cyan to AWS Orange) -->
+                <linearGradient id="cloudEdgeGrad" x1="12%" y1="20%" x2="88%" y2="80%">
+                  <stop offset="0%" stop-color="#55c7e8" stop-opacity="0.95"/>
+                  <stop offset="42%" stop-color="#38bdf8" stop-opacity="0.85"/>
+                  <stop offset="68%" stop-color="#ffb84d" stop-opacity="0.9"/>
+                  <stop offset="100%" stop-color="#ff9900" stop-opacity="0.95"/>
+                </linearGradient>
+
+                <!-- Soft Radiant Glow Filter for Cloud Edge -->
+                <filter id="neonCloudGlow" x="-25%" y="-25%" width="150%" height="150%">
+                  <feGaussianBlur stdDeviation="8" result="blur1"/>
+                  <feGaussianBlur stdDeviation="20" result="blur2"/>
+                  <feMerge>
+                    <feMergeNode in="blur2"/>
+                    <feMergeNode in="blur1"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+
+                <!-- Inner Ambient Fill Gradient -->
+                <radialGradient id="cloudInnerGlow" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#0e1e33" stop-opacity="0.6"/>
+                  <stop offset="55%" stop-color="#0a1424" stop-opacity="0.35"/>
+                  <stop offset="100%" stop-color="#070b12" stop-opacity="0"/>
+                </radialGradient>
+              </defs>
+
+              <!-- Cloud Body Fill -->
+              <path class="cloud-path-fill" d="M170,240 L370,240 C415,240 450,205 450,165 C450,130 425,100 390,92 C385,55 350,25 305,25 C275,25 248,40 232,65 C220,55 202,48 182,48 C145,48 115,75 110,110 C75,115 50,145 50,180 C50,215 82,240 120,240 Z" fill="url(#cloudInnerGlow)"/>
+
+              <!-- Outer Radiant Glow Stroke -->
+              <path class="cloud-path-glow" d="M170,240 L370,240 C415,240 450,205 450,165 C450,130 425,100 390,92 C385,55 350,25 305,25 C275,25 248,40 232,65 C220,55 202,48 182,48 C145,48 115,75 110,110 C75,115 50,145 50,180 C50,215 82,240 120,240 Z" stroke="url(#cloudEdgeGrad)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" filter="url(#neonCloudGlow)"/>
+
+              <!-- Main Sharp Cloud Contour -->
+              <path class="cloud-path-core" d="M170,240 L370,240 C415,240 450,205 450,165 C450,130 425,100 390,92 C385,55 350,25 305,25 C275,25 248,40 232,65 C220,55 202,48 182,48 C145,48 115,75 110,110 C75,115 50,145 50,180 C50,215 82,240 120,240 Z" stroke="url(#cloudEdgeGrad)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+
+              <!-- Constellation Network Lines & Data Interconnects -->
+              <g class="cloud-constellation" stroke-opacity="0.4" stroke-width="1.2">
+                <!-- Cyan / Blue Node Interconnects (Left) -->
+                <line x1="90" y1="170" x2="140" y2="130" stroke="#55c7e8"/>
+                <line x1="140" y1="130" x2="190" y2="85" stroke="#55c7e8"/>
+                <line x1="140" y1="130" x2="180" y2="175" stroke="#55c7e8"/>
+                <line x1="180" y1="175" x2="135" y2="215" stroke="#55c7e8"/>
+                <line x1="190" y1="85" x2="250" y2="70" stroke="#55c7e8"/>
+                <line x1="180" y1="175" x2="250" y2="190" stroke="#55c7e8"/>
+
+                <!-- Cross Bridge Interconnects -->
+                <line x1="250" y1="70" x2="310" y2="55" stroke="#80d4f6"/>
+                <line x1="250" y1="190" x2="310" y2="195" stroke="#ffb84d"/>
+                <line x1="250" y1="70" x2="250" y2="190" stroke="#55c7e8" stroke-dasharray="3 3"/>
+
+                <!-- Orange / Amber Node Interconnects (Right) -->
+                <line x1="310" y1="55" x2="365" y2="95" stroke="#ffb84d"/>
+                <line x1="365" y1="95" x2="415" y2="155" stroke="#ff9900"/>
+                <line x1="310" y1="195" x2="370" y2="165" stroke="#ff9900"/>
+                <line x1="370" y1="165" x2="415" y2="155" stroke="#ff9900"/>
+                <line x1="310" y1="195" x2="360" y2="225" stroke="#ff9900"/>
+                <line x1="360" y1="225" x2="415" y2="185" stroke="#ff9900"/>
+                <line x1="365" y1="95" x2="310" y2="195" stroke="#ffb84d" stroke-dasharray="3 3"/>
+
+                <!-- Orbiting Network Extension Lines (Connecting to space) -->
+                <line x1="45" y1="100" x2="90" y2="130" stroke="#55c7e8" stroke-dasharray="2 4"/>
+                <line x1="415" y1="120" x2="480" y2="95" stroke="#ffb84d" stroke-dasharray="2 4"/>
+                <line x1="420" y1="200" x2="485" y2="230" stroke="#ff9900" stroke-dasharray="2 4"/>
+              </g>
+
+              <!-- Constellation Nodes (Pulsing Circles) -->
+              <g class="cloud-nodes">
+                <circle cx="90" cy="170" r="3.5" fill="#55c7e8" class="cnode cn-pulse1"/>
+                <circle cx="140" cy="130" r="3" fill="#55c7e8" class="cnode cn-pulse2"/>
+                <circle cx="190" cy="85" r="4" fill="#55c7e8" class="cnode cn-pulse3"/>
+                <circle cx="180" cy="175" r="3" fill="#55c7e8" class="cnode cn-pulse1"/>
+                <circle cx="135" cy="215" r="3.5" fill="#55c7e8" class="cnode cn-pulse2"/>
+                <circle cx="250" cy="70" r="4.5" fill="#78dcfa" class="cnode cn-pulse3"/>
+                <circle cx="250" cy="190" r="3.5" fill="#8de0fc" class="cnode cn-pulse1"/>
+                <circle cx="310" cy="55" r="4" fill="#ffb84d" class="cnode cn-pulse2"/>
+                <circle cx="310" cy="195" r="3.5" fill="#ffb84d" class="cnode cn-pulse3"/>
+                <circle cx="365" cy="95" r="4" fill="#ffaa33" class="cnode cn-pulse1"/>
+                <circle cx="370" cy="165" r="3.5" fill="#ff9900" class="cnode cn-pulse2"/>
+                <circle cx="415" cy="155" r="4.5" fill="#ff9900" class="cnode cn-pulse3"/>
+                <circle cx="360" cy="225" r="3" fill="#ff9900" class="cnode cn-pulse1"/>
+              </g>
+            </svg>
+          </div>
+
+          <!-- Official AWS Logo Centered Inside the Cloud -->
+          <div class="cloud-logo-stage" aria-label="Amazon Web Services">
+            <img class="cloud-aws-logo logo-dark-theme" src="images/aws-logo.svg?v=2" alt="Amazon Web Services" width="145" height="87">
+            <img class="cloud-aws-logo logo-light-theme" src="images/aws-logo-dark.svg?v=2" alt="Amazon Web Services" width="145" height="87" style="display:none;">
+          </div>
+
+          <!-- Floating Orbit Technology Labels (Matching Reference Image) -->
+          <div class="cloud-orbit-tag cot-cloud" style="top: 8%; left: 4%;">
+            <span class="cot-dot cyan-dot"></span>
+            <span class="cot-text">CLOUD COMPUTING</span>
+          </div>
+
+          <div class="cloud-orbit-tag cot-devops" style="top: 10%; right: 4%;">
+            <span class="cot-dot amber-dot"></span>
+            <span class="cot-text">DEVOPS</span>
+          </div>
+
+          <div class="cloud-orbit-tag cot-genai" style="top: 48%; right: -2%;">
+            <span class="cot-dot amber-dot"></span>
+            <span class="cot-text">GENERATIVE AI</span>
+          </div>
+
+          <div class="cloud-orbit-tag cot-innovate" style="bottom: 12%; right: 6%;">
+            <span class="cot-dot amber-dot"></span>
+            <span class="cot-text">INNOVATION</span>
+          </div>
+
+          <div class="cloud-orbit-tag cot-aws" style="bottom: 14%; left: 6%;">
+            <span class="cot-dot cyan-dot"></span>
+            <span class="cot-text">AWS</span>
+          </div>
+
+          <!-- Floating Micro-Particles Layer -->
+          <div class="cloud-particles" aria-hidden="true">
+            <span class="cp cp-1"></span>
+            <span class="cp cp-2"></span>
+            <span class="cp cp-3"></span>
+            <span class="cp cp-4"></span>
+            <span class="cp cp-5"></span>
+            <span class="cp cp-6"></span>
+            <span class="cp cp-7"></span>
+          </div>
+        </div>
       </div>
     </div>
   </section>

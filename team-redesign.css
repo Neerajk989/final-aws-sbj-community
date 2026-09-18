@@ -816,3 +816,25 @@
     justify-content: center !important;
   }
 }
+
+
+/* Small third line under Team header brand */
+.team-fullpage .team-logo-thirdline {
+  display: block;
+  margin-top: 2px;
+  font-size: 7px;
+  line-height: 1.15;
+  letter-spacing: .10em;
+  font-weight: 700;
+  color: rgba(235, 243, 248, .68);
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .team-fullpage .team-logo-thirdline {
+    font-size: 6px;
+    letter-spacing: .08em;
+    white-space: normal;
+    max-width: 135px;
+  }
+}

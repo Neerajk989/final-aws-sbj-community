@@ -763,6 +763,29 @@
   min-height: 445px !important;
 }
 
+/* Design & Content Team: 3 cards horizontally centered in the row */
+.team-fullpage .team-dept[data-team-dept="design"] .team-dept-grid,
+.team-dept[data-team-dept="design"] .team-dept-grid {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: stretch !important;
+  flex-wrap: wrap !important;
+  gap: 28px !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+}
+
+.team-fullpage .team-dept[data-team-dept="design"] .team-dept-grid .tm-ref-card,
+.team-fullpage .team-dept[data-team-dept="design"] .team-dept-grid .tm-member-card,
+.team-dept[data-team-dept="design"] .team-dept-grid .tm-ref-card,
+.team-dept[data-team-dept="design"] .team-dept-grid .tm-member-card {
+  flex: 0 1 310px !important;
+  width: 100% !important;
+  max-width: 310px !important;
+  min-height: 445px !important;
+  margin: 0 !important;
+}
+
 /* Main page #team section leadership grid */
 .team-leadership-grid {
   display: flex !important;

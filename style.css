@@ -7651,3 +7651,20 @@ select {
   .aws-ai-launcher-divider { height: 23px; }
   .aws-ai-launcher-arrow { font-size: 20px; }
 }
+
+/* Transparent institute branding beside AWS, scoped to the main navigation. */
+.snav .snav-logo { min-width: 0; flex-shrink: 1; }
+.snav .snav-institute-logo {
+  display: block; width: 250px; max-width: 100%; height: auto;
+  flex-shrink: 1; min-width: 0; object-fit: contain;
+  background: transparent; border: 0; border-radius: 0;
+  filter: brightness(2.8);
+}
+[data-theme="light"] .snav .snav-institute-logo { filter: none; }
+@media (max-width: 640px) {
+  .snav .snav-inner { gap: 8px; }
+  .snav .snav-logo { flex: 1; gap: 8px; }
+  .snav .snav-institute-logo { width: clamp(135px, 42vw, 220px); }
+  .snav .snav-logo-img { flex-shrink: 0; }
+  .snav .snav-toggle { flex-shrink: 0; }
+}

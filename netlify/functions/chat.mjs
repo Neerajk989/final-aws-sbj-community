@@ -8,39 +8,45 @@ function json(data, status = 200) {
   });
 }
 
-function extractReply(data) {
-  const outputItems = Array.isArray(data?.output) ? data.output : [];
-  const textParts = [];
+function sseHeaders() {
+  return {
+    "content-type": "text/event-stream; charset=utf-8",
+    "cache-control": "no-cache, no-store, must-revalidate",
+    "connection": "keep-alive",
+    "x-accel-buffering": "no"
+  };
+}
+
+function sseEvent(payload) {
+  return "data: " + JSON.stringify(payload) + "\n\n";
+}
+
+function extractSources(responseData) {
   const sources = [];
+  const outputItems = Array.isArray(responseData?.output) ? responseData.output : [];
 
   for (const item of outputItems) {
-    if (item?.type === "message" && Array.isArray(item.content)) {
-      for (const part of item.content) {
-        if (part?.type === "output_text" && part.text) {
-          textParts.push(part.text);
-          if (Array.isArray(part.annotations)) {
-            for (const ann of part.annotations) {
-              if (ann?.type === "url_citation" && ann.url) {
-                sources.push({
-                  title: ann.title || ann.url,
-                  url: ann.url
-                });
-              }
-            }
-          }
+    if (item?.type !== "message" || !Array.isArray(item.content)) continue;
+
+    for (const part of item.content) {
+      if (part?.type !== "output_text" || !Array.isArray(part.annotations)) continue;
+
+      for (const ann of part.annotations) {
+        if (ann?.type === "url_citation" && ann.url) {
+          sources.push({
+            title: ann.title || ann.url,
+            url: ann.url
+          });
         }
       }
     }
   }
 
-  const uniqueSources = sources.filter((src, index, arr) =>
-    src.url && arr.findIndex(x => x.url === src.url) === index
-  ).slice(0, 5);
-
-  return {
-    reply: textParts.join("\n").trim() || "Sorry, I could not generate a response.",
-    sources: uniqueSources
-  };
+  return sources
+    .filter((src, index, arr) =>
+      src.url && arr.findIndex(item => item.url === src.url) === index
+    )
+    .slice(0, 5);
 }
 
 export default async (request) => {
@@ -50,6 +56,7 @@ export default async (request) => {
 
   try {
     const apiKey = process.env.OPENAI_API_KEY;
+
     if (!apiKey) {
       return json({
         success: false,
@@ -91,23 +98,21 @@ export default async (request) => {
     const modelOnlyTask = /\b(write|rewrite|summarize|translate|code|program|debug|solve|calculate|equation|essay|poem|story|email|caption|algorithm|brainstorm|idea|explain)\b/i.test(message);
     const casualTask = /^(hi|hello|hey|thanks|thank you|okay|ok|bye|good morning|good evening)\b/i.test(message);
 
-    // Use website content first for site questions.
-    // For almost every other factual/general knowledge question, allow web search so the assistant can answer broadly.
-    // Keep coding/writing/math and casual chat fast without search unless the question is explicitly current.
-    const needsWeb = !hasWebsiteContext && !casualTask && (explicitlyCurrent || !modelOnlyTask);
+    // Website context is supplied first. Web search remains available as a fallback
+    // for factual/current questions that are not answered by the page.
+    const allowWebSearch = !casualTask && (explicitlyCurrent || !modelOnlyTask);
 
     const requestBody = {
       model: "gpt-5.6-luna",
+      stream: true,
       instructions:
         "You are SB Jain AWS AI. Be fast, concise, and factual. " +
         "ROUTING RULES: " +
-        "(1) If WEBSITE CONTENT is provided and it contains the answer, answer from that website content only. Preserve names, roles, dates, labels, numbers, and wording exactly when possible. Do not replace a website fact with model memory. " +
-        "(2) If WEBSITE CONTENT does not contain the answer, answer the user's question normally. For factual, real-world, current, or general-knowledge questions, use web search when enabled and answer from reliable search results. " +
-        "(3) For coding, writing, math, debugging, study questions, explanations, brainstorming, and everyday questions, provide a useful direct answer. " +
-        "(4) Try to answer every valid user question. Never reply that you only answer AWS or website questions. " +
-        "(5) Never invent facts. If something cannot be verified, clearly say what is uncertain while still giving the most useful safe answer you can. " +
-        "(6) When web search is used, give the answer first and include source links when available. " +
-        "(7) For website questions, do not say you searched the web unless you actually did. " +
+        "(1) WEBSITE CONTENT is the first source of truth for questions about this website, its community, team, events, FAQ, gallery, or information visibly present on the page. If the answer is in WEBSITE CONTENT, answer from it and do not contradict it with model memory. " +
+        "(2) If WEBSITE CONTENT does not contain the answer, use web search when available for current, factual, real-world, or general-knowledge questions. Prefer reliable primary or authoritative sources. " +
+        "(3) For coding, writing, math, debugging, study questions, explanations, brainstorming, and everyday tasks, answer directly. " +
+        "(4) Never claim you searched the web unless you actually used the web-search tool. " +
+        "(5) Never invent facts. " +
         "WEBSITE CONTENT:\n" + (pageContext || "[No relevant website content found]"),
       input: [
         ...safeHistory,
@@ -116,13 +121,10 @@ export default async (request) => {
           content: [{ type: "input_text", text: message }]
         }
       ],
-      max_output_tokens: 900,
-      metadata: {
-        mode: needsWeb ? "verified_web" : (hasWebsiteContext ? "website_grounded" : "general")
-      }
+      max_output_tokens: 900
     };
 
-    if (needsWeb) {
+    if (allowWebSearch) {
       requestBody.tools = [{ type: "web_search" }];
       requestBody.tool_choice = "auto";
     }
@@ -136,9 +138,8 @@ export default async (request) => {
       body: JSON.stringify(requestBody)
     });
 
-    const data = await upstream.json().catch(() => ({}));
-
     if (!upstream.ok) {
+      const data = await upstream.json().catch(() => ({}));
       const upstreamMessage =
         data?.error?.message ||
         data?.error?.code ||
@@ -146,17 +147,96 @@ export default async (request) => {
 
       return json({
         success: false,
-        error: "OpenAI error: " + String(upstreamMessage).slice(0, 260)
+        error: "OpenAI error: " + String(upstreamMessage).slice(0, 300)
       }, upstream.status);
     }
 
-    const parsed = extractReply(data);
+    if (!upstream.body) {
+      return json({
+        success: false,
+        error: "OpenAI returned an empty streaming response."
+      }, 502);
+    }
 
-    return json({
-      success: true,
-      reply: parsed.reply,
-      sources: parsed.sources,
-      answerSource: hasWebsiteContext ? "website" : (needsWeb ? "web" : "ai")
+    const reader = upstream.body.getReader();
+    const decoder = new TextDecoder();
+    const encoder = new TextEncoder();
+
+    const stream = new ReadableStream({
+      async start(controller) {
+        let buffer = "";
+        let sources = [];
+        let answerSource = hasWebsiteContext ? "website" : "ai";
+
+        const emit = (payload) => controller.enqueue(encoder.encode(sseEvent(payload)));
+
+        try {
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+
+            let boundary;
+            while ((boundary = buffer.indexOf("\n\n")) !== -1) {
+              const block = buffer.slice(0, boundary);
+              buffer = buffer.slice(boundary + 2);
+
+              const dataLines = block
+                .split("\n")
+                .filter(line => line.startsWith("data:"))
+                .map(line => line.slice(5).trim());
+
+              if (!dataLines.length) continue;
+
+              const raw = dataLines.join("\n");
+              if (raw === "[DONE]") continue;
+
+              let event;
+              try {
+                event = JSON.parse(raw);
+              } catch {
+                continue;
+              }
+
+              if (event.type === "response.output_text.delta" && event.delta) {
+                emit({ type: "delta", text: event.delta });
+              } else if (event.type === "response.completed") {
+                sources = extractSources(event.response);
+                if (sources.length) answerSource = "web";
+                emit({
+                  type: "done",
+                  sources,
+                  answerSource
+                });
+              } else if (event.type === "error") {
+                emit({
+                  type: "error",
+                  error: event.error?.message || "OpenAI streaming error."
+                });
+              }
+            }
+          }
+
+          emit({ type: "done", sources, answerSource });
+          controller.close();
+        } catch (error) {
+          console.error("[AI Chat] Streaming failed", error);
+          try {
+            emit({
+              type: "error",
+              error: error?.message || "AI streaming failed."
+            });
+          } finally {
+            controller.close();
+          }
+        }
+      }
+    });
+
+    return new Response(stream, {
+      status: 200,
+      headers: sseHeaders()
     });
   } catch (error) {
     console.error("[AI Chat] Netlify function failed", error);

@@ -1515,15 +1515,6 @@ document.addEventListener('DOMContentLoaded', () => {
       'hi': 'Hi! How can I help you with AWS, cloud, coding, or the SB Jain AWS community?',
       'hello': 'Hello! Ask me anything about AWS, cloud, coding, projects, or the community.'
     };
-    const pageAnswer = answerFromPage(message);
-    if (pageAnswer) {
-      addMessage(message, 'user');
-      input.value = '';
-      addMessage(pageAnswer, 'bot');
-      history.push({ role: 'user', content: message });
-      history.push({ role: 'assistant', content: pageAnswer });
-      return;
-    }
 
     const quickKey = message.toLowerCase().replace(/[?!.]/g, '').trim();
     if (instantReplies[quickKey]) {
@@ -1540,22 +1531,30 @@ document.addEventListener('DOMContentLoaded', () => {
     input.style.height = 'auto';
     sendBtn.disabled = true;
 
-    const typing = addMessage('Thinking…', 'bot', 'typing');
+    let typing = addMessage('Thinking…', 'bot', 'typing');
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 35000);
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
+
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, history, pageContext: getRelevantWebsiteContext(message) }),
+        body: JSON.stringify({
+          message,
+          history,
+          pageContext: getRelevantWebsiteContext(message)
+        }),
         signal: controller.signal
       });
-      clearTimeout(timeoutId);
-      const data = await response.json();
-      typing.remove();
 
-      if (!response.ok || !data.success) {
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        typing.remove();
+        typing = null;
+
         if (data.error && /(quota|billing|insufficient_quota|credits)/i.test(data.error)) {
           addMessage('OpenAI API billing or credits are not available for this key. Add API credits/billing, then redeploy.', 'bot', 'error');
         } else {
@@ -1564,35 +1563,104 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      const sourceLabel =
-        data.answerSource === 'website' ? 'From this website' :
-        data.answerSource === 'web' ? 'Checked on the web' :
-        'AI answer';
-      addMessage(sourceLabel + '\n\n' + data.reply, 'bot');
-      if (Array.isArray(data.sources) && data.sources.length) {
+      if (!response.body) {
+        throw new Error('The AI did not return a streaming response.');
+      }
+
+      typing.remove();
+      typing = null;
+
+      const botEl = addMessage('', 'bot');
+      let fullReply = '';
+      let answerSource = 'ai';
+      let sources = [];
+      let buffer = '';
+
+      const render = () => {
+        const sourceLabel =
+          answerSource === 'website' ? 'From this website' :
+          answerSource === 'web' ? 'Checked on the web' :
+          'AI answer';
+
+        botEl.textContent = sourceLabel + '\n\n' + fullReply;
+        messages.scrollTop = messages.scrollHeight;
+      };
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+
+        let boundary;
+        while ((boundary = buffer.indexOf('\n\n')) !== -1) {
+          const block = buffer.slice(0, boundary);
+          buffer = buffer.slice(boundary + 2);
+
+          const dataLines = block
+            .split('\n')
+            .filter(line => line.startsWith('data:'))
+            .map(line => line.slice(5).trim());
+
+          if (!dataLines.length) continue;
+
+          let eventData;
+          try {
+            eventData = JSON.parse(dataLines.join('\n'));
+          } catch {
+            continue;
+          }
+
+          if (eventData.type === 'delta') {
+            fullReply += eventData.text || '';
+            render();
+          } else if (eventData.type === 'done') {
+            answerSource = eventData.answerSource || answerSource;
+            sources = Array.isArray(eventData.sources) ? eventData.sources : [];
+            render();
+          } else if (eventData.type === 'error') {
+            throw new Error(eventData.error || 'AI streaming error.');
+          }
+        }
+      }
+
+      if (fullReply.trim()) {
+        history.push({ role: 'user', content: message });
+        history.push({ role: 'assistant', content: fullReply.trim() });
+        if (history.length > 12) history.splice(0, history.length - 12);
+      }
+
+      if (sources.length) {
         const sourceBox = document.createElement('div');
         sourceBox.className = 'aws-ai-sources';
         sourceBox.textContent = 'Sources: ';
-        data.sources.forEach((source, index) => {
+
+        sources.forEach((source, index) => {
           const a = document.createElement('a');
           a.href = source.url;
           a.target = '_blank';
           a.rel = 'noopener noreferrer';
           a.textContent = source.title || ('Source ' + (index + 1));
           sourceBox.appendChild(a);
-          if (index < data.sources.length - 1) sourceBox.appendChild(document.createTextNode(' · '));
+
+          if (index < sources.length - 1) {
+            sourceBox.appendChild(document.createTextNode(' · '));
+          }
         });
+
         messages.appendChild(sourceBox);
         messages.scrollTop = messages.scrollHeight;
       }
-      history.push({ role: 'user', content: message });
-      history.push({ role: 'assistant', content: data.reply });
-      if (history.length > 12) history.splice(0, history.length - 12);
     } catch (error) {
-      typing.remove();
+      if (typing) typing.remove();
+
       const msg = error && error.name === 'AbortError'
         ? 'The AI took too long. Please send the question again.'
-        : 'Could not connect to the AI assistant. Please try again.';
+        : (error?.message || 'Could not connect to the AI assistant. Please try again.');
+
       addMessage(msg, 'bot', 'error');
     } finally {
       sendBtn.disabled = false;

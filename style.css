@@ -7750,3 +7750,165 @@ select {
 }
 
 
+
+/* AWS induction ceremony in the Events view */
+.events-overlay-dialog {
+  max-width: 1100px;
+  padding: 42px;
+  scrollbar-color: #6b573e #0c111a;
+}
+.events-list-view[hidden], .induction-detail-view[hidden] { display: none !important; }
+.events-list-view .events-cs-header { margin-bottom: 28px; }
+.induction-card {
+  width: min(100%, 380px);
+  overflow: hidden;
+  border: 1px solid rgba(255, 153, 0, .28);
+  border-radius: 20px;
+  background: #101723;
+  color: #f8f9fb;
+  box-shadow: 0 14px 35px rgba(0, 0, 0, .22);
+}
+.induction-card-art, .induction-detail-art {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+  background: radial-gradient(circle at 50% 38%, rgba(255, 153, 0, .13), transparent 45%),
+    linear-gradient(145deg, #1c2430, #0b111a 75%);
+}
+.induction-card-art { min-height: 208px; }
+.induction-card-art::before, .induction-detail-art::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent);
+}
+.induction-tag {
+  position: absolute;
+  z-index: 2;
+  top: 17px;
+  left: 17px;
+  padding: 7px 11px;
+  border-radius: 6px;
+  background: #ffad3b;
+  color: #101722;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .12em;
+}
+.induction-art-ring {
+  position: absolute;
+  width: 70%;
+  aspect-ratio: 1;
+  border: 1px solid rgba(255, 153, 0, .24);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 12px rgba(255,153,0,.025), 0 0 0 18px rgba(255,153,0,.025);
+}
+.induction-brand {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(12px, 2vw, 24px);
+  width: 90%;
+  padding: 35px 0 23px;
+}
+.induction-brand img { display: block; width: auto; object-fit: contain; }
+.induction-aws-logo { max-width: 35%; max-height: 78px; }
+.induction-sbj-logo { max-width: 45%; max-height: 95px; }
+.induction-brand-cross { color: #ffa934; font-size: 32px; font-weight: 300; }
+.induction-art-caption {
+  position: absolute;
+  bottom: 17px;
+  color: #ffba69;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .24em;
+}
+.induction-card-content { padding: 23px 24px 22px; }
+.induction-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  color: #ffba69;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .1em;
+}
+.induction-card h3 { margin: 15px 0 10px; color: #fff; font-size: 21px; line-height: 1.2; }
+.induction-card p { color: #bec7d4; font-size: 13px; line-height: 1.7; }
+.induction-card-footer {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 22px;
+  padding-top: 17px;
+  border-top: 1px solid rgba(255,255,255,.11);
+}
+.induction-card-footer > span { color: #9daabd; font-size: 11px; }
+.induction-card-footer .induction-more { align-self: flex-end; }
+.induction-more, .induction-back {
+  cursor: pointer;
+  background: transparent;
+  color: #ffb34f;
+  font-weight: 800;
+}
+.induction-more {
+  flex: none;
+  border: 1px solid #ffad3b;
+  border-radius: 99px;
+  padding: 11px 15px;
+  font-size: 11px;
+  letter-spacing: .09em;
+}
+.induction-more:hover, .induction-more:focus-visible { background: #ffad3b; color: #111722; }
+.induction-back { border: 0; padding: 0; margin-bottom: 24px; font-size: 14px; }
+.induction-back:hover, .induction-back:focus-visible { color: #fff; text-decoration: underline; }
+.induction-detail-hero {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  border: 1px solid rgba(255, 153, 0, .25);
+  border-radius: 20px;
+  overflow: hidden;
+  background: #0d1420;
+}
+.induction-detail-art { min-height: 390px; }
+.induction-detail-art .induction-brand { width: 94%; }
+.induction-detail-art .induction-aws-logo { max-height: 100px; }
+.induction-detail-art .induction-sbj-logo { max-height: 135px; }
+.induction-detail-intro { padding: clamp(28px, 4vw, 48px); }
+.induction-detail-kicker { color: #ffb34f; font-size: 11px; font-weight: 800; letter-spacing: .13em; }
+.induction-detail-intro h2 { margin: 19px 0; color: #fff; font-size: clamp(29px, 3vw, 42px); line-height: 1.1; }
+.induction-detail-intro p, .induction-info-panel p { color: #c5cfdb; font-size: 14px; line-height: 1.75; }
+.induction-hero-facts { margin-top: 26px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.12); }
+.induction-hero-facts > div { margin-top: 12px; }
+.induction-hero-facts dt, .induction-info-grid dt { color: #ffb34f; font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.induction-hero-facts dd, .induction-info-grid dd { margin: 5px 0 0; color: #f3f6fa; font-size: 14px; line-height: 1.55; }
+.induction-info-panel { margin-top: 20px; padding: 27px 30px; border: 1px solid rgba(255, 153, 0, .2); border-radius: 16px; background: #0e1520; }
+.induction-info-panel h3 { margin-bottom: 14px; color: #fff; font-size: 19px; }
+.induction-info-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
+.induction-info-grid > div { min-width: 0; padding: 15px; border: 1px solid rgba(255,255,255,.1); border-radius: 10px; background: rgba(255,255,255,.025); }
+[data-theme="light"] .events-overlay-dialog { background: #0c121c; border-color: rgba(255,153,0,.24); }
+[data-theme="light"] .events-cs-title { color: #fff; }
+[data-theme="light"] .events-cs-sub { color: #bec7d4; }
+[data-theme="light"] .events-overlay-close { color: #fff; background: #222a35; border-color: #414957; }
+@media (max-width: 760px) {
+  .events-overlay-dialog { padding: 28px 18px; max-height: calc(100dvh - 24px); }
+  .induction-card { margin-inline: auto; }
+  .induction-detail-hero { grid-template-columns: 1fr; }
+  .induction-detail-art { min-height: 265px; }
+  .induction-detail-intro { padding: 25px 20px; }
+  .induction-info-panel { padding: 22px 18px; }
+}
+@media (max-width: 430px) {
+  .induction-card-footer { align-items: flex-start; flex-direction: column; }
+  .induction-info-grid { grid-template-columns: 1fr; }
+}

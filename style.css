@@ -7821,7 +7821,13 @@ select {
 }
 .induction-brand img { display: block; width: auto; object-fit: contain; }
 .induction-aws-logo { max-width: 35%; max-height: 78px; }
-.induction-sbj-logo { max-width: 45%; max-height: 95px; }
+.induction-sbj-logo {
+  display: block;
+  flex: none;
+  width: 82px;
+  height: 110px;
+  background: url('images/sbjit-nav-logo.png') left center / auto 100% no-repeat;
+}
 .induction-brand-cross { color: #ffa934; font-size: 32px; font-weight: 300; }
 .induction-art-caption {
   position: absolute;
@@ -7883,7 +7889,7 @@ select {
 .induction-detail-art { min-height: 390px; }
 .induction-detail-art .induction-brand { width: 94%; }
 .induction-detail-art .induction-aws-logo { max-height: 100px; }
-.induction-detail-art .induction-sbj-logo { max-height: 135px; }
+.induction-detail-art .induction-sbj-logo { width: 116px; height: 160px; }
 .induction-detail-intro { padding: clamp(28px, 4vw, 48px); }
 .induction-detail-kicker { color: #ffb34f; font-size: 11px; font-weight: 800; letter-spacing: .13em; }
 .induction-detail-intro h2 { margin: 19px 0; color: #fff; font-size: clamp(29px, 3vw, 42px); line-height: 1.1; }

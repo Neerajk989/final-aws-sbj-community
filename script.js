@@ -783,25 +783,53 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* =========================================================
-     12. EVENTS "COMING SOON" CONTROLLER
+     12. EVENTS CONTROLLER
   ========================================================= */
   const eventsOverlay = document.getElementById('eventsOverlay');
   const eventsOverlayClose = document.getElementById('eventsOverlayClose');
   const eventsOverlayBackdrop = document.getElementById('eventsOverlayBackdrop');
+  const eventsDialog = eventsOverlay?.querySelector('.events-overlay-dialog');
+  const eventsListView = document.getElementById('eventsListView');
+  const inductionDetailView = document.getElementById('inductionDetailView');
+  const inductionMore = document.getElementById('inductionMore');
+  const inductionBack = document.getElementById('inductionBack');
+  let eventsReturnFocus = null;
+
+  function showEventsList(restoreFocus = false) {
+    eventsListView.hidden = false;
+    inductionDetailView.hidden = true;
+    eventsOverlay?.setAttribute('aria-labelledby', 'eventsCsHeading');
+    if (eventsDialog) eventsDialog.scrollTop = 0;
+    if (restoreFocus) inductionMore?.focus();
+  }
+
+  inductionMore?.addEventListener('click', () => {
+    eventsListView.hidden = true;
+    inductionDetailView.hidden = false;
+    eventsOverlay?.setAttribute('aria-labelledby', 'inductionDetailTitle');
+    if (eventsDialog) eventsDialog.scrollTop = 0;
+    inductionBack?.focus();
+  });
+  inductionBack?.addEventListener('click', () => showEventsList(true));
 
   function openEventsOverlay() {
+    eventsReturnFocus = document.activeElement;
+    showEventsList();
     eventsOverlay?.classList.add('is-open');
     eventsOverlay?.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+    eventsOverlayClose?.focus();
   }
 
   function closeEventsOverlay() {
     eventsOverlay?.classList.remove('is-open');
     eventsOverlay?.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
+    showEventsList();
+    eventsReturnFocus?.focus?.();
   }
 
-  // Intercept all "Events" links to open the Coming Soon overlay
+  // Open the upcoming events view from site navigation.
   document.querySelectorAll('a[href="#events"], .open-events-link').forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();

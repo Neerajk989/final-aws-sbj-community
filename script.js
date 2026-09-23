@@ -788,7 +788,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const eventsOverlay = document.getElementById('eventsOverlay');
   const eventsOverlayClose = document.getElementById('eventsOverlayClose');
   const eventsOverlayBackdrop = document.getElementById('eventsOverlayBackdrop');
-  const eventsDialog = eventsOverlay?.querySelector('.events-overlay-dialog');
   const eventsListView = document.getElementById('eventsListView');
   const inductionDetailView = document.getElementById('inductionDetailView');
   const inductionMore = document.getElementById('inductionMore');
@@ -799,7 +798,7 @@ document.addEventListener('DOMContentLoaded', () => {
     eventsListView.hidden = false;
     inductionDetailView.hidden = true;
     eventsOverlay?.setAttribute('aria-labelledby', 'eventsCsHeading');
-    if (eventsDialog) eventsDialog.scrollTop = 0;
+    if (eventsOverlay) eventsOverlay.scrollTop = 0;
     if (restoreFocus) inductionMore?.focus();
   }
 
@@ -807,7 +806,7 @@ document.addEventListener('DOMContentLoaded', () => {
     eventsListView.hidden = true;
     inductionDetailView.hidden = false;
     eventsOverlay?.setAttribute('aria-labelledby', 'inductionDetailTitle');
-    if (eventsDialog) eventsDialog.scrollTop = 0;
+    if (eventsOverlay) eventsOverlay.scrollTop = 0;
     inductionBack?.focus();
   });
   inductionBack?.addEventListener('click', () => showEventsList(true));

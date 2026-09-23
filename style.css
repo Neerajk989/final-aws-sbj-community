@@ -7912,3 +7912,69 @@ select {
   .induction-card-footer { align-items: flex-start; flex-direction: column; }
   .induction-info-grid { grid-template-columns: 1fr; }
 }
+/* Full-screen Events view, using the same geometric emerald background as Team. */
+.events-overlay,
+[data-theme="light"] .events-overlay {
+  display: block;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background-color: #052e28;
+  background-image:
+    linear-gradient(135deg, transparent 0 21.8%, rgba(0, 244, 211, .38) 21.9% 22.05%, transparent 22.18% 100%),
+    linear-gradient(135deg, transparent 0 8%, rgba(8, 94, 77, .62) 8% 23%, transparent 23% 38%, rgba(7, 74, 63, .46) 38% 56%, transparent 56% 73%, rgba(8, 83, 69, .34) 73% 86%, transparent 86% 100%),
+    linear-gradient(45deg, transparent 0 17%, rgba(3, 40, 35, .78) 17% 35%, transparent 35% 51%, rgba(9, 87, 72, .38) 51% 68%, transparent 68% 100%),
+    linear-gradient(180deg, #074038 0%, #06342e 48%, #042923 100%);
+  background-size: 1220px 860px, 1040px 720px, 1280px 900px, 100% 100%;
+  background-position: -220px -140px, 240px 80px, -120px 300px, 0 0;
+  animation: teamGeometricFlow 26s ease-in-out infinite alternate;
+}
+.events-overlay-backdrop { display: none; }
+.events-overlay-dialog,
+[data-theme="light"] .events-overlay-dialog {
+  width: 100%;
+  max-width: none;
+  max-height: none;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: visible;
+  padding: clamp(66px, 8vh, 96px) clamp(18px, 5vw, 72px) 90px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+  transition: none;
+}
+.events-overlay.is-open .events-overlay-dialog { transform: none; }
+.events-overlay-close {
+  position: fixed;
+  z-index: 3;
+  top: 22px;
+  right: clamp(18px, 5vw, 72px);
+  width: 42px;
+  height: 42px;
+  background: #0d2424;
+  border-color: rgba(255, 255, 255, .2);
+}
+.events-list-view, .induction-detail-view { max-width: 1220px; margin-inline: auto; }
+.events-list-view .events-cs-header { text-align: left; }
+.events-list-view .events-cs-sub { margin-inline: 0; }
+@media (max-width: 760px) {
+  .events-overlay, [data-theme="light"] .events-overlay {
+    background-size: 760px 560px, 700px 520px, 820px 620px, 100% 100%;
+    animation-duration: 32s;
+  }
+  .events-overlay-dialog, [data-theme="light"] .events-overlay-dialog {
+    width: 100%;
+    max-height: none;
+    padding: 80px 18px 52px;
+  }
+  .events-list-view .events-cs-header { text-align: center; }
+  .events-list-view .events-cs-sub { margin-inline: auto; }
+  .events-overlay-close { top: 17px; right: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .events-overlay, [data-theme="light"] .events-overlay { animation: none; }
+}

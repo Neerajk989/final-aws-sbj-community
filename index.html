@@ -38,7 +38,7 @@
     href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap"
     rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=64">
+  <link rel="stylesheet" href="style.css?v=65">
   <link rel="stylesheet" href="team-redesign.css?v=7">
 
   <script>
@@ -724,7 +724,7 @@
     </div>
   </footer>
 
-  <script src="script.js?v=55"></script>
+  <script src="script.js?v=56"></script>
 
   <!-- TEAM MEMBER PROFILE EDIT MODAL -->
   <div class="tm-modal" id="teamModal" aria-hidden="true" role="dialog" aria-modal="true"
@@ -824,52 +824,79 @@
 
 
 
-  <!-- EVENTS COMING SOON VIEW (Opens when clicking "Events") -->
-  <div class="events-overlay" id="eventsOverlay" aria-hidden="true" role="dialog" aria-modal="true"
-    aria-labelledby="eventsCsHeading">
+  <!-- Upcoming events and event details -->
+  <div class="events-overlay" id="eventsOverlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="eventsCsHeading">
     <div class="events-overlay-backdrop" id="eventsOverlayBackdrop"></div>
     <div class="events-overlay-dialog">
-
-      <!-- Close Button -->
-      <button class="events-overlay-close" id="eventsOverlayClose" type="button"
-        aria-label="Close events view">&times;</button>
-
-      <!-- Header / Badge -->
-      <div class="events-cs-header">
-        <span class="events-status-badge">
-          <span class="events-pulse-dot"></span>
-          COMING SOON · 2026
-        </span>
-        <h2 class="events-cs-title" id="eventsCsHeading">
-          Coming <span class="ital grad">Soon</span>
-        </h2>
-        <p class="events-cs-sub">
-          We're preparing hands-on cloud architectures, AWS certification bootcamps, and hackathons for the SB Jain
-          builder community. Stay tuned!
-        </p>
-      </div>
-
-      <!-- Notify Box -->
-      <div class="events-notify-box">
-        <div class="enb-content">
-          <h4 style="color: #fff; font-size: 17px; font-weight: 700; margin-bottom: 4px;">Want first access when
-            registration opens?</h4>
-          <p style="color: var(--txt-dim); font-size: 13px;">Enter your email to receive early invitations and workshop
-            passes.</p>
+      <button class="events-overlay-close" id="eventsOverlayClose" type="button" aria-label="Close events view">&times;</button>
+      <div class="events-list-view" id="eventsListView">
+        <div class="events-cs-header">
+          <span class="events-status-badge">AWS STUDENT BUILDER GROUP · 2026</span>
+          <h2 class="events-cs-title" id="eventsCsHeading">Upcoming <span class="ital grad">Events</span></h2>
+          <p class="events-cs-sub">Join the SB Jain AWS community for our next chapter.</p>
         </div>
-        <form class="enb-form" id="eventsNotifyForm"
-          onsubmit="event.preventDefault(); alert('Thank you! You will be notified when event registrations open.'); document.getElementById('eventsOverlay').classList.remove('is-open');">
-          <input type="email" id="eventsEmailInput" placeholder="Enter your college email" required>
-          <button class="btn-primary" type="submit" style="padding: 12px 24px; font-size: 12px; white-space: nowrap;">
-            <span>Notify Me ↗</span>
-          </button>
-        </form>
+        <article class="induction-card" aria-labelledby="inductionCardTitle">
+          <div class="induction-card-art">
+            <span class="induction-tag">CEREMONY</span>
+            <span class="induction-art-ring" aria-hidden="true"></span>
+            <div class="induction-brand" aria-label="AWS and SB Jain Institute of Technology">
+              <img src="images/aws-logo.svg?v=2" alt="AWS" class="induction-aws-logo">
+              <span class="induction-brand-cross" aria-hidden="true">×</span>
+              <img src="images/sbjain-logo.png" alt="SB Jain Institute of Technology" class="induction-sbj-logo">
+            </div>
+            <span class="induction-art-caption">BUILD · LEARN · CONNECT</span>
+          </div>
+          <div class="induction-card-content">
+            <div class="induction-card-meta"><span>29 SEP 2026</span><span>11:00 AM</span></div>
+            <h3 id="inductionCardTitle">Induction Ceremony AWS</h3>
+            <p>Meet the AWS Student Builder Group at SB Jain. Discover the community, the people behind it, and what we plan to build together. Start your cloud journey with fellow student builders.</p>
+            <div class="induction-card-footer">
+              <span>S.B. Jain Institute of Technology, Management and Research, Nagpur</span>
+              <button type="button" class="induction-more" id="inductionMore">MORE INFO <span aria-hidden="true">↗</span></button>
+            </div>
+          </div>
+        </article>
       </div>
-
+      <div class="induction-detail-view" id="inductionDetailView" hidden>
+        <button type="button" class="induction-back" id="inductionBack">← Back to Upcoming Events</button>
+        <section class="induction-detail-hero" aria-labelledby="inductionDetailTitle">
+          <div class="induction-detail-art">
+            <span class="induction-tag">CEREMONY</span>
+            <span class="induction-art-ring" aria-hidden="true"></span>
+            <div class="induction-brand" aria-label="AWS and SB Jain Institute of Technology">
+              <img src="images/aws-logo.svg?v=2" alt="AWS" class="induction-aws-logo">
+              <span class="induction-brand-cross" aria-hidden="true">×</span>
+              <img src="images/sbjain-logo.png" alt="SB Jain Institute of Technology" class="induction-sbj-logo">
+            </div>
+            <span class="induction-art-caption">BUILD · LEARN · CONNECT</span>
+          </div>
+          <div class="induction-detail-intro">
+            <span class="induction-detail-kicker">AWS STUDENT BUILDER GROUP · SB JAIN</span>
+            <h2 id="inductionDetailTitle">Induction Ceremony AWS</h2>
+            <p>Join the induction ceremony for the AWS Student Builder Group at SB Jain. Meet fellow builders and discover opportunities to learn, collaborate, and grow together.</p>
+            <dl class="induction-hero-facts">
+              <div><dt>DATE</dt><dd>29 September 2026</dd></div>
+              <div><dt>TIME</dt><dd>11:00 AM</dd></div>
+              <div><dt>VENUE</dt><dd>S.B. Jain Institute of Technology, Management and Research, Nagpur</dd></div>
+            </dl>
+          </div>
+        </section>
+        <section class="induction-info-panel" aria-labelledby="inductionAboutTitle">
+          <h3 id="inductionAboutTitle">About Event</h3>
+          <p>The induction ceremony welcomes students to the SB Jain AWS Student Builder Group. Get to know the community, connect with its members, and explore how we learn cloud technologies and build projects together. It is a starting point for new ideas, teamwork, and the year ahead.</p>
+        </section>
+        <section class="induction-info-panel" aria-labelledby="inductionInfoTitle">
+          <h3 id="inductionInfoTitle">Event Information</h3>
+          <dl class="induction-info-grid">
+            <div><dt>Date</dt><dd>29 September 2026</dd></div>
+            <div><dt>Time</dt><dd>11:00 AM</dd></div>
+            <div class="induction-info-venue"><dt>Venue</dt><dd>S.B. Jain Institute of Technology, Management and Research, Nagpur</dd></div>
+            <div><dt>Event</dt><dd>Induction Ceremony AWS</dd></div>
+          </dl>
+        </section>
+      </div>
     </div>
   </div>
-
-
 
 
   <!-- FULL PAGE GALLERY VIEW (Opens when clicking "Gallery" in navigation) -->

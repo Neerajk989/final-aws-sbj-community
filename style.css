@@ -7912,6 +7912,7 @@ select {
   .induction-card-footer { align-items: flex-start; flex-direction: column; }
   .induction-info-grid { grid-template-columns: 1fr; }
 }
+
 /* Full-screen Events view, using the same geometric emerald background as Team. */
 .events-overlay,
 [data-theme="light"] .events-overlay {

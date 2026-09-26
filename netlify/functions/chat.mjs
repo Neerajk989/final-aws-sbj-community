@@ -24,9 +24,7 @@ export default async (request) => {
   if (request.method !== "POST") return json({ success: false, error: "Method not allowed." }, 405);
 
   try {
-    // Accept the old variable during migration because the site previously used it
-    // for a Gemini key. Prefer GEMINI_API_KEY once the Netlify setting is renamed.
-    const apiKey = process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       return json({ success: false, error: "GEMINI_API_KEY is missing in Netlify environment variables." }, 503);
     }

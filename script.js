@@ -1359,7 +1359,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* =========================================================
-   OPENAI CHATBOT
+   GEMINI CHATBOT
 ========================================================= */
 document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('awsAiChat')) return;
@@ -1383,7 +1383,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <header class="aws-ai-header">
         <div>
           <strong>SB Jain AWS AI</strong>
-          <span>Powered by OpenAI</span>
+          <span>Powered by Gemini</span>
         </div>
         <button class="aws-ai-close" type="button" aria-label="Close AI assistant">×</button>
       </header>
@@ -1438,7 +1438,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const q = normalizeQuestion(message);
     const siteWords = [
       'website','page','community','sb jain','sbjit','team','leader','head','co head',
-      'member','volunteer','event','events','gallery','join','faq','workshop','hackathon',
+      'member','volunteer','event','events','ceremony','induction','venue','gallery','join','faq','workshop','hackathon',
       'speaker','organizer','technical','design','marketing','operations'
     ];
     if (siteWords.some(w => q.includes(w))) return true;
@@ -1458,13 +1458,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Pull concise visible text from the main website sections.
     const selectors = [
+      ...(/\b(event|ceremony|venue|induction|schedule)\b/i.test(q) ? ['#eventsOverlay'] : []),
       '#home', '#about', '#team', '#faq', '#gallery',
-      '.hero', '.team-fullpage', '.faq-list', '.gallery-fullpage'
+      '#eventsOverlay', '.hero', '.team-fullpage', '.faq-list', '.gallery-fullpage'
     ];
 
     selectors.forEach(selector => {
       document.querySelectorAll(selector).forEach(el => {
-        const text = (el.innerText || '').replace(/\s+/g, ' ').trim();
+        const text = (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
         if (text) chunks.push(text.slice(0, 5000));
       });
     });
@@ -1583,7 +1584,7 @@ document.addEventListener('DOMContentLoaded', () => {
         typing = null;
 
         if (data.error && /(quota|billing|insufficient_quota|credits)/i.test(data.error)) {
-          addMessage('OpenAI API billing or credits are not available for this key. Add API credits/billing, then redeploy.', 'bot', 'error');
+          addMessage('Gemini API limit reached for this project. Check its usage and free-tier limits in Google AI Studio.', 'bot', 'error');
         } else {
           addMessage(data.error || 'AI assistant is unavailable right now.', 'bot', 'error');
         }

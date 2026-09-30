@@ -678,13 +678,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const logoImgs = document.querySelectorAll('.snav-logo-img');
 
   function updateLogoForTheme(theme) {
-    logoImgs.forEach(img => {
-      if (theme === 'light') {
-        img.src = 'images/aws-logo-dark.svg?v=2';
-      } else {
-        img.src = 'images/aws-logo.svg?v=2';
-      }
-    });
+    logoImgs.forEach(img => { img.src = 'images/builder-symbol.png'; });
   }
 
   function applyTheme(theme) {
@@ -813,6 +807,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function openEventsOverlay() {
     eventsReturnFocus = document.activeElement;
+    if (eventsReturnFocus?.closest('.team-fullpage, .gallery-fullpage, .events-nav')) {
+      eventsReturnFocus = document.querySelector('.snav:not(.events-nav) a[href="#events"]');
+    }
+    ['teamFullpage', 'galleryFullpage'].forEach(id => {
+      const panel = document.getElementById(id);
+      panel?.classList.remove('is-open');
+      panel?.setAttribute('aria-hidden', 'true');
+    });
+    setEventsMenu(false);
     showEventsList();
     eventsOverlay?.classList.add('is-open');
     eventsOverlay?.setAttribute('aria-hidden', 'false');
@@ -820,13 +823,70 @@ document.addEventListener('DOMContentLoaded', () => {
     eventsOverlayClose?.focus();
   }
 
-  function closeEventsOverlay() {
+  function closeEventsOverlay(restoreFocus = true) {
+    setEventsMenu(false);
     eventsOverlay?.classList.remove('is-open');
     eventsOverlay?.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
     showEventsList();
-    eventsReturnFocus?.focus?.();
+    if (restoreFocus) eventsReturnFocus?.focus?.();
   }
+
+  // Keep the Events navigation independent of the homepage mobile menu.
+  const eventsNav = eventsOverlay?.querySelector('.events-nav');
+  const eventsMenuToggle = eventsNav?.querySelector('.snav-toggle');
+  const eventsMobileMenu = document.getElementById('events-mobile-menu');
+  function setEventsMenu(open) {
+    eventsNav?.classList.toggle('open', open);
+    eventsMenuToggle?.setAttribute('aria-expanded', String(open));
+    eventsMenuToggle?.setAttribute('aria-label', open ? 'Close navigation menu' : 'Open navigation menu');
+    eventsMobileMenu?.setAttribute('aria-hidden', String(!open));
+  }
+  eventsMenuToggle?.addEventListener('click', () => {
+    setEventsMenu(!eventsNav.classList.contains('open'));
+  });
+  ['eventsThemeToggle', 'eventsThemeToggleMobile'].forEach(id => {
+    document.getElementById(id)?.addEventListener('click', () => {
+      document.getElementById('themeToggle')?.click();
+    });
+  });
+  eventsNav?.addEventListener('click', (e) => {
+    const link = e.target.closest('a[href]');
+    if (!link || !eventsNav.contains(link)) return;
+    const href = link.getAttribute('href');
+    setEventsMenu(false);
+    if (!href.startsWith('#')) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    if (href === '#events') {
+      showEventsList();
+      document.getElementById('eventsCsHeading')?.focus();
+      return;
+    }
+    closeEventsOverlay(false);
+    if (href === '#team') {
+      openTeamFullpage();
+      document.getElementById('teamFpCloseBtn')?.focus();
+    } else if (href === '#gallery') {
+      openGalleryFullpage();
+      document.getElementById('galleryFullpageClose')?.focus();
+    } else {
+      const section = document.querySelector(href);
+      if (section) {
+        section.setAttribute('tabindex', '-1');
+        section.focus({ preventScroll: true });
+        section.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+      }
+    }
+  }, true);
+  eventsOverlay?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab' || !eventsOverlay.classList.contains('is-open')) return;
+    const controls = [...eventsOverlay.querySelectorAll('a[href], button, [tabindex="0"]')]
+      .filter(el => !el.disabled && el.getClientRects().length && getComputedStyle(el).visibility !== 'hidden');
+    const first = controls[0], last = controls[controls.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); }
+  });
 
   // Open the upcoming events view from site navigation.
   document.querySelectorAll('a[href="#events"], .open-events-link').forEach(link => {

@@ -864,3 +864,19 @@
     max-width: 145px;
   }
 }
+
+/* Keep Sarang’s face and shoulders centered in every profile photo. */
+[data-member-id="sarang-chakole"] .tm-avatar-img {
+  inset: 0 auto auto -25%;
+  width: 150%;
+  height: 150%;
+  max-width: none;
+  object-fit: cover;
+  border-radius: 0;
+}
+
+[data-member-id="sarang-chakole"] .tm-ref-avatar,
+[data-member-id="sarang-chakole"] .tm-member-avatar,
+[data-member-id="sarang-chakole"] .team-dp-circle {
+  overflow: hidden !important;
+}
